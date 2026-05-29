@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<elements>
+	<info>
+		<name>Fighter</name>
+		<update version="0.4.3">
+			<file name="class-fighter.xml" url="https://raw.githubusercontent.com/AuroraLegacy/elements/master/core/players-handbook/classes/class-fighter.xml" />
+		</update>
+	</info>
+
+	<element name="Fighter" type="Class" source="Player's Handbook" id="ID_WOTC_PHB_CLASS_FIGHTER">
+		<description>
+			<p>A master of martial combat, skilled with a variety of weapons and armor.</p>
+		</description>
+		<sheet display="false">
+			<description>A master of martial combat, skilled with a variety of weapons and armor.</description>
+		</sheet>
+		<setters>
+			<set name="short">A master of martial combat, skilled with a variety of weapons and armor.</set>
+			<set name="hd">d10</set>
+		</setters>
+		<rules>
+			<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_LIGHT_ARMOR" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_MEDIUM_ARMOR" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_HEAVY_ARMOR" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_SHIELDS" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_WEAPON_PROFICIENCY_SIMPLE_WEAPONS" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_WEAPON_PROFICIENCY_MARTIAL_WEAPONS" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_SAVINGTHROW_STRENGTH" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Proficiency" id="ID_PROFICIENCY_SAVINGTHROW_CONSTITUTION" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<select type="Proficiency" name="Skill Proficiency (Fighter)" supports="Skill,Fighter" number="2" requirements="!ID_WOTC_PHB_MULTICLASS_FIGHTER"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_FIGHTINGSTYLE" level="1"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_SECONDWIND" level="1"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_ACTIONSURGE" level="2"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_MARTIALARCHETYPE" level="3"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_ABILITYSCOREIMPROVEMENT_FIGHTER" level="4"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_EXTRAATTACK" level="5"/>
+			<grant type="Class Feature" id="ID_WOTC_PHB_CLASS_FEATURE_INDOMITABLE" level="9"/>
+		</rules>
+		<multiclass id="ID_WOTC_PHB_MULTICLASS_FIGHTER">
+			<prerequisite>Strength 13 or Dexterity 13</prerequisite>
+			<requirements>(([str:13]||[dex:13]),!(ID_WOTC_PHB24_CLASS_FIGHTER||ID_WOTC_PHB24_MULTICLASS_FIGHTER))||ID_INTERNAL_GRANTS_MULTICLASS_UNLOCKER</requirements>
+			<setters>
+				<set name="multiclass proficiencies">Light armor, medium armor, shields, simple weapons, martial weapons</set>
+			</setters>
+			<rules>
+				<grant type="Grants" id="ID_INTERNAL_GRANT_MULTICLASS" />
+				<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_LIGHT_ARMOR" />
+				<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_MEDIUM_ARMOR" />
+				<grant type="Proficiency" id="ID_PROFICIENCY_ARMOR_PROFICIENCY_SHIELDS" />
+				<grant type="Proficiency" id="ID_PROFICIENCY_WEAPON_PROFICIENCY_SIMPLE_WEAPONS" />
+				<grant type="Proficiency" id="ID_PROFICIENCY_WEAPON_PROFICIENCY_MARTIAL_WEAPONS" />
+			</rules>
+		</multiclass>
+	</element>
+
+	<element name="Second Wind" type="Class Feature" source="Player's Handbook" id="ID_WOTC_PHB_CLASS_FEATURE_SECONDWIND">
+		<requirements>!ID_INTERNAL_FEATURE_REPLACEMENT_FIGHTER_SECOND_WIND</requirements>
+		<description>
+			<p>You have a limited well of stamina that you can draw on to protect yourself from harm. On your turn, you can use a bonus action to regain hit points equal to 1d10 + your fighter level. Once you use this feature, you must finish a short or long rest before you can use it again.</p>
+		</description>
+		<sheet action="Bonus Action" usage="1/Short Rest">
+			<description>You regain 1d10+{{level:fighter}} hp.</description>
+		</sheet>
+	</element>
+
+	<element name="Action Surge" type="Class Feature" source="Player's Handbook" id="ID_WOTC_PHB_CLASS_FEATURE_ACTIONSURGE">
+		<requirements>!ID_INTERNAL_FEATURE_REPLACEMENT_FIGHTER_ACTION_SURGE</requirements>
+		<description>
+			<p>Starting at 2nd level, you can push yourself beyond your normal limits for a moment. On your turn, you can take one additional action on top of your regular action and a possible bonus action.</p>
+		</description>
+		<sheet usage="1/Short Rest">
+			<description>On your turn, you can take one additional action on top of your regular action.</description>
+			<description usage="2/Short Rest" level="17">On your turn, you can take one additional action on top of your regular action.</description>
+		</sheet>
+	</element>
+
+	<element name="Martial Archetype" type="Class Feature" source="Player's Handbook" id="ID_WOTC_PHB_CLASS_FEATURE_MARTIALARCHETYPE">
+		<requirements>!ID_INTERNAL_FEATURE_REPLACEMENT_FIGHTER_MARTIAL_ARCHETYPE</requirements>
+		<description>
+			<p>At 3rd level, you choose an archetype that you strive to emulate in your combat styles and techniques.</p>
+		</description>
+		<sheet display="false" />
+		<rules>
+			<select type="Archetype" name="Martial Archetype" supports="Martial Archetype" level="3" />
+		</rules>
+	</element>
+</elements>

@@ -1,0 +1,231 @@
+import type { IdNamePair } from "./schema";
+
+// ─── Weapon categories ────────────────────────────────────────────────────────
+
+export const WEAPON_CATEGORIES: Record<string, string> = {
+  ID_INTERNAL_WEAPON_CATEGORY_SIMPLE_MELEE: "simple melee",
+  ID_INTERNAL_WEAPON_CATEGORY_SIMPLE_RANGED: "simple ranged",
+  ID_INTERNAL_WEAPON_CATEGORY_MARTIAL_MELEE: "martial melee",
+  ID_INTERNAL_WEAPON_CATEGORY_MARTIAL_RANGED: "martial ranged",
+};
+
+// ─── Weapon properties ────────────────────────────────────────────────────────
+
+export const WEAPON_PROPERTIES: Record<string, string> = {
+  ID_INTERNAL_WEAPON_PROPERTY_AMMUNITION: "ammunition",
+  ID_INTERNAL_WEAPON_PROPERTY_FINESSE: "finesse",
+  ID_INTERNAL_WEAPON_PROPERTY_HEAVY: "heavy",
+  ID_INTERNAL_WEAPON_PROPERTY_LIGHT: "light",
+  ID_INTERNAL_WEAPON_PROPERTY_LOADING: "loading",
+  ID_INTERNAL_WEAPON_PROPERTY_MONK: "monk",
+  ID_INTERNAL_WEAPON_PROPERTY_REACH: "reach",
+  ID_INTERNAL_WEAPON_PROPERTY_SPECIAL: "special",
+  ID_INTERNAL_WEAPON_PROPERTY_THROWN: "thrown",
+  ID_INTERNAL_WEAPON_PROPERTY_TWOHANDED: "two-handed",
+  ID_INTERNAL_WEAPON_PROPERTY_VERSATILE: "versatile",
+};
+
+// ─── Damage types ─────────────────────────────────────────────────────────────
+
+export const DAMAGE_TYPES: Record<string, string> = {
+  ID_INTERNAL_DAMAGE_TYPE_ACID: "acid",
+  ID_INTERNAL_DAMAGE_TYPE_BLUDGEONING: "bludgeoning",
+  ID_INTERNAL_DAMAGE_TYPE_COLD: "cold",
+  ID_INTERNAL_DAMAGE_TYPE_FIRE: "fire",
+  ID_INTERNAL_DAMAGE_TYPE_FORCE: "force",
+  ID_INTERNAL_DAMAGE_TYPE_LIGHTNING: "lightning",
+  ID_INTERNAL_DAMAGE_TYPE_NECROTIC: "necrotic",
+  ID_INTERNAL_DAMAGE_TYPE_PIERCING: "piercing",
+  ID_INTERNAL_DAMAGE_TYPE_POISON: "poison",
+  ID_INTERNAL_DAMAGE_TYPE_PSYCHIC: "psychic",
+  ID_INTERNAL_DAMAGE_TYPE_RADIANT: "radiant",
+  ID_INTERNAL_DAMAGE_TYPE_SLASHING: "slashing",
+  ID_INTERNAL_DAMAGE_TYPE_THUNDER: "thunder",
+};
+
+// ─── Weapon groups ────────────────────────────────────────────────────────────
+
+export const WEAPON_GROUPS: Record<string, string> = {
+  ID_INTERNAL_WEAPON_GROUP_AXES: "axes",
+  ID_INTERNAL_WEAPON_GROUP_BOWS: "bows",
+  ID_INTERNAL_WEAPON_GROUP_CLUBS: "clubs",
+  ID_INTERNAL_WEAPON_GROUP_CROSSBOWS: "crossbows",
+  ID_INTERNAL_WEAPON_GROUP_HAMMERS: "hammers",
+  ID_INTERNAL_WEAPON_GROUP_POLEARMS: "polearms",
+  ID_INTERNAL_WEAPON_GROUP_SLINGS: "slings",
+  ID_INTERNAL_WEAPON_GROUP_SPEARS: "spears",
+  ID_INTERNAL_WEAPON_GROUP_SWORDS: "swords",
+};
+
+// ─── Proficiencies ────────────────────────────────────────────────────────────
+
+export const PROFICIENCY_IDS: Record<string, string> = {
+  // Skills
+  ID_PROFICIENCY_SKILL_ACROBATICS: "Acrobatics",
+  ID_PROFICIENCY_SKILL_ANIMAL_HANDLING: "Animal Handling",
+  ID_PROFICIENCY_SKILL_ARCANA: "Arcana",
+  ID_PROFICIENCY_SKILL_ATHLETICS: "Athletics",
+  ID_PROFICIENCY_SKILL_DECEPTION: "Deception",
+  ID_PROFICIENCY_SKILL_HISTORY: "History",
+  ID_PROFICIENCY_SKILL_INSIGHT: "Insight",
+  ID_PROFICIENCY_SKILL_INTIMIDATION: "Intimidation",
+  ID_PROFICIENCY_SKILL_INVESTIGATION: "Investigation",
+  ID_PROFICIENCY_SKILL_MEDICINE: "Medicine",
+  ID_PROFICIENCY_SKILL_NATURE: "Nature",
+  ID_PROFICIENCY_SKILL_PERCEPTION: "Perception",
+  ID_PROFICIENCY_SKILL_PERFORMANCE: "Performance",
+  ID_PROFICIENCY_SKILL_PERSUASION: "Persuasion",
+  ID_PROFICIENCY_SKILL_RELIGION: "Religion",
+  ID_PROFICIENCY_SKILL_SLEIGHT_OF_HAND: "Sleight of Hand",
+  ID_PROFICIENCY_SKILL_STEALTH: "Stealth",
+  ID_PROFICIENCY_SKILL_SURVIVAL: "Survival",
+  // Saving throws
+  ID_PROFICIENCY_SAVINGTHROW_STRENGTH: "Strength saving throw",
+  ID_PROFICIENCY_SAVINGTHROW_DEXTERITY: "Dexterity saving throw",
+  ID_PROFICIENCY_SAVINGTHROW_CONSTITUTION: "Constitution saving throw",
+  ID_PROFICIENCY_SAVINGTHROW_INTELLIGENCE: "Intelligence saving throw",
+  ID_PROFICIENCY_SAVINGTHROW_WISDOM: "Wisdom saving throw",
+  ID_PROFICIENCY_SAVINGTHROW_CHARISMA: "Charisma saving throw",
+  // Armor
+  ID_PROFICIENCY_ARMOR_PROFICIENCY_LIGHT_ARMOR: "light armor",
+  ID_PROFICIENCY_ARMOR_PROFICIENCY_MEDIUM_ARMOR: "medium armor",
+  ID_PROFICIENCY_ARMOR_PROFICIENCY_HEAVY_ARMOR: "heavy armor",
+  ID_PROFICIENCY_ARMOR_PROFICIENCY_SHIELDS: "shields",
+  // Weapons — categories
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SIMPLE_WEAPONS: "simple weapons",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_MARTIAL_WEAPONS: "martial weapons",
+  // Weapons — specific
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_CLUB: "club",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_DAGGER: "dagger",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_GREATCLUB: "greatclub",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_HANDAXE: "handaxe",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_JAVELIN: "javelin",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_LIGHT_HAMMER: "light hammer",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_MACE: "mace",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_QUARTERSTAFF: "quarterstaff",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SICKLE: "sickle",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SPEAR: "spear",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_CROSSBOW_LIGHT: "light crossbow",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_DART: "dart",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SHORTBOW: "shortbow",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SLING: "sling",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_BATTLEAXE: "battleaxe",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_FLAIL: "flail",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_GLAIVE: "glaive",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_GREATAXE: "greataxe",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_GREATSWORD: "greatsword",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_HALBERD: "halberd",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_LANCE: "lance",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_LONGSWORD: "longsword",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_MAUL: "maul",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_MORNINGSTAR: "morningstar",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_PIKE: "pike",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_RAPIER: "rapier",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SCIMITAR: "scimitar",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_SHORTSWORD: "shortsword",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_TRIDENT: "trident",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_WAR_PICK: "war pick",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_WARHAMMER: "warhammer",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_WHIP: "whip",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_BLOWGUN: "blowgun",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_CROSSBOW_HAND: "hand crossbow",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_CROSSBOW_HEAVY: "heavy crossbow",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_LONGBOW: "longbow",
+  ID_PROFICIENCY_WEAPON_PROFICIENCY_NET: "net",
+  // Tools
+  ID_PROFICIENCY_TOOL_PROFICIENCY_VEHICLES_LAND: "vehicles (land)",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_VEHICLES_WATER: "vehicles (water)",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_THIEVES_TOOLS: "thieves' tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_DISGUISE_KIT: "disguise kit",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_FORGERY_KIT: "forgery kit",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_HERBALISM_KIT: "herbalism kit",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_NAVIGATOR_TOOLS: "navigator's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_POISONER_KIT: "poisoner's kit",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_ALCHEMIST_SUPPLIES: "alchemist's supplies",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_BREWER_SUPPLIES: "brewer's supplies",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_CALLIGRAPHER_SUPPLIES: "calligrapher's supplies",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_CARPENTER_TOOLS: "carpenter's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_COBBLER_TOOLS: "cobbler's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_COOK_UTENSILS: "cook's utensils",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_GLASSBLOWER_TOOLS: "glassblower's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_JEWELER_TOOLS: "jeweler's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_LEATHERWORKER_TOOLS: "leatherworker's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_MASON_TOOLS: "mason's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_PAINTER_SUPPLIES: "painter's supplies",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_POTTER_TOOLS: "potter's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_SMITH_TOOLS: "smith's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_TINKER_TOOLS: "tinker's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_WEAVER_TOOLS: "weaver's tools",
+  ID_PROFICIENCY_TOOL_PROFICIENCY_WOODCARVER_TOOLS: "woodcarver's tools",
+};
+
+// ─── Languages ────────────────────────────────────────────────────────────────
+
+export const LANGUAGE_IDS: Record<string, string> = {
+  ID_LANGUAGE_COMMON: "Common",
+  ID_LANGUAGE_DWARVISH: "Dwarvish",
+  ID_LANGUAGE_ELVISH: "Elvish",
+  ID_LANGUAGE_GIANT: "Giant",
+  ID_LANGUAGE_GNOMISH: "Gnomish",
+  ID_LANGUAGE_GOBLIN: "Goblin",
+  ID_LANGUAGE_HALFLING: "Halfling",
+  ID_LANGUAGE_ORC: "Orc",
+  ID_LANGUAGE_ABYSSAL: "Abyssal",
+  ID_LANGUAGE_CELESTIAL: "Celestial",
+  ID_LANGUAGE_DRACONIC: "Draconic",
+  ID_LANGUAGE_DEEP_SPEECH: "Deep Speech",
+  ID_LANGUAGE_INFERNAL: "Infernal",
+  ID_LANGUAGE_PRIMORDIAL: "Primordial",
+  ID_LANGUAGE_SYLVAN: "Sylvan",
+  ID_LANGUAGE_UNDERCOMMON: "Undercommon",
+};
+
+// ─── Vision types ─────────────────────────────────────────────────────────────
+
+export const VISION_IDS: Record<string, string> = {
+  ID_VISION_DARKVISION: "Darkvision",
+  ID_VISION_SUPERIORDARKVISION: "Superior Darkvision",
+  ID_VISION_BLINDSIGHT: "Blindsight",
+  ID_VISION_TREMORSENSE: "Tremorsense",
+  ID_VISION_TRUESIGHT: "Truesight",
+};
+
+// ─── Sizes ────────────────────────────────────────────────────────────────────
+
+export const SIZE_IDS: Record<string, string> = {
+  ID_SIZE_TINY: "Tiny",
+  ID_SIZE_SMALL: "Small",
+  ID_SIZE_MEDIUM: "Medium",
+  ID_SIZE_LARGE: "Large",
+  ID_SIZE_HUGE: "Huge",
+  ID_SIZE_GARGANTUAN: "Gargantuan",
+};
+
+// ─── Spell support tags that are NOT class names ──────────────────────────────
+
+/** Strings that appear in a Spell's <supports> block but are not class names. */
+export const SPELL_NON_CLASS_TAGS = new Set([
+  "Spell Saving Throw",
+  "Spell Attack",
+  "Artificer Ritual",
+  "Warlock Mystic Arcanum",
+]);
+
+// ─── Master lookup ────────────────────────────────────────────────────────────
+
+export function lookupId(id: string): string | undefined {
+  return (
+    WEAPON_CATEGORIES[id] ??
+    WEAPON_PROPERTIES[id] ??
+    DAMAGE_TYPES[id] ??
+    WEAPON_GROUPS[id] ??
+    PROFICIENCY_IDS[id] ??
+    LANGUAGE_IDS[id] ??
+    VISION_IDS[id] ??
+    SIZE_IDS[id]
+  );
+}
+
+export function toIdNamePair(id: string): IdNamePair {
+  return { id, name: lookupId(id) ?? id };
+}

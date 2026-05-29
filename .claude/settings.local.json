@@ -2,30 +2,24 @@
   "permissions": {
     "allow": [
       "WebFetch(domain:raw.githubusercontent.com)",
-      "Bash(curl -s \"https://raw.githubusercontent.com/AuroraLegacy/elements/master/core/players-handbook/classes/class-fighter.xml\")"
-    ]
-  },
-  "hooks": {
-    "Notification": [
-      {
-        "matcher": "*",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); $notify = New-Object System.Windows.Forms.NotifyIcon; $notify.Icon = [System.Drawing.SystemIcons]::Information; $notify.Visible = $true; $notify.ShowBalloonTip(3000, 'Claude Code', 'Needs your attention', 'Info'); [System.Media.SystemSounds]::Asterisk.Play()\""
-          }
-        ]
-      }
-    ],
-    "Stop": [
-      {
-        "hooks": [
-          {
-            "type": "command",
-            "command": "powershell -Command \"[System.Reflection.Assembly]::LoadWithPartialName('System.Windows.Forms'); $notify = New-Object System.Windows.Forms.NotifyIcon; $notify.Icon = [System.Drawing.SystemIcons]::Information; $notify.Visible = $true; $notify.ShowBalloonTip(3000, 'Claude Code', 'Finished', 'Info'); [System.Media.SystemSounds]::Hand.Play()\""
-          }
-        ]
-      }
+      "Bash(curl -s \"https://raw.githubusercontent.com/AuroraLegacy/elements/master/core/players-handbook/classes/class-fighter.xml\")",
+      "Bash(curl *)",
+      "Bash(npx tsc *)",
+      "Bash(npm test *)",
+      "Bash(node -e \"const p = require\\('./package.json'\\); console.log\\('next:', p.dependencies.next, 'react:', p.dependencies.react\\)\")",
+      "Bash(npx vitest *)",
+      "Bash(npx jest *)",
+      "Bash(cat jest.config.ts)",
+      "Bash(cat jest.config.js)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('jest',d.get\\('scripts',{}\\)\\), indent=2\\)\\)\")",
+      "Bash(node -e \"const s = require\\('./lib/content/srd/spells'\\); console.log\\('SRD spell count:', s.SRD_SPELLS.length\\); console.log\\('First few:', s.SRD_SPELLS.slice\\(0,3\\).map\\(x=>x.name\\)\\);\")",
+      "Bash(npx tsx *)",
+      "Bash(timeout 15 npx next build)",
+      "Bash(npx next *)",
+      "PowerShell(Select-String -Path \"C:\\\\Users\\\\nateg\\\\Documents\\\\BMIS444\\\\dnd-sheet\\\\.next\\\\dev\\\\logs\\\\next-development.log\" -Pattern \"\\\\[dedup\\\\]\" | Select-Object -Last 30 | ForEach-Object { $_.Line })",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(d.get\\('version','?'\\)\\)\")",
+      "Bash(grep -v \"^$\")",
+      "Bash(Remove-Item *)"
     ]
   }
 }
