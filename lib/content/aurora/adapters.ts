@@ -345,6 +345,14 @@ export function adaptAuroraClass(el: ClassElement): SrdClass {
     .map((g) => g.name ?? deriveTraitName(g.id, el.name))
     .sort();
 
+  const featuresByLevel: Record<number, string[]> = {};
+  for (const g of grants) {
+    if (g.type !== "Class Feature") continue;
+    const name = g.name ?? deriveTraitName(g.id, el.name);
+    const lvl = g.level ?? 1;
+    (featuresByLevel[lvl] ??= []).push(name);
+  }
+
   return {
     id: SRD_CLASS_ID_BY_NAME[el.name] ?? el.id,
     name: el.name,
@@ -360,6 +368,7 @@ export function adaptAuroraClass(el: ClassElement): SrdClass {
     subclassUnlockLevel,
     spellcasting,
     featureKeys,
+    ...(Object.keys(featuresByLevel).length > 0 ? { featuresByLevel } : {}),
     sourceLabel: abbreviateSource(el.source),
   };
 }

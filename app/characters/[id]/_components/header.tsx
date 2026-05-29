@@ -11,9 +11,10 @@ import { ConditionPicker } from "./panels/condition-picker";
 interface Props {
   character: Character;
   derived: DerivedStats;
+  onLevelTap?: () => void;
 }
 
-export function Header({ character, derived }: Props) {
+export function Header({ character, derived, onLevelTap }: Props) {
   const [inspirePending, startInspireTransition] = useTransition();
   const [hpOpen, setHpOpen] = useState(false);
   const [conditionsOpen, setConditionsOpen] = useState(false);
@@ -26,9 +27,7 @@ export function Header({ character, derived }: Props) {
     });
   }
 
-  const subtitleParts: string[] = [];
-  if (character.level) subtitleParts.push(`Level ${character.level}`);
-  if (derived.speed) subtitleParts.push(`Speed ${derived.speed} ft.`);
+  const hasSubtitle = character.level || derived.speed;
 
   return (
     <>
@@ -37,8 +36,22 @@ export function Header({ character, derived }: Props) {
         <div className="flex items-start justify-between gap-3 max-w-4xl mx-auto">
           <div className="min-w-0">
             <h1 className="text-xl font-bold text-stone-100 truncate">{character.name}</h1>
-            {subtitleParts.length > 0 && (
-              <p className="text-xs text-stone-400 mt-0.5">{subtitleParts.join(" · ")}</p>
+            {hasSubtitle && (
+              <div className="text-xs text-stone-400 mt-0.5">
+                {character.level && onLevelTap ? (
+                  <button
+                    onClick={onLevelTap}
+                    className="underline underline-offset-2 decoration-stone-600 hover:text-stone-200
+                      hover:decoration-stone-400 transition-colors"
+                    title="Tap to change level"
+                  >
+                    Level {character.level}
+                  </button>
+                ) : (
+                  `Level ${character.level}`
+                )}
+                {derived.speed ? ` · Speed ${derived.speed} ft.` : ""}
+              </div>
             )}
           </div>
 

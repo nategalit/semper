@@ -25,6 +25,7 @@ import { TabDescription } from "./tabs/tab-description";
 import { TabExtras } from "./tabs/tab-extras";
 import type { TabId } from "./tab-config";
 import { DiceRollerFab } from "./dice-roller-fab";
+import { LevelUpPanel } from "./panels/level-up-panel";
 
 interface Props {
   character: Character;
@@ -58,6 +59,7 @@ export function CharacterSheet({
   // ── Tab navigation ─────────────────────────────────────────────────────────
   const [activeTab, setActiveTab] = useState<TabId>("stats");
   const [moreOpen, setMoreOpen] = useState(false);
+  const [levelUpOpen, setLevelUpOpen] = useState(false);
 
   // ── Optimistic character state ─────────────────────────────────────────────
   const [isPending, startTransition] = useTransition();
@@ -179,6 +181,7 @@ export function CharacterSheet({
           srdRace={srdRace}
           srdBackground={srdBackground}
           featureMap={featureMap}
+          onChangeLevelRequest={() => setLevelUpOpen(true)}
         />
       )}
       {activeTab === "description" && <TabDescription character={optimisticCharacter} />}
@@ -190,7 +193,11 @@ export function CharacterSheet({
     <CharacterMutationContext.Provider value={{ character: optimisticCharacter, mutate, isPending }}>
       <RollContext.Provider value={{ rolls, roll, retryRoll }}>
         <div className="flex flex-col min-h-screen">
-          <Header character={optimisticCharacter} derived={derived} />
+          <Header
+            character={optimisticCharacter}
+            derived={derived}
+            onLevelTap={() => setLevelUpOpen(true)}
+          />
 
           <TabShellDesktop activeTab={activeTab} onTabChange={setActiveTab} />
 
@@ -199,6 +206,12 @@ export function CharacterSheet({
           </main>
 
           <DiceRollerFab />
+
+          <LevelUpPanel
+            open={levelUpOpen}
+            onClose={() => setLevelUpOpen(false)}
+            srdClass={srdClass}
+          />
 
           <TabShellMobile
             activeTab={activeTab}

@@ -34,9 +34,10 @@ interface Props {
   srdRace: SrdRace | undefined;
   srdBackground: SrdBackground | undefined;
   featureMap: Map<string, FeatureEntry>;
+  onChangeLevelRequest?: () => void;
 }
 
-export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap }: Props) {
+export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onChangeLevelRequest }: Props) {
   const { character, mutate } = useMutation();
   const [subclassPickerOpen, setSubclassPickerOpen] = useState(false);
   const subrace = srdRace?.subraces.find((s) => s.id === character.data.subraceId);
@@ -64,6 +65,23 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap }: Pr
   return (
     <>
     <div className="space-y-4">
+      {/* Level button */}
+      {onChangeLevelRequest && (
+        <button
+          onClick={onChangeLevelRequest}
+          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-stone-700
+            bg-stone-800/50 hover:bg-stone-800 hover:border-stone-600 transition-colors"
+        >
+          <div className="text-left">
+            <p className="text-sm font-semibold text-stone-200">
+              Level {character.level} {srdClass ? `· ${srdClass.name}` : ""}
+            </p>
+            <p className="text-xs text-stone-500 mt-0.5">Tap to level up or down</p>
+          </div>
+          <span className="text-stone-500 text-lg">›</span>
+        </button>
+      )}
+
       {/* Feature Charges */}
       {features.length > 0 && (
         <SectionCard title="Class Features">

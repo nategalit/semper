@@ -12,11 +12,14 @@ import {
   type NewCharacterInput,
   type UpdateCharacterInput,
 } from "@/lib/types/character";
+import type { AbilityKey } from "@/lib/content/srd";
 import {
   getClassFeatures,
   resolveRechargesOn,
   maxChargesFor,
 } from "@/lib/character/features";
+import { getSpellSlotsForClass } from "@/lib/content/srd/progression";
+import { SRD_CLASSES } from "@/lib/content/srd/classes";
 
 // Snake_case row as returned by Supabase Postgres.
 interface CharacterRow {
@@ -470,6 +473,138 @@ const LONG_REST_CLEARS = new Set([
   "Exhaustion", // reduces by 1 level, handled separately — cleared here means level 1 cleared
   "Frightened", "Incapacitated", "Paralyzed",
 ]);
+
+// ─── Level up / down ──────────────────────────────────────────────────────────
+
+export async function levelUpCharacter(
+  characterId: string,
+  targetLevel: number,
+  /** HP gained at each newly-added level number. Ignored when leveling down. */
+  hpGainedByLevel: Record<number, number>,
+  /** ASI point allocations keyed by level number. Ignored when leveling down. */
+  asiByLevel: Record<number, Partial<Record<AbilityKey, number>>>,
+  newSubclassId?: string,
+): Promise<void> {
+  const { userId } = await requireAuth();
+  const supabase = await createSupabaseServerClient();
+
+  const { data: row, error: fetchError } = await supabase
+    .from("characters")
+    .select("data, level, class_id")
+    .eq("id", characterId)
+    .eq("user_id", userId)
+    .single();
+
+  if (fetchError || !row) throw new Error(fetchError?.message ?? "Not found");
+
+  const current = row.data as CharacterData;
+  const currentLevel = row.level as number;
+  const classId = row.class_id as string | null;
+
+  const isUp   = targetLevel > currentLevel;
+  const isDown = targetLevel < currentLevel;
+
+  // ── Ability scores ─────────────────────────────────────────────────────────
+  const newAbilityScores = { ...current.abilityScores };
+
+  if (isUp) {
+    for (const asi of Object.values(asiByLevel)) {
+      for (const [ability, bonus] of Object.entries(asi) as [AbilityKey, number][]) {
+        if (bonus) newAbilityScores[ability] = Math.min(20, newAbilityScores[ability] + bonus);
+      }
+    }
+  } else if (isDown) {
+    for (let lvl = currentLevel; lvl > targetLevel; lvl--) {
+      const asi = current.levelChoices?.[lvl]?.asi;
+      if (asi) {
+        for (const [ability, bonus] of Object.entries(asi) as [AbilityKey, number][]) {
+          if (bonus) newAbilityScores[ability] = Math.max(1, newAbilityScores[ability] - bonus);
+        }
+      }
+    }
+  }
+
+  // ── HP ─────────────────────────────────────────────────────────────────────
+  const newHpByLevel = { ...current.hpByLevel };
+  let newMaxHp = current.maxHp;
+
+  if (isUp) {
+    let gained = 0;
+    for (let lvl = currentLevel + 1; lvl <= targetLevel; lvl++) {
+      const hp = hpGainedByLevel[lvl] ?? 0;
+      newHpByLevel[lvl] = hp;
+      gained += hp;
+    }
+    newMaxHp = current.maxHp + gained;
+  } else if (isDown) {
+    let lost = 0;
+    for (let lvl = currentLevel; lvl > targetLevel; lvl--) {
+      const stored = current.hpByLevel?.[lvl];
+      if (stored !== undefined) { lost += stored; delete newHpByLevel[lvl]; }
+    }
+    newMaxHp = Math.max(1, current.maxHp - lost);
+  }
+
+  // ── levelChoices ────────────────────────────────────────────────────────────
+  const newLevelChoices = { ...current.levelChoices };
+  const subclassUnlockLevel = current.resolvedClass?.subclassUnlockLevel ?? 3;
+
+  if (isUp) {
+    for (let lvl = currentLevel + 1; lvl <= targetLevel; lvl++) {
+      newLevelChoices[lvl] = {
+        hpGained: hpGainedByLevel[lvl] ?? 0,
+        ...(asiByLevel[lvl] ? { asi: asiByLevel[lvl] } : {}),
+        ...(newSubclassId && lvl === subclassUnlockLevel ? { subclassId: newSubclassId } : {}),
+      };
+    }
+  } else if (isDown) {
+    for (let lvl = currentLevel; lvl > targetLevel; lvl--) {
+      delete newLevelChoices[lvl];
+    }
+  }
+
+  // ── Subclass ───────────────────────────────────────────────────────────────
+  let newSubclassIdFinal: string | undefined = current.subclassId;
+  if (isUp && newSubclassId) {
+    newSubclassIdFinal = newSubclassId;
+  } else if (isDown && targetLevel < subclassUnlockLevel) {
+    newSubclassIdFinal = undefined;
+  }
+
+  // ── Spell slots ────────────────────────────────────────────────────────────
+  // Prefer resolvedClass spellcasting; fall back to SRD table.
+  const spellcasting =
+    current.resolvedClass?.spellcasting ??
+    (classId ? (SRD_CLASSES.find((c) => c.id === classId)?.spellcasting ?? null) : null);
+
+  const newSpellSlots = classId
+    ? getSpellSlotsForClass(classId, spellcasting, targetLevel, current.spellSlots)
+    : undefined;
+
+  // ── Merge & write ──────────────────────────────────────────────────────────
+  const merged: CharacterData = {
+    ...current,
+    abilityScores: newAbilityScores,
+    maxHp: newMaxHp,
+    currentHp: Math.min(current.currentHp, newMaxHp),
+    hitDiceTotal: targetLevel,
+    hitDiceRemaining: Math.min(current.hitDiceRemaining, targetLevel),
+    hpByLevel: Object.keys(newHpByLevel).length > 0 ? newHpByLevel : undefined,
+    levelChoices: Object.keys(newLevelChoices).length > 0 ? newLevelChoices : undefined,
+    subclassId: newSubclassIdFinal,
+    ...(newSpellSlots !== undefined ? { spellSlots: newSpellSlots } : {}),
+  };
+
+  const { error } = await supabase
+    .from("characters")
+    .update({ level: targetLevel, data: merged })
+    .eq("id", characterId)
+    .eq("user_id", userId);
+
+  if (error) throw new Error(error.message);
+  revalidatePath(`/characters/${characterId}`);
+  revalidatePath("/dashboard");
+}
 
 export async function deleteCharacter(id: string): Promise<void> {
   const { userId } = await requireAuth();
