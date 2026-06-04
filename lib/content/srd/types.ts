@@ -48,6 +48,8 @@ export interface SrdClass {
   asiLevels?: number[];
   /** Feature names granted per level (populated for Aurora classes via adaptAuroraClass). */
   featuresByLevel?: Record<number, string[]>;
+  /** Human-readable descriptions for non-charge class features, keyed by feature name. */
+  featureDescriptions?: Record<string, string>;
   source?: ContentSource;
   sourceLabel?: string;
 }
@@ -58,6 +60,8 @@ export interface SrdSubclass {
   name: string;
   description: string;
   features: string[];
+  /** Human-readable descriptions for subclass features, keyed by feature name. */
+  featureDescriptions?: Record<string, string>;
   source?: ContentSource;
   sourceLabel?: string;
 }

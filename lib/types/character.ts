@@ -7,6 +7,7 @@ export interface LevelChoiceRecord {
   asi?: Partial<Record<AbilityKey, number>>;
   featId?: string;
   subclassId?: string;
+  fightingStyle?: string;
 }
 
 export interface AbilityScores {

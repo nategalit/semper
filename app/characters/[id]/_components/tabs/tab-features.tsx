@@ -55,6 +55,24 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onCh
     ? getClassFeatures(character.classId, character.level, {})
     : [];
 
+  const chargeLabels = new Set(features.map((d) => d.label));
+  const activeClass = srdClass ?? character.data.resolvedClass;
+  const nonChargeFeatures: { name: string; level: number; description?: string }[] =
+    activeClass?.featuresByLevel
+      ? Object.entries(activeClass.featuresByLevel)
+          .filter(([lvl]) => Number(lvl) <= character.level)
+          .sort(([a], [b]) => Number(a) - Number(b))
+          .flatMap(([lvl, names]) =>
+            names
+              .filter((n) => !chargeLabels.has(n))
+              .map((name) => ({
+                name,
+                level: Number(lvl),
+                description: activeClass.featureDescriptions?.[name],
+              }))
+          )
+      : [];
+
   function handleChargeChange(key: string, next: number) {
     const patch: Partial<CharacterData> = {
       featureCharges: { ...character.data.featureCharges, [key]: next },
@@ -97,6 +115,7 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onCh
                 <FeatureRow
                   key={def.key}
                   label={def.label}
+                  description={def.description}
                   current={current}
                   max={max}
                   recharge={recharge}
@@ -104,6 +123,27 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onCh
                 />
               );
             })}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Non-charge class features */}
+      {nonChargeFeatures.length > 0 && (
+        <SectionCard title="Class Progression">
+          <div className="space-y-2">
+            {nonChargeFeatures.map(({ name, level, description }) => (
+              <div key={`${level}-${name}`} className="flex gap-3">
+                <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
+                  {level}
+                </span>
+                <div>
+                  <p className="text-sm font-medium text-stone-300">{name}</p>
+                  {description && (
+                    <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{description}</p>
+                  )}
+                </div>
+              </div>
+            ))}
           </div>
         </SectionCard>
       )}
@@ -252,20 +292,26 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onCh
 
 interface FeatureRowProps {
   label: string;
+  description?: string;
   current: number;
   max: number;
   recharge: "short" | "long";
   onSet: (next: number) => void;
 }
 
-function FeatureRow({ label, current, max, recharge, onSet }: FeatureRowProps) {
+function FeatureRow({ label, description, current, max, recharge, onSet }: FeatureRowProps) {
   const isUnlimited = max >= UNLIMITED;
 
   return (
     <div className="space-y-1.5">
-      <div className="flex items-center justify-between gap-2">
-        <span className="text-sm font-medium text-stone-200">{label}</span>
-        <span className="text-[10px] uppercase tracking-wider text-stone-600">
+      <div className="flex items-start justify-between gap-2">
+        <div>
+          <span className="text-sm font-medium text-stone-200">{label}</span>
+          {description && (
+            <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{description}</p>
+          )}
+        </div>
+        <span className="text-[10px] uppercase tracking-wider text-stone-600 shrink-0 pt-0.5">
           {recharge === "short" ? "short rest" : "long rest"}
         </span>
       </div>

@@ -3,6 +3,7 @@ import type { AbilityKey } from "@/lib/content/srd";
 export interface FeatureDef {
   key: string;
   label: string;
+  description?: string;
   /** Returns max charges for the given level and ability mods. Return 0 if not yet available. */
   maxCharges: (level: number, abilityMods: Partial<Record<AbilityKey, number>>) => number;
   /**
@@ -24,6 +25,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "rage",
       label: "Rage",
+      description: "Enter a rage as a bonus action. While raging you gain advantage on STR checks and saves, bonus damage, and resistance to physical damage. Lasts 1 minute.",
       maxCharges: (level) => {
         if (level >= 20) return UNLIMITED;
         if (level >= 17) return 6;
@@ -40,6 +42,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "bardic_inspiration",
       label: "Bardic Inspiration",
+      description: "As a bonus action, grant an ally a Bardic Inspiration die (d6→d12) they can add to one ability check, attack roll, or saving throw within 10 minutes. Charges = CHA modifier. Recharges on short rest at level 5.",
       // Charges = CHA modifier (minimum 1)
       maxCharges: (_level, mods) => Math.max(mods.cha ?? 1, 1),
       // Font of Inspiration (level 5): recharges on short rest
@@ -51,6 +54,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "channel_divinity",
       label: "Channel Divinity",
+      description: "Channel divine energy to fuel a magical effect. You gain uses at level 2 (1), level 6 (2), and level 18 (3). Recharges on a short or long rest.",
       maxCharges: (level) => {
         if (level < 2)   return 0;
         if (level >= 18) return 3;
@@ -65,6 +69,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "wild_shape",
       label: "Wild Shape",
+      description: "As an action, transform into a beast you have seen. CR limit and available forms increase with level. Lasts until you run out of HP, dismiss it, or use Wild Shape again.",
       maxCharges: (level) => (level >= 2 ? 2 : 0),
       rechargesOn: "short",
     },
@@ -74,12 +79,14 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "second_wind",
       label: "Second Wind",
+      description: "As a bonus action, regain HP equal to 1d10 + your fighter level. Once per short or long rest.",
       maxCharges: () => 1,
       rechargesOn: "short",
     },
     {
       key: "action_surge",
       label: "Action Surge",
+      description: "On your turn, take one additional action on top of your regular action. Two uses per rest at level 17.",
       maxCharges: (level) => {
         if (level < 2)   return 0;
         return level >= 17 ? 2 : 1;
@@ -92,6 +99,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "ki_points",
       label: "Ki Points",
+      description: "Fuel special monk abilities: Flurry of Blows, Patient Defense, Step of the Wind, and more. Ki points = monk level. Recharge on a short or long rest.",
       maxCharges: (level) => (level >= 2 ? level : 0),
       rechargesOn: "short",
     },
@@ -101,6 +109,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "lay_on_hands",
       label: "Lay on Hands",
+      description: "Touch a creature to restore HP from your healing pool (paladin level × 5). As an action you can also cure one disease or poison for 5 points instead. Recharges on a long rest.",
       // Pool of HP, not individual charges — tracked as remaining pool points
       maxCharges: (level) => level * 5,
       rechargesOn: "long",
@@ -108,6 +117,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "channel_divinity",
       label: "Channel Divinity",
+      description: "Channel divine energy granted by your Sacred Oath to fuel a magical effect. Available at level 3. Recharges on a short or long rest.",
       maxCharges: (level) => (level >= 3 ? 1 : 0),
       rechargesOn: "short",
     },
@@ -123,6 +133,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "sorcery_points",
       label: "Sorcery Points",
+      description: "A pool of magical energy equal to your sorcerer level. Spend to create spell slots or fuel Metamagic options. Recharges on a long rest.",
       maxCharges: (level) => (level >= 2 ? level : 0),
       rechargesOn: "long",
     },
@@ -137,6 +148,7 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     {
       key: "arcane_recovery",
       label: "Arcane Recovery",
+      description: "Once per day during a short rest, recover expended spell slots with a combined level up to half your wizard level (rounded up). Cannot recover 6th level or higher slots.",
       maxCharges: () => 1,
       rechargesOn: "long",
     },
