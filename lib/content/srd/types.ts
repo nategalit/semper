@@ -60,6 +60,8 @@ export interface SrdSubclass {
   name: string;
   description: string;
   features: string[];
+  /** Feature names granted per level. When present, the sheet renders a level-keyed list. */
+  featuresByLevel?: Record<number, string[]>;
   /** Human-readable descriptions for subclass features, keyed by feature name. */
   featureDescriptions?: Record<string, string>;
   source?: ContentSource;

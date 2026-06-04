@@ -107,6 +107,20 @@ export const SRD_SUBCLASSES: SrdSubclass[] = [
     name: "Champion",
     description: "The archetypal Champion focuses on the development of raw physical power honed to deadly perfection. Those who model themselves on this archetype combine rigorous training with physical excellence.",
     features: ["Improved Critical", "Remarkable Athlete", "Additional Fighting Style", "Superior Critical", "Survivor"],
+    featuresByLevel: {
+      3:  ["Improved Critical"],
+      7:  ["Remarkable Athlete"],
+      10: ["Additional Fighting Style"],
+      15: ["Superior Critical"],
+      18: ["Survivor"],
+    },
+    featureDescriptions: {
+      "Improved Critical":         "Your weapon attacks score a critical hit on a roll of 19 or 20.",
+      "Remarkable Athlete":        "Add half your proficiency bonus (rounded up) to any STR, DEX, or CON check that doesn't already use your proficiency bonus. Your running long jump distance increases by your STR modifier in feet.",
+      "Additional Fighting Style":  "You can choose a second option from the Fighting Style class feature.",
+      "Superior Critical":         "Your weapon attacks score a critical hit on a roll of 18–20.",
+      "Survivor":                  "At the start of each of your turns, if you are at or below half your hit point maximum, you regain HP equal to 5 + your CON modifier.",
+    },
   },
   {
     id: "ID_SUBCLASS_FIGHTER_BATTLEMASTER",

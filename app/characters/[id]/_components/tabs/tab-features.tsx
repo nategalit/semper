@@ -166,13 +166,40 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onCh
         ) : currentSubclass ? (
           <SectionCard title={currentSubclass.name}>
             <p className="text-sm text-stone-300 mb-3">{currentSubclass.description}</p>
-            <div className="flex flex-wrap gap-1.5">
-              {currentSubclass.features.map((f) => (
-                <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-stone-800 border border-stone-700 text-stone-400">
-                  {f}
-                </span>
-              ))}
-            </div>
+            {currentSubclass.featuresByLevel ? (
+              <div className="space-y-2">
+                {Object.entries(currentSubclass.featuresByLevel)
+                  .filter(([lvl]) => Number(lvl) <= character.level)
+                  .sort(([a], [b]) => Number(a) - Number(b))
+                  .flatMap(([lvl, names]) =>
+                    names.map((name) => ({ name, level: Number(lvl) }))
+                  )
+                  .map(({ name, level }) => (
+                    <div key={`${level}-${name}`} className="flex gap-3">
+                      <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
+                        {level}
+                      </span>
+                      <div>
+                        <p className="text-sm font-medium text-stone-300">{name}</p>
+                        {currentSubclass.featureDescriptions?.[name] && (
+                          <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">
+                            {currentSubclass.featureDescriptions[name]}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {currentSubclass.features.map((f) => (
+                  <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-stone-800 border border-stone-700 text-stone-400">
+                    {f}
+                  </span>
+                ))}
+              </div>
+            )}
             <button
               onClick={() => setSubclassPickerOpen(true)}
               className="mt-3 text-xs text-stone-600 hover:text-stone-400 transition-colors"
