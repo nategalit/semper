@@ -25,7 +25,18 @@ export default async function CharacterPage({ params }: Props) {
 
   // Post-6C characters store resolved objects; pre-6C fall back to SRD lookup.
   const srdRace = character.data.resolvedRace ?? SRD_RACES.find((r) => r.id === character.raceId) ?? undefined;
-  const srdClass = character.data.resolvedClass ?? SRD_CLASSES.find((c) => c.id === character.classId) ?? undefined;
+  // featuresByLevel and featureDescriptions were added to SRD_CLASSES in Phase 8.
+  // Characters created before that have a resolvedClass in the DB that's missing them.
+  // Always patch from the current static entry so older characters get the live data.
+  const staticClass   = SRD_CLASSES.find((c) => c.id === character.classId);
+  const resolvedClass = character.data.resolvedClass ?? staticClass;
+  const srdClass = resolvedClass
+    ? {
+        ...resolvedClass,
+        featuresByLevel:     resolvedClass.featuresByLevel    ?? staticClass?.featuresByLevel,
+        featureDescriptions: resolvedClass.featureDescriptions ?? staticClass?.featureDescriptions,
+      }
+    : undefined;
   const srdBackground = character.data.resolvedBackground ?? SRD_BACKGROUNDS.find(
     (b) => b.id === character.data.backgroundId
   ) ?? undefined;

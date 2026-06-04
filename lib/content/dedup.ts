@@ -71,6 +71,13 @@ function bgFPs(b: SrdBackground): { base: string; full: string } {
 
 // ─── Core dedup ───────────────────────────────────────────────────────────────
 
+/**
+ * Source labels that represent a genuinely distinct edition from the SRD/PHB14 baseline.
+ * These entries are always kept as Case B (shown alongside SRD) even when the structural
+ * fingerprint matches, because 2024-edition content differs in features and design intent.
+ */
+const DISTINCT_FROM_SRD = new Set(["PHB24", "DMG24"]);
+
 interface Entry<T> {
   item: T & { source?: ContentSource; sourceLabel?: string };
   base: string;
@@ -148,10 +155,12 @@ function dedupEntries<T extends { name: string; source?: ContentSource; sourceLa
       results.push(srdItem);
       caseADropped += srdEntries.length - 1; // drop extra SRD if any
 
-      // Aurora entries that differ from SRD base = Case B variants
+      // Aurora entries that differ from SRD base = Case B variants.
+      // 2024-edition sources are always Case B regardless of fingerprint match —
+      // PHB24 classes are a distinct edition even when structural stats are identical.
       const caseBEntries: Entry<T>[] = [];
       for (const aur of auroraEntries) {
-        if (aur.base === srdBase) {
+        if (!DISTINCT_FROM_SRD.has(aur.item.sourceLabel ?? "") && aur.base === srdBase) {
           caseADropped++;
         } else {
           caseBEntries.push(aur);
