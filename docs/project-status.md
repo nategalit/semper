@@ -1,39 +1,44 @@
 # Semper — Project Status
-Last updated: 2026-06-04
+Last updated: 2026-06-05
 
 ---
 
 ## Current State
 
-**Phase:** 8 — Level Up flow (late-stage, Fighting Style pipeline in progress)
+**Phase:** 8 — Level Up flow (Fighting Style pipeline complete)
 
-**Latest commit:** `6493364` — Phase 8 Chunk 1f: subclass feature progression rendering
-- Champion subclass now shows level-keyed feature list with descriptions (matching Class Progression format)
-- `SrdSubclass` type gained `featuresByLevel?: Record<number, string[]>`
+**Latest commits (this session):**
+- `91eb18a` — Fix: thread importedFightingStyles into LevelUpPanel (Aurora styles missing from Paladin level-up)
+- `2bef72a` — Phase 8 3f: Fighting Style on features tab + wizard reset + HTML strip
+- Prior: TCE routing fix (`cf.supports?.split(",")[0].trim()`), 3b–3e chunks
 
-**Actively in progress:** Phase 8 Chunk 3 — Fighting Style choice surface
+**Phase 8 Chunk 3 — Fighting Style choice surface: ALL DONE**
 - 3a ✅ SRD 6 styles confirmed; Aurora data shape investigated
-- 3b ✅ Schema + parser pipeline: `ClassFeatureElement.supports` captured; `ImportedContent.fightingStyles[]` stored at sync time; `getEnabledFightingStyles()` getter added
-- 3c ⏳ Storage — ensure `levelChoices[N].fightingStyle` persists correctly through level-up confirm
-- 3d ⏳ Server action — `levelUpCharacter` writes fightingStyle on level-up; `levelDownCharacter` clears `levelChoices[N].fightingStyle` for every level being unwound (same pattern as ASI delta reversal)
-- 3e ⏳ Fighter L1 wizard step — "Class Features" step surfaces merged SRD + Aurora Fighting Style picker with source chips
-- 3f ⏳ Render — chosen Fighting Style visible on Features tab
+- 3b ✅ Schema + parser: `ClassFeatureElement.supports` captured; `fightingStyles[]` stored at sync time; `getEnabledFightingStyles()` getter
+- 3c ✅ Storage: `levelChoices[N].fightingStyle` persists correctly through level-up confirm
+- 3d ✅ Server action: `levelUpCharacter` writes fightingStyle; `levelDownCharacter` clears it for every unwound level
+- 3e ✅ Fighter L1 wizard step: "Class Features" step with merged SRD + Aurora picker, source chips
+- 3f ✅ Features tab: chosen Fighting Style rendered in dedicated card with source chip and HTML-stripped description
+- Hotfix ✅ Wizard store resets on mount (stale state after character creation fixed)
+- Hotfix ✅ Aurora description HTML (`<p>` tags) stripped in wizard picker and Features tab
+- Hotfix ✅ Level-up panel: Aurora Fighting Styles now appear for Paladin (and Ranger); source chips + HTML strip applied
 
 **Blocked:** Nothing hard-blocked.
-- **⚠ Aurora re-sync required before testing 3b.** Existing DB rows were stored before the `fightingStyles` key existed. Re-sync your content source (Settings → Content → Sync) so Aurora Fighting Styles populate into `fightingStyles[]`.
 
 ---
 
 ## What's Next
 
-1. **Phase 8 / Chunk 3c** — Storage: verify `levelChoices[N].fightingStyle` writes and reads correctly end-to-end (level-up-panel → `levelUpCharacter` → DB → character page).
-   - Prereq: none (3b already landed)
+1. **Phase 8 / Chunk 2** — Fallen Aasimar subrace HTML rendering  
+   Aurora subrace descriptions (e.g. Fallen Aasimar) contain HTML that renders as raw tags in the Features tab subrace section. Same `stripHtml` or `cleanHtml` treatment needed.
 
-2. **Phase 8 / Chunk 3d** — Server action: add level-DOWN clearing of `fightingStyle` for every unwound level. `levelDownCharacter` must wipe `levelChoices[N].fightingStyle` the same way it reverses ASI deltas, so a Paladin who reaches L2, drops to L1, and re-levels doesn't retain a phantom style.
-   - Prereq: 3c verified
+2. **Phase 9 — Action bar**  
+   BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Not started.
 
-3. **Phase 8 / Chunk 3e** — Fighter L1 wizard step: add a "Class Features" screen to the level-up flow that shows the Fighting Style picker (merged SRD + Aurora entries, with source chips) for any level where a class grants a style pick.
-   - Prereq: 3d done; Aurora re-synced
+3. **Phase 10 — Polish pass**  
+   - AC recalc lag on equip/unequip (optimistic update audit)
+   - H4/H5 heading overlap in PHB24 class descriptions
+   - `unstable_cache` for content getters
 
 ---
 
@@ -41,14 +46,16 @@ Last updated: 2026-06-04
 
 | Flow | What to check |
 |---|---|
-| Character creation | Full wizard: race → class → background → subrace → stats → name. Verify PHB24 martials (Barbarian, Bard, Fighter, Monk, Rogue) appear alongside SRD classes. |
+| Character creation | Full wizard: race → class → background → subrace → stats → name. Verify PHB24 martials appear. |
+| Character creation — Fighting Style (Fighter L1) | Create a Fighter. Confirm "Class Features" step appears with merged SRD + Aurora styles and source chips. Pick one. Confirm it shows on Features tab after creation. |
+| Character creation — re-entry | Hit "Create character", then navigate back to /characters/new. Confirm wizard starts at step 1 with blank state (not pre-filled from prior character). |
 | Level Up — basic | Open any character → Features tab → "Tap to level up or down" → change level. Verify HP, spell slots, proficiency bonus update. |
-| Level Up — subclass | Level a Wizard to 2. Confirm subclass picker appears. Pick a subclass. Confirm it shows on Features tab with feature list. |
-| Level Up — Champion | Level a Fighter to 3+. After picking Champion subclass, confirm Features tab shows level-keyed list (Improved Critical at 3, Remarkable Athlete at 7, etc.) with descriptions — not pill badges. |
-| Level Up — Fighting Style (Paladin) | Level a Paladin to 2. Confirm the Fighting Style picker appears with 6 card-button options. Pick one. Confirm level can be set back to 1 and then re-leveled to 2 with a fresh pick. *(3b landed — re-sync Aurora first to get TCE styles in the picker)* |
-| Level Up — Fighting Style (Fighter) | Level a Fighter from 0 to 1. Confirm Fighting Style picker appears at L1 (blocked until 3e lands). |
-| Features tab | Open any character with a class. Confirm "Class Progression" section shows features with level numbers and descriptions. |
-| Class description | Verify Class section in Features tab shows class description HTML. Known issue: H4/H5 headings may visually overlap (deferred to Phase 10). |
+| Level Up — subclass | Level a Wizard to 2. Confirm subclass picker appears. Pick a subclass. Confirm it shows on Features tab. |
+| Level Up — Fighting Style (Paladin L2) | Level a Paladin to 2. Confirm Fighting Style picker shows **both** SRD styles and Aurora extras (e.g. TCE: Blind Fighting, Interception, etc.) with source chips. Pick one. Confirm it appears on Features tab. |
+| Level Up — Fighting Style (Ranger L2) | Same as Paladin. |
+| Level Up — Fighting Style down | Level Paladin to 2, pick style, level back to 1, re-level to 2. Confirm fresh pick is required (prior choice cleared). |
+| Features tab | Open any character. Confirm "Class Progression" section shows features with level numbers and descriptions. |
+| Features tab — Fighting Style | Open Fighter/Paladin/Ranger with a style set. Confirm "Fighting Style" card shows name + plain-text description + source chip. |
 
 ---
 
@@ -63,22 +70,28 @@ Last updated: 2026-06-04
 | 5 — Sheet interactivity | ✅ Done | HP tracking, spell slot use, short/long rest, conditions, feature charges, dice roller |
 | 6 — Content import UI | ✅ Done | Aurora source management, per-book toggle, sync, dedup (SRD vs PHB24) |
 | 7 — PWA polish | ✅ Done | Offline support, install prompt, manifest, service worker |
-| 8 — Level Up flow | 🔄 In progress | Guided level-up/down panel; subclass picker; Fighting Style picker (3c-3f remaining) |
+| 8 — Level Up flow | ✅ Done | Guided level-up/down panel; subclass picker; Fighting Style picker (SRD + Aurora, wizard + level-up) |
 | 9 — Action bar | ⏳ Queued | BG3-style unified action/resource bar (design doc: `docs/phase-8-action-bar.md`) |
-| 10 — Polish pass | ⏳ Queued | Performance (AC recalc lag, content re-fetch), CSS bugs (class description heading overlap), optimistic updates via `useOptimistic` |
+| 10 — Polish pass | ⏳ Queued | Performance (AC recalc lag, content re-fetch), CSS bugs (class description heading overlap), optimistic updates |
 | 11 | ⏳ TBD | Not yet specified |
 | 12 | ⏳ TBD | Not yet specified |
-| — | ⏳ Post-Phase 8 | **Class completeness audit** — survey which SRD/PHB24 classes have complete feature data vs gaps; produce `docs/class-completeness-audit.md` |
+| — | ⏳ Post-Phase 8 | **Class completeness audit** — `docs/class-completeness-audit.md` |
 | — | ⏳ Future | **Combat Mode design doc** — `docs/combat-mode-design.md` (concept stage only) |
 
 ---
 
 ## Known Issues
 
+### Fallen Aasimar subrace HTML
+**Status:** Active — deferred to Chunk 2
+**Symptom:** Aurora subrace descriptions (e.g. Fallen Aasimar) contain HTML tags that render as literal text in the Features tab subrace section.
+**Fix:** Apply `stripHtml` or `cleanHtml` to subrace description rendering in `tab-features.tsx`.
+
+---
+
 ### Class description heading overlap
 **Status:** Parked — deferred to Phase 10 polish
-**Symptom:** H4/H5 headings in PHB24 class descriptions (Cleric, Sorcerer, Fighter, Wizard, others) visually overlap with the text immediately below. Race and background descriptions render correctly with the same `.aurora-content` CSS, so the bug is class-HTML-specific.
-**Attempted fixes:** margin CSS adjustments, cleaning orphaned `</div>` tags — all insufficient.
+**Symptom:** H4/H5 headings in PHB24 class descriptions (Cleric, Sorcerer, Fighter, Wizard, others) visually overlap with the text immediately below. Race and background descriptions render correctly with the same `.aurora-content` CSS.
 **Hypothesis:** Something in class HTML structure (deeper table nesting, unclosed tags, parent overflow context) interacts with CSS in a way race/background HTML doesn't.
 **To fix:** Open DevTools on a broken heading, inspect computed styles + DOM ancestry, identify structural cause, fix at root.
 
@@ -87,20 +100,20 @@ Last updated: 2026-06-04
 ### Slow AC recalc on equip/unequip
 **Status:** Tech debt — deferred to Phase 10 polish
 **Symptom:** After clicking equip/unequip on armor or shield, the AC stat in the header updates 2–3 seconds later. Calculation is correct; propagation is slow.
-**Cause (likely):** Same family as create-character lag and equipment manager first-open lag — content/character re-fetch on every mutation instead of optimistic local update of derived stats.
-**To fix (Phase 10):** Audit all derived-stat recomputes for optimistic-vs-server-roundtrip; consider unifying via React 19's `useOptimistic` on `CharacterMutationContext` for all stat-affecting actions. Also revisit `unstable_cache` for `getEnabledItems/Features/Spells`.
+**Cause (likely):** Content/character re-fetch on every mutation instead of optimistic local update of derived stats.
+**To fix (Phase 10):** Audit all derived-stat recomputes; consider `useOptimistic` on `CharacterMutationContext` for stat-affecting actions. Also revisit `unstable_cache` for `getEnabledItems/Features/Spells`.
 
 ---
 
 ### PHB24 classes missing from class picker (resolved)
 **Status:** Fixed in commit `af6b1a3`
-Barbarian, Bard, Fighter, Monk, Rogue appeared SRD-only when Aurora (PHB24) was synced, because the dedup fingerprint matched same-named classes from different editions. Fixed by adding `DISTINCT_FROM_SRD` set that bypasses Case A dedup for PHB24/DMG24 sources.
+Barbarian, Bard, Fighter, Monk, Rogue appeared SRD-only when Aurora (PHB24) was synced. Fixed by adding `DISTINCT_FROM_SRD` set that bypasses Case A dedup for PHB24/DMG24 sources.
 
 ---
 
 ### Class Progression not rendering for pre-Phase-8 characters (resolved)
 **Status:** Fixed in commit `af6b1a3`
-`resolvedClass` stored at character-creation time lacked `featuresByLevel`. The `??` operator short-circuits when the object is truthy-but-incomplete. Fixed by patching specific fields from live `SRD_CLASSES` data instead of falling through the whole object.
+`resolvedClass` stored at character-creation time lacked `featuresByLevel`. Fixed by patching specific fields from live `SRD_CLASSES` data in `page.tsx`.
 
 ---
 
