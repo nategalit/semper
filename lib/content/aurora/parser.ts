@@ -383,15 +383,19 @@ function normalizeFeature(
   sheet: ParsedSheet
 ): ClassFeatureElement | RacialTraitElement {
   const replacedBy = textOf(firstChild(el, "requirements")) || undefined;
-  return {
+  const common = {
     ...base,
-    elementType,
     ...(sheet.action ? { action: sheet.action } : {}),
     ...(sheet.usage ? { usage: sheet.usage } : {}),
     variants: sheet.variants,
     ...(replacedBy ? { replacedBy } : {}),
     rules: parseRules(firstChild(el, "rules")),
   };
+  if (elementType === "ClassFeature") {
+    const supports = textOf(firstChild(el, "supports")) || undefined;
+    return { ...common, elementType: "ClassFeature" as const, ...(supports ? { supports } : {}) };
+  }
+  return { ...common, elementType: "RacialTrait" as const };
 }
 
 function normalizeSpell(el: El, base: BaseElementData): SpellElement {

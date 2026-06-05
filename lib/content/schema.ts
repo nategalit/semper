@@ -146,6 +146,8 @@ interface BaseFeatureElement extends BaseElement {
 
 export interface ClassFeatureElement extends BaseFeatureElement {
   elementType: "ClassFeature";
+  /** Value of the <supports> tag; set when the element belongs to a choice pool (e.g. "Fighting Style"). */
+  supports?: string;
 }
 
 /** Racial traits, background features, and archetype features share this shape. */

@@ -28,9 +28,10 @@ export type WizardStep =
   | "background"
   | "skills"
   | "subclass"
+  | "class-features"
   | "review";
 
-/** Canonical ordered steps. "subrace" is conditionally inserted by the wizard component. */
+/** Canonical ordered steps. "subrace" and "class-features" are conditionally inserted by the wizard component. */
 export const WIZARD_STEPS: WizardStep[] = [
   "name",
   "edition",
@@ -41,6 +42,7 @@ export const WIZARD_STEPS: WizardStep[] = [
   "background",
   "skills",
   "subclass",
+  "class-features",
   "review",
 ];
 
@@ -54,6 +56,7 @@ export const STEP_LABELS: Record<WizardStep, string> = {
   background: "Background",
   skills: "Skills",
   subclass: "Subclass",
+  "class-features": "Class Features",
   review: "Review",
 };
 
@@ -72,6 +75,7 @@ interface WizardState {
 
   classSkills: string[];
   wizardSubclassId: string;
+  wizardFightingStyleId: string;
   /** Flexible ability picks (e.g. Half-Elf's two +1s), stored as an array of chosen keys. */
   flexibleAbilityPicks: AbilityKey[];
 
@@ -86,6 +90,7 @@ interface WizardState {
   setBackgroundId: (id: string) => void;
   toggleClassSkill: (skill: string) => void;
   setWizardSubclassId: (id: string) => void;
+  setWizardFightingStyleId: (id: string) => void;
   toggleFlexiblePick: (key: AbilityKey, maxCount: number) => void;
   setAbilityMethod: (method: AbilityMethod) => void;
   setAbilityScore: (key: AbilityKey, value: number) => void;
@@ -108,6 +113,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
   backgroundId: "",
   classSkills: [],
   wizardSubclassId: "",
+  wizardFightingStyleId: "",
   flexibleAbilityPicks: [],
   abilityMethod: "standard-array",
   abilityScores: { ...DEFAULT_SCORES },
@@ -131,8 +137,9 @@ export const useWizardStore = create<WizardState>((set, get) => ({
           classSkills: [], wizardSubclassId: "", flexibleAbilityPicks: [] }),
   setRaceId: (raceId) => set({ raceId, subraceId: "", flexibleAbilityPicks: [] }),
   setSubraceId: (subraceId) => set({ subraceId }),
-  setClassId: (classId) => set({ classId, classSkills: [], wizardSubclassId: "" }),
+  setClassId: (classId) => set({ classId, classSkills: [], wizardSubclassId: "", wizardFightingStyleId: "" }),
   setWizardSubclassId: (wizardSubclassId) => set({ wizardSubclassId }),
+  setWizardFightingStyleId: (wizardFightingStyleId) => set({ wizardFightingStyleId }),
   setBackgroundId: (backgroundId) => set({ backgroundId }),
   toggleFlexiblePick: (key, maxCount) =>
     set((s) => {

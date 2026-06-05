@@ -12,6 +12,7 @@ import type {
   SubraceElement,
   ClassElement,
   SubclassElement,
+  ClassFeatureElement,
   BackgroundElement,
   FeatElement,
   ItemElement,
@@ -26,6 +27,13 @@ export interface FeatureEntry {
   description: string;
 }
 
+export interface FightingStyleEntry {
+  id: string;
+  name: string;
+  description: string;
+  sourceLabel: string;
+}
+
 export interface ImportedContent {
   spells: DisplaySpell[];
   races: RaceElement[];
@@ -37,6 +45,8 @@ export interface ImportedContent {
   items: ItemElement[];
   /** ClassFeature + RacialTrait elements (subclass/racial trait descriptions). Stored at sync time. */
   features: FeatureEntry[];
+  /** ClassFeature elements whose <supports> tag equals "Fighting Style". */
+  fightingStyles: FightingStyleEntry[];
 }
 
 export interface ElementCounts {
@@ -103,6 +113,7 @@ function partitionElements(elements: AuroraElement[]): {
     feats: [],
     items: [],
     features: [],
+    fightingStyles: [],
   };
 
   // Track unknown source strings across all element types
@@ -121,7 +132,20 @@ function partitionElements(elements: AuroraElement[]): {
       case "Background":  content.backgrounds.push(el as BackgroundElement); break;
       case "Feat":        content.feats.push(el as FeatElement); break;
       case "Item":        content.items.push(el as ItemElement); break;
-      case "ClassFeature":
+      case "ClassFeature": {
+        const cf = el as ClassFeatureElement;
+        if (cf.supports?.split(",")[0].trim() === "Fighting Style") {
+          content.fightingStyles.push({
+            id: cf.id,
+            name: cf.name,
+            description: cf.description,
+            sourceLabel: abbreviateSource(cf.source),
+          });
+        } else {
+          content.features.push({ id: cf.id, name: cf.name, description: cf.description });
+        }
+        break;
+      }
       case "RacialTrait": content.features.push({ id: el.id, name: el.name, description: el.description }); break;
     }
   }
@@ -409,4 +433,8 @@ export async function getEnabledSubraces(): Promise<SubraceElement[]> {
 
 export async function getEnabledFeatures(): Promise<FeatureEntry[]> {
   return queryEnabledField<FeatureEntry>("features");
+}
+
+export async function getEnabledFightingStyles(): Promise<FightingStyleEntry[]> {
+  return queryEnabledField<FightingStyleEntry>("fightingStyles");
 }

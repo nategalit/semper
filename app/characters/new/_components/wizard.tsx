@@ -6,8 +6,10 @@ import { useWizardStore, STEP_LABELS } from "@/lib/stores/wizard-store";
 import type { WizardStep } from "@/lib/stores/wizard-store";
 import { createCharacter } from "@/app/actions/characters";
 import type { SrdRace, SrdClass, SrdBackground, SrdSubclass, AbilityKey } from "@/lib/content/srd";
-import type { FeatureEntry } from "@/app/actions/content";
+import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
+import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
 import { DEFAULT_CHARACTER_DATA } from "@/lib/types/character";
+import type { LevelChoiceRecord } from "@/lib/types/character";
 import { isEditionMatch } from "@/lib/content/edition-filter";
 import { StepName } from "./step-name";
 import { StepEdition } from "./step-edition";
@@ -18,6 +20,8 @@ import { StepAbilities } from "./step-abilities";
 import { StepBackground } from "./step-background";
 import { StepSkills } from "./step-skills";
 import { StepSubclass } from "./step-subclass";
+import { StepClassFeatures } from "./step-class-features";
+import type { FightingStyleOption } from "./step-class-features";
 import { StepReview } from "./step-review";
 
 interface Props {
@@ -26,13 +30,15 @@ interface Props {
   subclasses: SrdSubclass[];
   backgrounds: SrdBackground[];
   featureMap: Map<string, FeatureEntry>;
+  importedFightingStyles: FightingStyleEntry[];
 }
 
-export function CharacterWizard({ races, classes, subclasses, backgrounds, featureMap }: Props) {
+export function CharacterWizard({ races, classes, subclasses, backgrounds, featureMap, importedFightingStyles }: Props) {
   const router = useRouter();
   const {
     step, setStep,
-    name, edition, raceId, subraceId, classId, backgroundId, classSkills, wizardSubclassId,
+    name, edition, raceId, subraceId, classId, backgroundId, classSkills,
+    wizardSubclassId, wizardFightingStyleId,
     flexibleAbilityPicks, computedAbilityScores,
   } = useWizardStore();
 
@@ -44,11 +50,26 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
   const selectedRace = filteredRaces.find((r) => r.id === raceId);
   const raceHasSubraces = (selectedRace?.subraces.length ?? 0) > 0;
 
-  // Dynamic step list — "subrace" inserted only when selected race has subraces.
+  // Resolve selected class (classId stored as "{id}:{sourceLabel}").
+  const selectedClass = filteredClasses.find((c) => `${c.id}:${c.sourceLabel ?? ""}` === classId);
+  // "class-features" step shown when the class grants Fighting Style at level 1.
+  const classFightingStyleLevel = FIGHTING_STYLE_BY_CLASS[selectedClass?.id ?? ""] ?? 0;
+  const needsClassFeatureStep = classFightingStyleLevel === 1;
+
+  // Merged fighting styles: SRD base 6 + Aurora extras, deduped by name.
+  const srdNameSet = new Set(FIGHTING_STYLES.map((s) => s.name.toLowerCase()));
+  const allFightingStyles: FightingStyleOption[] = [
+    ...FIGHTING_STYLES.map((s) => ({ ...s, sourceLabel: "SRD" })),
+    ...importedFightingStyles.filter((s) => !srdNameSet.has(s.name.toLowerCase())),
+  ];
+
+  // Dynamic step list — "subrace" and "class-features" conditionally inserted.
   const activeSteps: WizardStep[] = [
     "name", "edition", "race",
     ...(raceHasSubraces ? (["subrace"] as WizardStep[]) : []),
-    "class", "abilities", "background", "skills", "subclass", "review",
+    "class", "abilities", "background", "skills", "subclass",
+    ...(needsClassFeatureStep ? (["class-features"] as WizardStep[]) : []),
+    "review",
   ];
 
   const stepIndex = activeSteps.indexOf(step);
@@ -101,6 +122,10 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
     for (const k of flexibleAbilityPicks) abilityChoices[k] = flexAmt;
 
     console.log(`[wizard] pre-submit compute: ${(performance.now() - t0).toFixed(0)}ms`);
+    const l1Choice: LevelChoiceRecord | undefined = wizardFightingStyleId
+      ? { hpGained: maxHp, fightingStyle: wizardFightingStyleId }
+      : undefined;
+
     const character = await createCharacter({
       name,
       raceId: race?.id ?? undefined,
@@ -117,6 +142,7 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
         hitDiceRemaining: 1,
         skillProficiencies,
         edition,
+        ...(l1Choice ? { levelChoices: { 1: l1Choice } } : {}),
         ...(race ? { resolvedRace: race } : {}),
         ...(subrace ? { resolvedSubrace: subrace } : {}),
         ...(srdClass ? { resolvedClass: srdClass } : {}),
@@ -167,6 +193,7 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
         {step === "background" && <StepBackground backgrounds={filteredBackgrounds} featureMap={featureMap} />}
         {step === "skills"     && <StepSkills classes={filteredClasses} backgrounds={filteredBackgrounds} />}
         {step === "subclass"   && <StepSubclass classes={filteredClasses} subclasses={filteredSubclasses} featureMap={featureMap} />}
+        {step === "class-features" && <StepClassFeatures allFightingStyles={allFightingStyles} />}
         {step === "review"     && (
           <StepReview races={filteredRaces} classes={filteredClasses} backgrounds={filteredBackgrounds} />
         )}
@@ -188,7 +215,7 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
         {step !== "review" ? (
           <button
             onClick={handleNext}
-            disabled={!canAdvance(step, { name, raceId, subraceId, classId, backgroundId, classSkills, wizardSubclassId, flexibleAbilityPicks, races: filteredRaces, classes: filteredClasses })}
+            disabled={!canAdvance(step, { name, raceId, subraceId, classId, backgroundId, classSkills, wizardSubclassId, wizardFightingStyleId, flexibleAbilityPicks, races: filteredRaces, classes: filteredClasses })}
             className="rounded-md bg-amber-600 px-5 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Next →
@@ -210,7 +237,7 @@ function canAdvance(
   step: string,
   {
     name, raceId, subraceId, classId, backgroundId, classSkills, wizardSubclassId,
-    flexibleAbilityPicks, races, classes,
+    wizardFightingStyleId, flexibleAbilityPicks, races, classes,
   }: {
     name: string;
     raceId: string;
@@ -219,6 +246,7 @@ function canAdvance(
     backgroundId: string;
     classSkills: string[];
     wizardSubclassId: string;
+    wizardFightingStyleId: string;
     flexibleAbilityPicks: string[];
     races: SrdRace[];
     classes: SrdClass[];
@@ -252,6 +280,7 @@ function canAdvance(
       if (srdClass.subclassUnlockLevel === 1) return !!wizardSubclassId;
       return true;
     }
+    case "class-features": return !!wizardFightingStyleId;
     default: return true;
   }
 }

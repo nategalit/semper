@@ -5,7 +5,7 @@ import {
 import type { SrdRace, SrdClass, SrdSubclass, SrdBackground } from "@/lib/content/srd";
 import {
   getEnabledRaces, getEnabledSubraces, getEnabledClasses, getEnabledSubclasses,
-  getEnabledBackgrounds, getEnabledFeatures,
+  getEnabledBackgrounds, getEnabledFeatures, getEnabledFightingStyles,
 } from "@/app/actions/content";
 import type { FeatureEntry } from "@/app/actions/content";
 import type { SubraceElement } from "@/lib/content/schema";
@@ -19,7 +19,7 @@ import { CharacterWizard } from "./_components/wizard";
 export default async function NewCharacterPage() {
   await requireAuth();
 
-  const [auroraRaceEls, auroraSubraceEls, auroraClassEls, auroraSubclassEls, auroraBackgroundEls, featureEls] =
+  const [auroraRaceEls, auroraSubraceEls, auroraClassEls, auroraSubclassEls, auroraBackgroundEls, featureEls, importedFightingStyles] =
     await Promise.all([
       getEnabledRaces(),
       getEnabledSubraces(),
@@ -27,6 +27,7 @@ export default async function NewCharacterPage() {
       getEnabledSubclasses(),
       getEnabledBackgrounds(),
       getEnabledFeatures(),
+      getEnabledFightingStyles(),
     ]);
 
   const featureMap = new Map<string, FeatureEntry>(featureEls.map((f) => [f.id, f]));
@@ -91,6 +92,7 @@ export default async function NewCharacterPage() {
         subclasses={subclasses}
         backgrounds={backgrounds}
         featureMap={featureMap}
+        importedFightingStyles={importedFightingStyles}
       />
     </div>
   );

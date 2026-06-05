@@ -5,7 +5,7 @@ import { useMutation } from "@/lib/character/mutation-context";
 import { levelUpCharacter } from "@/app/actions/characters";
 import { abilityMod } from "@/lib/character/calc";
 import { averageHpPerLevel, getAsiLevels } from "@/lib/content/srd/progression";
-import { SRD_SUBCLASSES } from "@/lib/content/srd";
+import { SRD_SUBCLASSES, FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
 import type { SrdClass, SrdSubclass, AbilityKey } from "@/lib/content/srd";
 import type { AbilityScores } from "@/lib/types/character";
 
@@ -43,10 +43,13 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
     ? SRD_SUBCLASSES.filter((s) => s.classId === srdClass.id)
     : [];
 
+  const fightingStyleGrantLevel = FIGHTING_STYLE_BY_CLASS[classId] ?? 0;
+
   const [targetLevel, setTargetLevel] = useState(currentLevel);
   const [hpByNewLevel, setHpByNewLevel] = useState<Record<number, number>>({});
   const [asiByNewLevel, setAsiByNewLevel] = useState<Record<number, Partial<Record<AbilityKey, number>>>>({});
   const [pickedSubclassId, setPickedSubclassId] = useState(character.data.subclassId ?? "");
+  const [pickedFightingStyleId, setPickedFightingStyleId] = useState("");
 
   if (!open) return null;
 
@@ -60,6 +63,11 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
     isUp &&
     newLevels.includes(subclassUnlockLevel) &&
     !character.data.subclassId;
+
+  const needsFightingStylePick =
+    isUp &&
+    fightingStyleGrantLevel > 0 &&
+    newLevels.includes(fightingStyleGrantLevel);
 
   // ── HP helpers ──────────────────────────────────────────────────────────────
 
@@ -108,7 +116,9 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
     targetLevel !== currentLevel &&
     (isDown
       ? true
-      : (!needsSubclassPick || !!pickedSubclassId) && allAsiAllocated);
+      : (!needsSubclassPick || !!pickedSubclassId) &&
+        (!needsFightingStylePick || !!pickedFightingStyleId) &&
+        allAsiAllocated);
 
   // ── Confirm ─────────────────────────────────────────────────────────────────
 
@@ -120,6 +130,11 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
       for (const lvl of newLevels) hpGained[lvl] = getHpForLevel(lvl);
     }
 
+    const fightingStyleByLevel: Record<number, string> = {};
+    if (needsFightingStylePick && pickedFightingStyleId && fightingStyleGrantLevel > 0) {
+      fightingStyleByLevel[fightingStyleGrantLevel] = pickedFightingStyleId;
+    }
+
     startTransition(async () => {
       await levelUpCharacter(
         character.id,
@@ -127,6 +142,7 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
         hpGained,
         isUp ? asiByNewLevel : {},
         needsSubclassPick && pickedSubclassId ? pickedSubclassId : undefined,
+        Object.keys(fightingStyleByLevel).length > 0 ? fightingStyleByLevel : undefined,
       );
       onClose();
     });
@@ -241,6 +257,9 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
                 availableSubclasses={availableSubclasses}
                 pickedSubclassId={pickedSubclassId}
                 onSubclassPick={setPickedSubclassId}
+                isFightingStyleLevel={lvl === fightingStyleGrantLevel && needsFightingStylePick}
+                pickedFightingStyleId={pickedFightingStyleId}
+                onFightingStylePick={setPickedFightingStyleId}
               />
             ))}
         </div>
@@ -255,6 +274,11 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
           {needsSubclassPick && !pickedSubclassId && (
             <p className="text-xs text-center text-amber-500">
               Choose a subclass for level {subclassUnlockLevel}.
+            </p>
+          )}
+          {needsFightingStylePick && !pickedFightingStyleId && (
+            <p className="text-xs text-center text-amber-500">
+              Choose a Fighting Style for level {fightingStyleGrantLevel}.
             </p>
           )}
           <button
@@ -297,6 +321,9 @@ interface LevelSectionProps {
   availableSubclasses: SrdSubclass[];
   pickedSubclassId: string;
   onSubclassPick: (id: string) => void;
+  isFightingStyleLevel: boolean;
+  pickedFightingStyleId: string;
+  onFightingStylePick: (id: string) => void;
 }
 
 function LevelSection({
@@ -316,6 +343,9 @@ function LevelSection({
   availableSubclasses,
   pickedSubclassId,
   onSubclassPick,
+  isFightingStyleLevel,
+  pickedFightingStyleId,
+  onFightingStylePick,
 }: LevelSectionProps) {
   const features: string[] = srdClass?.featuresByLevel?.[lvl] ?? [];
   const computedFeatures = [
@@ -490,6 +520,37 @@ function LevelSection({
                 ))}
               </div>
             )}
+          </div>
+        )}
+
+        {/* Fighting Style picker */}
+        {isFightingStyleLevel && (
+          <div>
+            <p className="text-xs text-stone-500 uppercase tracking-wide mb-2">
+              Choose Fighting Style
+            </p>
+            <div className="space-y-2">
+              {FIGHTING_STYLES.map((style) => (
+                <button
+                  key={style.id}
+                  onClick={() => onFightingStylePick(style.id)}
+                  className={`w-full rounded-xl border p-3 text-left transition-colors ${
+                    pickedFightingStyleId === style.id
+                      ? "border-amber-500 bg-amber-900/20"
+                      : "border-stone-700 bg-stone-800 hover:border-stone-500"
+                  }`}
+                >
+                  <p className={`text-sm font-semibold ${
+                    pickedFightingStyleId === style.id ? "text-amber-300" : "text-stone-200"
+                  }`}>
+                    {style.name}
+                  </p>
+                  <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                    {style.description}
+                  </p>
+                </button>
+              ))}
+            </div>
           </div>
         )}
       </div>

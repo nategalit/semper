@@ -484,6 +484,8 @@ export async function levelUpCharacter(
   /** ASI point allocations keyed by level number. Ignored when leveling down. */
   asiByLevel: Record<number, Partial<Record<AbilityKey, number>>>,
   newSubclassId?: string,
+  /** Fighting Style choice keyed by the level it was granted. */
+  fightingStyleByLevel?: Record<number, string>,
 ): Promise<void> {
   const { userId } = await requireAuth();
   const supabase = await createSupabaseServerClient();
@@ -555,6 +557,7 @@ export async function levelUpCharacter(
         hpGained: hpGainedByLevel[lvl] ?? 0,
         ...(asiByLevel[lvl] ? { asi: asiByLevel[lvl] } : {}),
         ...(newSubclassId && lvl === subclassUnlockLevel ? { subclassId: newSubclassId } : {}),
+        ...(fightingStyleByLevel?.[lvl] ? { fightingStyle: fightingStyleByLevel[lvl] } : {}),
       };
     }
   } else if (isDown) {

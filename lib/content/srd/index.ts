@@ -8,3 +8,5 @@ export { SRD_BACKGROUNDS } from "./backgrounds";
 export { SRD_SPELLS } from "./spells";
 export { SRD_ITEMS } from "./items";
 export type { SrdItem } from "./items";
+export { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "./fighting-styles";
+export type { FightingStyle } from "./fighting-styles";
