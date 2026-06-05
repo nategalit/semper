@@ -214,6 +214,7 @@ export function CharacterSheet({
             open={levelUpOpen}
             onClose={() => setLevelUpOpen(false)}
             srdClass={srdClass}
+            importedFightingStyles={importedFightingStyles}
           />
 
           <TabShellMobile

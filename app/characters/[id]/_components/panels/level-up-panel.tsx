@@ -8,6 +8,7 @@ import { averageHpPerLevel, getAsiLevels } from "@/lib/content/srd/progression";
 import { SRD_SUBCLASSES, FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
 import type { SrdClass, SrdSubclass, AbilityKey } from "@/lib/content/srd";
 import type { AbilityScores } from "@/lib/types/character";
+import type { FightingStyleEntry } from "@/app/actions/content";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -18,15 +19,23 @@ const ABILITY_LABELS: Record<AbilityKey, string> = {
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
+interface FightingStyleOption {
+  id: string;
+  name: string;
+  description: string;
+  sourceLabel: string;
+}
+
 interface Props {
   open: boolean;
   onClose: () => void;
   srdClass: SrdClass | undefined;
+  importedFightingStyles?: FightingStyleEntry[];
 }
 
 // ─── Main panel ───────────────────────────────────────────────────────────────
 
-export function LevelUpPanel({ open, onClose, srdClass }: Props) {
+export function LevelUpPanel({ open, onClose, srdClass, importedFightingStyles = [] }: Props) {
   const { character } = useMutation();
   const [isPending, startTransition] = useTransition();
 
@@ -44,6 +53,12 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
     : [];
 
   const fightingStyleGrantLevel = FIGHTING_STYLE_BY_CLASS[classId] ?? 0;
+
+  const srdStyleNames = useMemo(() => new Set(FIGHTING_STYLES.map((s) => s.name.toLowerCase())), []);
+  const allFightingStyles: FightingStyleOption[] = useMemo(() => [
+    ...FIGHTING_STYLES.map((s) => ({ ...s, sourceLabel: "SRD" })),
+    ...importedFightingStyles.filter((s) => !srdStyleNames.has(s.name.toLowerCase())),
+  ], [importedFightingStyles, srdStyleNames]);
 
   const [targetLevel, setTargetLevel] = useState(currentLevel);
   const [hpByNewLevel, setHpByNewLevel] = useState<Record<number, number>>({});
@@ -258,6 +273,7 @@ export function LevelUpPanel({ open, onClose, srdClass }: Props) {
                 pickedSubclassId={pickedSubclassId}
                 onSubclassPick={setPickedSubclassId}
                 isFightingStyleLevel={lvl === fightingStyleGrantLevel && needsFightingStylePick}
+                allFightingStyles={allFightingStyles}
                 pickedFightingStyleId={pickedFightingStyleId}
                 onFightingStylePick={setPickedFightingStyleId}
               />
@@ -322,6 +338,7 @@ interface LevelSectionProps {
   pickedSubclassId: string;
   onSubclassPick: (id: string) => void;
   isFightingStyleLevel: boolean;
+  allFightingStyles: FightingStyleOption[];
   pickedFightingStyleId: string;
   onFightingStylePick: (id: string) => void;
 }
@@ -344,6 +361,7 @@ function LevelSection({
   pickedSubclassId,
   onSubclassPick,
   isFightingStyleLevel,
+  allFightingStyles,
   pickedFightingStyleId,
   onFightingStylePick,
 }: LevelSectionProps) {
@@ -530,7 +548,7 @@ function LevelSection({
               Choose Fighting Style
             </p>
             <div className="space-y-2">
-              {FIGHTING_STYLES.map((style) => (
+              {allFightingStyles.map((style) => (
                 <button
                   key={style.id}
                   onClick={() => onFightingStylePick(style.id)}
@@ -540,13 +558,18 @@ function LevelSection({
                       : "border-stone-700 bg-stone-800 hover:border-stone-500"
                   }`}
                 >
-                  <p className={`text-sm font-semibold ${
-                    pickedFightingStyleId === style.id ? "text-amber-300" : "text-stone-200"
-                  }`}>
-                    {style.name}
-                  </p>
+                  <div className="flex items-start justify-between gap-2">
+                    <p className={`text-sm font-semibold ${
+                      pickedFightingStyleId === style.id ? "text-amber-300" : "text-stone-200"
+                    }`}>
+                      {style.name}
+                    </p>
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-700 text-stone-500 shrink-0">
+                      {style.sourceLabel}
+                    </span>
+                  </div>
                   <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-                    {style.description}
+                    {style.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
                   </p>
                 </button>
               ))}
