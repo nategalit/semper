@@ -73,6 +73,21 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
 
   const chargeLabels = new Set(features.map((d) => d.label));
   const activeClass = srdClass ?? character.data.resolvedClass;
+
+  // Case-insensitive description lookup with two-level fallback:
+  // 1. SRD hand-written descriptions (plain text, curated) — added last so they win
+  // 2. Aurora ClassFeature descriptions from featureMap (HTML-stripped) — covers PHB24-unique features
+  const descByNameLower = new Map<string, string>();
+  for (const f of featureMap.values()) {
+    const stripped = f.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+    if (stripped) descByNameLower.set(f.name.toLowerCase(), stripped);
+  }
+  if (activeClass?.featureDescriptions) {
+    for (const [name, desc] of Object.entries(activeClass.featureDescriptions)) {
+      if (desc) descByNameLower.set(name.toLowerCase(), desc);
+    }
+  }
+
   const nonChargeFeatures: { name: string; level: number; description?: string }[] =
     activeClass?.featuresByLevel
       ? Object.entries(activeClass.featuresByLevel)
@@ -84,7 +99,7 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
               .map((name) => ({
                 name,
                 level: Number(lvl),
-                description: activeClass.featureDescriptions?.[name],
+                description: descByNameLower.get(name.toLowerCase()) || undefined,
               }))
           )
       : [];
