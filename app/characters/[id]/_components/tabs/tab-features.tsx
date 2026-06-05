@@ -7,10 +7,10 @@ import {
   resolveRechargesOn, UNLIMITED,
 } from "@/lib/character/features";
 import { setFeatureCharge } from "@/app/actions/characters";
-import { SRD_SUBCLASSES } from "@/lib/content/srd";
+import { SRD_SUBCLASSES, FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
 import type { SrdClass, SrdRace, SrdBackground } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
-import type { FeatureEntry } from "@/app/actions/content";
+import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
 import { SectionCard } from "../shared/section-card";
 import { EmptyState } from "../shared/empty-state";
 import { SubclassPicker } from "../panels/subclass-picker";
@@ -34,13 +34,29 @@ interface Props {
   srdRace: SrdRace | undefined;
   srdBackground: SrdBackground | undefined;
   featureMap: Map<string, FeatureEntry>;
+  importedFightingStyles?: FightingStyleEntry[];
   onChangeLevelRequest?: () => void;
 }
 
-export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onChangeLevelRequest }: Props) {
+export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, importedFightingStyles, onChangeLevelRequest }: Props) {
   const { character, mutate } = useMutation();
   const [subclassPickerOpen, setSubclassPickerOpen] = useState(false);
   const subrace = srdRace?.subraces.find((s) => s.id === character.data.subraceId);
+
+  // Resolve chosen Fighting Style (if any).
+  const fightingStyleGrantLevel = FIGHTING_STYLE_BY_CLASS[character.classId ?? ""] ?? 0;
+  const chosenFightingStyleId =
+    fightingStyleGrantLevel > 0 && fightingStyleGrantLevel <= character.level
+      ? character.data.levelChoices?.[fightingStyleGrantLevel]?.fightingStyle
+      : undefined;
+  const chosenFightingStyle = chosenFightingStyleId
+    ? (() => {
+        const srd = FIGHTING_STYLES.find((s) => s.id === chosenFightingStyleId);
+        if (srd) return { name: srd.name, description: srd.description, sourceLabel: "SRD" };
+        const imported = importedFightingStyles?.find((s) => s.id === chosenFightingStyleId);
+        return imported ?? undefined;
+      })()
+    : undefined;
 
   const currentSubclass = character.data.subclassId
     ? SRD_SUBCLASSES.find((s) => s.id === character.data.subclassId)
@@ -144,6 +160,25 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, onCh
                 </div>
               </div>
             ))}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Fighting Style */}
+      {chosenFightingStyle && (
+        <SectionCard title="Fighting Style">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <p className="text-sm font-semibold text-stone-200">{chosenFightingStyle.name}</p>
+              {chosenFightingStyle.description && (
+                <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                  {chosenFightingStyle.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
+                </p>
+              )}
+            </div>
+            <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-800 border border-stone-700 text-stone-500 shrink-0">
+              {chosenFightingStyle.sourceLabel}
+            </span>
           </div>
         </SectionCard>
       )}

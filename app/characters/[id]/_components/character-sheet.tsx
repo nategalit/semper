@@ -4,7 +4,7 @@ import { useState, useTransition, useOptimistic, useCallback } from "react";
 import type { Character, CharacterData } from "@/lib/types/character";
 import type { DerivedStats } from "@/lib/character/calc";
 import type { SrdClass, SrdRace, SrdBackground, SrdSpell } from "@/lib/content/srd";
-import type { FeatureEntry } from "@/app/actions/content";
+import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
 import type { RollEntry } from "@/lib/types/roll";
 import type { DisplaySpell } from "@/lib/types/spell";
 import { SRD_SPELLS } from "@/lib/content/srd";
@@ -36,6 +36,7 @@ interface Props {
   initialRolls: RollEntry[];
   importedSpells: DisplaySpell[];
   featureMap: Map<string, FeatureEntry>;
+  importedFightingStyles: FightingStyleEntry[];
 }
 
 function srdToDisplay(s: SrdSpell): DisplaySpell {
@@ -51,6 +52,7 @@ export function CharacterSheet({
   initialRolls,
   importedSpells,
   featureMap,
+  importedFightingStyles,
 }: Props) {
   const allSpells: DisplaySpell[] = [
     ...SRD_SPELLS.map(srdToDisplay),
@@ -181,6 +183,7 @@ export function CharacterSheet({
           srdRace={srdRace}
           srdBackground={srdBackground}
           featureMap={featureMap}
+          importedFightingStyles={importedFightingStyles}
           onChangeLevelRequest={() => setLevelUpOpen(true)}
         />
       )}

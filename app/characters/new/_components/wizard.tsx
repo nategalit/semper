@@ -39,8 +39,10 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
     step, setStep,
     name, edition, raceId, subraceId, classId, backgroundId, classSkills,
     wizardSubclassId, wizardFightingStyleId,
-    flexibleAbilityPicks, computedAbilityScores,
+    flexibleAbilityPicks, computedAbilityScores, reset,
   } = useWizardStore();
+
+  useEffect(() => { reset(); }, []);
 
   const filteredRaces = races.filter((r) => isEditionMatch(r.sourceLabel, edition));
   const filteredClasses = classes.filter((c) => isEditionMatch(c.sourceLabel, edition));

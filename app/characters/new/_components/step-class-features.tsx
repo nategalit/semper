@@ -2,6 +2,10 @@
 
 import { useWizardStore } from "@/lib/stores/wizard-store";
 
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
+
 export interface FightingStyleOption {
   id: string;
   name: string;
@@ -42,7 +46,7 @@ export function StepClassFeatures({ allFightingStyles }: Props) {
               </span>
             </div>
             <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-              {style.description}
+              {stripHtml(style.description)}
             </p>
           </button>
         ))}

@@ -97,6 +97,7 @@ interface WizardState {
   setArrayAssignment: (index: number, key: AbilityKey | "") => void;
   computedAbilityScores: () => AbilityScores;
   pointBuySpent: () => number;
+  reset: () => void;
 }
 
 const DEFAULT_SCORES: AbilityScores = {
@@ -194,4 +195,21 @@ export const useWizardStore = create<WizardState>((set, get) => ({
       0
     );
   },
+
+  reset: () => set({
+    step: "name",
+    name: "",
+    edition: "mix",
+    raceId: "",
+    subraceId: "",
+    classId: "",
+    backgroundId: "",
+    classSkills: [],
+    wizardSubclassId: "",
+    wizardFightingStyleId: "",
+    flexibleAbilityPicks: [],
+    abilityMethod: "standard-array",
+    abilityScores: { ...DEFAULT_SCORES },
+    arrayAssignments: { 0: "", 1: "", 2: "", 3: "", 4: "", 5: "" },
+  }),
 }));
