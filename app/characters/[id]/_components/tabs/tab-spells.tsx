@@ -36,14 +36,16 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
   const casterType = getCasterType(character.classId);
   const isPrepared = casterType === "prepared";
 
-  // Which spell IDs are currently active (prepared or known)?
-  const activeSpellIds = isPrepared ? spellsPrepared : spellsKnown;
-  const activeSpells = allSpells
-    .filter((s) => activeSpellIds.includes(s.id))
+  // Cantrips are always available — always read from spellsKnown, never from spellsPrepared.
+  // Leveled spells: prepared casters (Wizard, Cleric, etc.) read from spellsPrepared;
+  // known casters (Sorcerer, Bard, etc.) read from spellsKnown.
+  const leveledSpellIds = isPrepared ? spellsPrepared : spellsKnown;
+  const cantrips = allSpells
+    .filter((s) => s.level === 0 && spellsKnown.includes(s.id))
+    .sort((a, b) => a.name.localeCompare(b.name));
+  const leveledSpells = allSpells
+    .filter((s) => s.level > 0 && leveledSpellIds.includes(s.id))
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
-
-  const cantrips = activeSpells.filter((s) => s.level === 0);
-  const leveledSpells = activeSpells.filter((s) => s.level > 0);
 
   function handlePipClick(level: string, slot: SpellSlotLevel, wasFilled: boolean) {
     if (wasFilled && slot.remaining <= 0) return;
