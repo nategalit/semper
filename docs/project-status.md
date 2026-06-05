@@ -5,23 +5,27 @@ Last updated: 2026-06-05
 
 ## Current State
 
-**Phase:** 8 — Level Up flow (Fighting Style pipeline complete)
+**Phase:** Pre-Phase 9 cleanup (bugs from block 1–9 testing)
 
 **Latest commits (this session):**
-- `91eb18a` — Fix: thread importedFightingStyles into LevelUpPanel (Aurora styles missing from Paladin level-up)
-- `2bef72a` — Phase 8 3f: Fighting Style on features tab + wizard reset + HTML strip
-- Prior: TCE routing fix (`cf.supports?.split(",")[0].trim()`), 3b–3e chunks
+- `3339ada` — Fix: case-insensitive feature description fallback chain (PHB24 features now get Aurora descriptions)
+- `f3411c8` — Bug 2 (3–6/11): featureDescriptions for Barbarian, Bard, Druid, Monk
+- `c624080` — Bug 2 (2/11): featureDescriptions for Cleric
+- `63d44be` — Bug 2 (1/11): featureDescriptions for Paladin
+- `0dcd304` — Bug 1: cantrips now always read from spellsKnown
 
-**Phase 8 Chunk 3 — Fighting Style choice surface: ALL DONE**
-- 3a ✅ SRD 6 styles confirmed; Aurora data shape investigated
-- 3b ✅ Schema + parser: `ClassFeatureElement.supports` captured; `fightingStyles[]` stored at sync time; `getEnabledFightingStyles()` getter
-- 3c ✅ Storage: `levelChoices[N].fightingStyle` persists correctly through level-up confirm
-- 3d ✅ Server action: `levelUpCharacter` writes fightingStyle; `levelDownCharacter` clears it for every unwound level
-- 3e ✅ Fighter L1 wizard step: "Class Features" step with merged SRD + Aurora picker, source chips
-- 3f ✅ Features tab: chosen Fighting Style rendered in dedicated card with source chip and HTML-stripped description
-- Hotfix ✅ Wizard store resets on mount (stale state after character creation fixed)
-- Hotfix ✅ Aurora description HTML (`<p>` tags) stripped in wizard picker and Features tab
-- Hotfix ✅ Level-up panel: Aurora Fighting Styles now appear for Paladin (and Ranger); source chips + HTML strip applied
+**Class Progression description architecture (resolved):**
+- PHB24 characters read `featuresByLevel` from Aurora-adapted resolvedClass (PHB24 feature names)
+- SRD `featureDescriptions` is patched in at render time via `page.tsx` — but only covers SRD feature names, not PHB24-unique ones (Weapon Mastery, Paladin's Smite, etc.)
+- **Fix**: `tab-features.tsx` now builds a case-insensitive `descByNameLower` map from two sources:
+  1. Aurora `featureMap` (ClassFeature descriptions, HTML-stripped) — covers PHB24-unique features
+  2. SRD `featureDescriptions` (plain text, curated) — overwrites Aurora where names match, so curated text always wins
+- "Lay on Hands" / "Channel Divinity" correctly absent from Class Progression — they are tracked charge features shown with pip UI, intentionally filtered by `chargeLabels`
+
+**Bug 2 — Class featureDescriptions (SRD): 6/11 done**
+- ✅ Paladin, Cleric, Barbarian, Bard, Druid, Monk
+- ⏳ Ranger, Rogue, Sorcerer, Warlock, Wizard
+- Note: PHB24 variants now get Aurora fallback descriptions for features not in SRD. SRD descriptions are still worth writing — they take priority and are more concise.
 
 **Blocked:** Nothing hard-blocked.
 
@@ -29,14 +33,16 @@ Last updated: 2026-06-05
 
 ## What's Next
 
-1. **Phase 8 / Chunk 2** — Fallen Aasimar subrace HTML rendering  
-   Aurora subrace descriptions (e.g. Fallen Aasimar) contain HTML that renders as raw tags in the Features tab subrace section. Same `stripHtml` or `cleanHtml` treatment needed.
+1. **Bug 2 remaining (5 classes)** — Ranger, Rogue, Sorcerer, Warlock, Wizard `featureDescriptions` in `lib/content/srd/classes.ts`. One class per response.
 
-2. **Phase 9 — Action bar**  
-   BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Not started.
+2. **Redesign 1 — Spells tab** — Design proposal first, then build chunked. Current tab shows spell names only; target state: cantrips always visible, spell info density matching Manage Spells modal, expandable cards, upcast control, Cast button consuming slots.
 
-3. **Phase 10 — Polish pass**  
-   - AC recalc lag on equip/unequip (optimistic update audit)
+3. **Fallen Aasimar subrace HTML** — Aurora subrace descriptions contain raw HTML tags in Features tab.
+
+4. **Phase 9 — Action bar** — BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Not started.
+
+5. **Phase 10 — Polish pass**
+   - AC recalc lag on equip/unequip
    - H4/H5 heading overlap in PHB24 class descriptions
    - `unstable_cache` for content getters
 
