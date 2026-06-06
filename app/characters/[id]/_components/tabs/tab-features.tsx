@@ -7,8 +7,8 @@ import {
   resolveRechargesOn, UNLIMITED,
 } from "@/lib/character/features";
 import { setFeatureCharge } from "@/app/actions/characters";
-import { SRD_SUBCLASSES, FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
-import type { SrdClass, SrdRace, SrdBackground } from "@/lib/content/srd";
+import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
+import type { SrdClass, SrdRace, SrdBackground, SrdSubclass } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
 import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
 import { SectionCard } from "../shared/section-card";
@@ -35,10 +35,11 @@ interface Props {
   srdBackground: SrdBackground | undefined;
   featureMap: Map<string, FeatureEntry>;
   importedFightingStyles?: FightingStyleEntry[];
+  allSubclasses?: SrdSubclass[];
   onChangeLevelRequest?: () => void;
 }
 
-export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, importedFightingStyles, onChangeLevelRequest }: Props) {
+export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, importedFightingStyles, allSubclasses = [], onChangeLevelRequest }: Props) {
   const { character, mutate } = useMutation();
   const [subclassPickerOpen, setSubclassPickerOpen] = useState(false);
   const subrace = srdRace?.subraces.find((s) => s.id === character.data.subraceId);
@@ -59,7 +60,7 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
     : undefined;
 
   const currentSubclass = character.data.subclassId
-    ? SRD_SUBCLASSES.find((s) => s.id === character.data.subclassId)
+    ? allSubclasses.find((s) => s.id === character.data.subclassId)
     : undefined;
 
   const needsSubclass =
@@ -215,7 +216,12 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
           </SectionCard>
         ) : currentSubclass ? (
           <SectionCard title={currentSubclass.name}>
-            <p className="text-sm text-stone-300 mb-3">{currentSubclass.description}</p>
+            {currentSubclass.description && (
+              <div
+                className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
+                dangerouslySetInnerHTML={{ __html: cleanHtml(currentSubclass.description, featureMap) }}
+              />
+            )}
             {currentSubclass.featuresByLevel ? (
               <div className="space-y-2">
                 {Object.entries(currentSubclass.featuresByLevel)
@@ -359,6 +365,7 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
         open={subclassPickerOpen}
         onClose={() => setSubclassPickerOpen(false)}
         srdClass={srdClass}
+        allSubclasses={allSubclasses}
       />
     )}
   </>

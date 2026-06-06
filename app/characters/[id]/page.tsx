@@ -1,8 +1,11 @@
 import { getCharacter } from "@/app/actions/characters";
 import { listRolls } from "@/app/actions/rolls";
-import { getEnabledSpells, getEnabledFeatures, getEnabledFightingStyles } from "@/app/actions/content";
+import { getEnabledSpells, getEnabledFeatures, getEnabledFightingStyles, getEnabledSubclasses } from "@/app/actions/content";
 import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
-import { SRD_RACES, SRD_CLASSES, SRD_BACKGROUNDS } from "@/lib/content/srd";
+import { SRD_RACES, SRD_CLASSES, SRD_BACKGROUNDS, SRD_SUBCLASSES } from "@/lib/content/srd";
+import type { SrdSubclass } from "@/lib/content/srd";
+import { adaptAuroraSubclass, SUBCLASS_PARENT_TO_CLASS_ID } from "@/lib/content/aurora/adapters";
+import { dedupSubclasses } from "@/lib/content/dedup";
 import { deriveStats } from "@/lib/character/calc";
 import { CharacterSheet } from "./_components/character-sheet";
 
@@ -14,15 +17,24 @@ export default async function CharacterPage({ params }: Props) {
   const { id } = await params;
 
   const t0 = Date.now();
-  const [character, initialRolls, importedSpells, featureEls, importedFightingStyles] = await Promise.all([
+  const [character, initialRolls, importedSpells, featureEls, importedFightingStyles, rawSubclasses] = await Promise.all([
     getCharacter(id),
     listRolls(id),
     getEnabledSpells(),
     getEnabledFeatures(),
     getEnabledFightingStyles(),
+    getEnabledSubclasses(),
   ]);
   const featureMap = new Map<string, FeatureEntry>(featureEls.map((f) => [f.id, f]));
-  console.log(`[CharacterPage] parallel fetch total: ${Date.now() - t0}ms (getCharacter + listRolls + getEnabledSpells + getEnabledFeatures + getEnabledFightingStyles)`);
+  const auroraSubclasses: SrdSubclass[] = rawSubclasses.flatMap((el) => {
+    const classId = SUBCLASS_PARENT_TO_CLASS_ID[el.parentClass];
+    return classId ? [adaptAuroraSubclass(el, classId)] : [];
+  });
+  const { results: allSubclasses } = dedupSubclasses([
+    ...SRD_SUBCLASSES.map((s) => ({ ...s, source: "SRD" as const, sourceLabel: "SRD" })),
+    ...auroraSubclasses,
+  ]);
+  console.log(`[CharacterPage] parallel fetch total: ${Date.now() - t0}ms (getCharacter + listRolls + getEnabledSpells + getEnabledFeatures + getEnabledFightingStyles + getEnabledSubclasses)`);
 
   // Post-6C characters store resolved objects; pre-6C fall back to SRD lookup.
   const srdRace = character.data.resolvedRace ?? SRD_RACES.find((r) => r.id === character.raceId) ?? undefined;
@@ -56,6 +68,7 @@ export default async function CharacterPage({ params }: Props) {
         importedSpells={importedSpells}
         featureMap={featureMap}
         importedFightingStyles={importedFightingStyles}
+        allSubclasses={allSubclasses}
       />
     </div>
   );

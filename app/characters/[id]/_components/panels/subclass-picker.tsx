@@ -3,19 +3,23 @@
 import { useState } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import { setSubclass } from "@/app/actions/characters";
-import { SRD_SUBCLASSES } from "@/lib/content/srd";
-import type { SrdClass } from "@/lib/content/srd";
+import type { SrdClass, SrdSubclass } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
+
+function stripHtml(html: string): string {
+  return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+}
 
 interface Props {
   open: boolean;
   onClose: () => void;
   srdClass: SrdClass;
+  allSubclasses?: SrdSubclass[];
 }
 
-export function SubclassPicker({ open, onClose, srdClass }: Props) {
+export function SubclassPicker({ open, onClose, srdClass, allSubclasses = [] }: Props) {
   const { character, mutate } = useMutation();
-  const subclasses = SRD_SUBCLASSES.filter((s) => s.classId === srdClass.id);
+  const subclasses = allSubclasses.filter((s) => s.classId === srdClass.id);
   const [picked, setPicked] = useState(character.data.subclassId ?? "");
 
   if (!open) return null;
@@ -65,10 +69,19 @@ export function SubclassPicker({ open, onClose, srdClass }: Props) {
                   : "border-stone-700 bg-stone-800 hover:border-stone-500"
               }`}
             >
-              <p className={`text-sm font-semibold ${picked === sub.id ? "text-amber-300" : "text-stone-200"}`}>
-                {sub.name}
-              </p>
-              <p className="text-xs text-stone-500 mt-1 leading-relaxed">{sub.description}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className={`text-sm font-semibold ${picked === sub.id ? "text-amber-300" : "text-stone-200"}`}>
+                  {sub.name}
+                </p>
+                <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${
+                  sub.source === "SRD"
+                    ? "bg-stone-700 text-stone-300"
+                    : "bg-indigo-900/60 text-indigo-300 border border-indigo-700/50"
+                }`}>
+                  {sub.sourceLabel ?? "SRD"}
+                </span>
+              </div>
+              <p className="text-xs text-stone-500 mt-1 leading-relaxed">{stripHtml(sub.description)}</p>
               {picked === sub.id && (
                 <div className="flex flex-wrap gap-1.5 mt-2">
                   {sub.features.map((f) => (

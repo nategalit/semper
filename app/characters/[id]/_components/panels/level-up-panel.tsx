@@ -5,7 +5,7 @@ import { useMutation } from "@/lib/character/mutation-context";
 import { levelUpCharacter } from "@/app/actions/characters";
 import { abilityMod } from "@/lib/character/calc";
 import { averageHpPerLevel, getAsiLevels } from "@/lib/content/srd/progression";
-import { SRD_SUBCLASSES, FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
+import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
 import type { SrdClass, SrdSubclass, AbilityKey } from "@/lib/content/srd";
 import type { AbilityScores } from "@/lib/types/character";
 import type { FightingStyleEntry } from "@/app/actions/content";
@@ -31,11 +31,12 @@ interface Props {
   onClose: () => void;
   srdClass: SrdClass | undefined;
   importedFightingStyles?: FightingStyleEntry[];
+  allSubclasses?: SrdSubclass[];
 }
 
 // ─── Main panel ───────────────────────────────────────────────────────────────
 
-export function LevelUpPanel({ open, onClose, srdClass, importedFightingStyles = [] }: Props) {
+export function LevelUpPanel({ open, onClose, srdClass, importedFightingStyles = [], allSubclasses = [] }: Props) {
   const { character } = useMutation();
   const [isPending, startTransition] = useTransition();
 
@@ -49,7 +50,7 @@ export function LevelUpPanel({ open, onClose, srdClass, importedFightingStyles =
   const asiLevelSet = useMemo(() => new Set(getAsiLevels(classId)), [classId]);
   const subclassUnlockLevel = srdClass?.subclassUnlockLevel ?? 3;
   const availableSubclasses = srdClass
-    ? SRD_SUBCLASSES.filter((s) => s.classId === srdClass.id)
+    ? allSubclasses.filter((s) => s.classId === srdClass.id)
     : [];
 
   const fightingStyleGrantLevel = FIGHTING_STYLE_BY_CLASS[classId] ?? 0;
@@ -524,14 +525,23 @@ function LevelSection({
                         : "border-stone-700 bg-stone-800 hover:border-stone-500"
                     }`}
                   >
-                    <p className={`text-sm font-semibold ${
-                      pickedSubclassId === sub.id ? "text-amber-300" : "text-stone-200"
-                    }`}>
-                      {sub.name}
-                    </p>
+                    <div className="flex items-start justify-between gap-2">
+                      <p className={`text-sm font-semibold ${
+                        pickedSubclassId === sub.id ? "text-amber-300" : "text-stone-200"
+                      }`}>
+                        {sub.name}
+                      </p>
+                      <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${
+                        sub.source === "SRD"
+                          ? "bg-stone-700 text-stone-300"
+                          : "bg-indigo-900/60 text-indigo-300 border border-indigo-700/50"
+                      }`}>
+                        {sub.sourceLabel ?? "SRD"}
+                      </span>
+                    </div>
                     {sub.description && (
                       <p className="text-xs text-stone-500 mt-1 leading-relaxed line-clamp-2">
-                        {sub.description}
+                        {sub.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
                       </p>
                     )}
                   </button>

@@ -8,6 +8,7 @@ Last updated: 2026-06-05
 **Phase:** Pre-Phase 9 cleanup (bugs from block 1–9 testing)
 
 **Latest commits (this session):**
+- _(pending commit)_ — Issues 2–5: Aurora subclasses surface in all pickers; HTML rendered; source chips; dedup
 - `3339ada` — Fix: case-insensitive feature description fallback chain (PHB24 features now get Aurora descriptions)
 - `f3411c8` — Bug 2 (3–6/11): featureDescriptions for Barbarian, Bard, Druid, Monk
 - `c624080` — Bug 2 (2/11): featureDescriptions for Cleric
@@ -22,10 +23,22 @@ Last updated: 2026-06-05
   2. SRD `featureDescriptions` (plain text, curated) — overwrites Aurora where names match, so curated text always wins
 - "Lay on Hands" / "Channel Divinity" correctly absent from Class Progression — they are tracked charge features shown with pip UI, intentionally filtered by `chargeLabels`
 
+**Aurora subclass surfaces (Issues 2–5, resolved):**
+- **Issue 2** — `page.tsx` calls `getEnabledSubclasses()`, applies `dedupSubclasses` against SRD baseline (same logic as wizard), passes `allSubclasses: SrdSubclass[]` prop through `CharacterSheet` → `TabFeatures` → `SubclassPicker` and → `LevelUpPanel`. Wizard `step-subclass.tsx` already worked — no change.
+- **Issue 3** — `currentSubclass.description` in `tab-features.tsx` now uses `cleanHtml(desc, featureMap)` + `.aurora-content` + `dangerouslySetInnerHTML`. Picker/level-up descriptions use `stripHtml` (compact context).
+- **Issue 4** — Element references (`<div element="ID_..."/>`) in subclass descriptions are resolved via `featureMap` in the Features tab full display (same pipeline as race/class/background sections).
+- **Issue 5** — Source chips on all subclass picker cards: stone chip for SRD, indigo chip for Aurora. Thief shows as two cards — "Thief · SRD" and "Thief · PHB24" — this is correct Case B behavior (PHB24 in `DISTINCT_FROM_SRD`, different mechanics).
+- **Dedup** — `dedupSubclasses` applied at `page.tsx` level ensures exact Case A duplicates (same name + feature fingerprint, non-PHB24/DMG24 source) are dropped. SRD entries get `sourceLabel: "SRD"` so chips render correctly.
+
 **Bug 2 — Class featureDescriptions (SRD): 6/11 done**
 - ✅ Paladin, Cleric, Barbarian, Bard, Druid, Monk
 - ⏳ Ranger, Rogue, Sorcerer, Warlock, Wizard
 - Note: PHB24 variants now get Aurora fallback descriptions for features not in SRD. SRD descriptions are still worth writing — they take priority and are more concise.
+
+**Issue 1 — PHB24 feature descriptions missing (re-sync done, results pending):**
+- Aurora content re-synced. Test PHB24 Paladin/Fighter descriptions to see if Weapon Mastery, Paladin's Smite, etc. now resolve via featureMap fallback.
+- If apostrophe-named features (Paladin's Smite) are still missing: `deriveTraitName` strips apostrophes when IDs are title-cased from underscores → patch needed.
+- **Note for future:** Schema changes to `ImportedContent` (adding new top-level fields like `features`, `fightingStyles`) require users to re-sync Aurora content to populate the new fields in their stored JSON.
 
 **Blocked:** Nothing hard-blocked.
 
@@ -33,18 +46,21 @@ Last updated: 2026-06-05
 
 ## What's Next
 
-1. **Bug 2 remaining (5 classes)** — Ranger, Rogue, Sorcerer, Warlock, Wizard `featureDescriptions` in `lib/content/srd/classes.ts`. One class per response.
+1. **Issue 1 — Re-test PHB24 feature descriptions** (re-sync done). If Weapon Mastery etc. still missing, patch `deriveTraitName` for apostrophes. Report remaining broken features.
 
-2. **Redesign 1 — Spells tab** — Design proposal first, then build chunked. Current tab shows spell names only; target state: cantrips always visible, spell info density matching Manage Spells modal, expandable cards, upcast control, Cast button consuming slots.
+2. **Bug 2 remaining (5 classes)** — Ranger, Rogue, Sorcerer, Warlock, Wizard `featureDescriptions` in `lib/content/srd/classes.ts`. One class per response.
 
 3. **Fallen Aasimar subrace HTML** — Aurora subrace descriptions contain raw HTML tags in Features tab.
 
-4. **Phase 9 — Action bar** — BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Not started.
+4. **Phase 9 — Action bar** — BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. IA locked in `docs/information-architecture.md`.
 
-5. **Phase 10 — Polish pass**
+5. **Redesign 1 — Spells tab** — Design proposal first, then build chunked. Current tab shows spell names only; target state: cantrips always visible, spell info density matching Manage Spells modal, expandable cards, upcast control, Cast button consuming slots.
+
+6. **Phase 10 — Polish pass**
    - AC recalc lag on equip/unequip
    - H4/H5 heading overlap in PHB24 class descriptions
    - `unstable_cache` for content getters
+   - Features tab restructure (see `docs/information-architecture.md`)
 
 ---
 
@@ -129,6 +145,7 @@ Barbarian, Bard, Fighter, Monk, Rogue appeared SRD-only when Aurora (PHB24) was 
 |---|---|---|
 | `docs/level-up-phase.md` | Mostly built | Original Phase 8 design reference; level-up/down flow, choices, HP rolling |
 | `docs/phase-8-action-bar.md` | Design only | Phase 9 target; BG3-style unified action/resource bar |
+| `docs/information-architecture.md` | Decided | IA locked pre-Phase 9; job-based surface organization; order of operations |
 | `docs/combat-mode-design.md` | Not created | Future feature concept; create when design work begins |
 | `docs/class-completeness-audit.md` | Not created | Post-Phase 8; survey class feature data coverage across all SRD/PHB24 classes |
 | `docs/project-status.md` | This file | Living tracker; updated at end of each working session |
