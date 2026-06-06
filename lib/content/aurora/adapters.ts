@@ -129,6 +129,13 @@ const PRIMARY_ABILITIES_BY_CLASS_NAME: Record<string, AbilityKey[]> = {
 
 // ─── Trait name derivation ────────────────────────────────────────────────────
 
+// Aurora IDs encode apostrophes by omitting them (PALADINS_SMITE → "Paladins Smite").
+// These corrections restore the canonical display name.
+const APOSTROPHE_CORRECTIONS: Record<string, string> = {
+  "Paladins Smite": "Paladin's Smite",
+  "Monks Focus":    "Monk's Focus",
+};
+
 /**
  * Derives a human-readable name from an Aurora element ID for racial traits.
  * e.g. "ID_RACIAL_TRAIT_TIEFLING_HELLISH_RESISTANCE" + raceName="Tiefling"
@@ -146,7 +153,8 @@ function deriveTraitName(id: string, raceName: string): string {
   // Strip leading race name (e.g. TIEFLING_, HALFELF_, DRAGONBORN_)
   const racePrefix = raceName.toUpperCase().replace(/[^A-Z]/g, "") + "_";
   if (s.startsWith(racePrefix)) s = s.slice(racePrefix.length);
-  return s.split("_").map((w) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ");
+  const derived = s.split("_").map((w) => w.charAt(0) + w.slice(1).toLowerCase()).join(" ");
+  return APOSTROPHE_CORRECTIONS[derived] ?? derived;
 }
 
 // ─── Grant extraction helpers ─────────────────────────────────────────────────

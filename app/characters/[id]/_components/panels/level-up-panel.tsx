@@ -110,13 +110,26 @@ export function LevelUpPanel({ open, onClose, srdClass, importedFightingStyles =
     return Object.values(asi).reduce((sum, v) => sum + (v ?? 0), 0);
   }
 
+  // Scores after applying all earlier draft ASI allocations (levels strictly before lvl).
+  function effectiveScoresAtLevel(lvl: number): AbilityScores {
+    const result: AbilityScores = { ...abilityScores };
+    for (const prevLvl of newLevels) {
+      if (prevLvl >= lvl) break;
+      const prevAsi = asiByNewLevel[prevLvl] ?? {};
+      for (const key of ABILITY_KEYS) {
+        result[key] += prevAsi[key] ?? 0;
+      }
+    }
+    return result;
+  }
+
   function adjustAsi(lvl: number, ability: AbilityKey, delta: number) {
     const current = getAsiForLevel(lvl);
     const currentVal = current[ability] ?? 0;
     const newVal = Math.max(0, currentVal + delta);
     const newAsi = { ...current, [ability]: newVal };
     if (totalAsiPoints(newAsi) > 2) return;
-    if ((abilityScores[ability] + newVal) > 20) return;
+    if ((effectiveScoresAtLevel(lvl)[ability] + newVal) > 20) return;
     setAsiByNewLevel((prev) => ({ ...prev, [lvl]: newAsi }));
   }
 
@@ -267,7 +280,7 @@ export function LevelUpPanel({ open, onClose, srdClass, importedFightingStyles =
                 hasAsi={asiLevelSet.has(lvl)}
                 asi={getAsiForLevel(lvl)}
                 asiPoints={totalAsiPoints(getAsiForLevel(lvl))}
-                abilityScores={abilityScores}
+                abilityScores={effectiveScoresAtLevel(lvl)}
                 onAsiAdjust={(ability, delta) => adjustAsi(lvl, ability, delta)}
                 isSubclassLevel={lvl === subclassUnlockLevel && needsSubclassPick}
                 availableSubclasses={availableSubclasses}
