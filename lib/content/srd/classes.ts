@@ -309,6 +309,13 @@ export const SRD_CLASSES: SrdClass[] = [
       "Improved Divine Smite":  "Your melee weapon attacks deal an additional 1d8 radiant damage on every hit, stacking with any Divine Smite you use.",
       "Cleansing Touch":        "As an action, end one spell affecting a willing creature you touch. Usable a number of times equal to your Charisma modifier per long rest.",
       "Aura Improvements":      "Your Aura of Protection and Aura of Courage now extend to 30 feet instead of 10.",
+      "Paladin's Smite":        "When you hit with a melee weapon or Unarmed Strike, you can expend a spell slot to deal extra Radiant damage: 2d8 for a 1st-level slot, plus 1d8 per slot level above 1st (maximum 5d8). The damage increases by 1d8 against Undead or Fiends. On a critical hit, one of the dice is doubled.",
+      "Faithful Steed":         "You can cast Find Steed without expending a spell slot. The steed gains immunity to the Charmed and Frightened conditions.",
+      "Abjure Foes":            "As a Magic action, expend one use of Channel Divinity to awe creatures you can see within 60 feet. Each target must succeed on a Wisdom saving throw or be Frightened of you for 1 minute or until it takes any damage.",
+      "Radiant Strikes":        "Your melee weapon attacks and Unarmed Strikes deal an extra 1d8 Radiant damage on each hit.",
+      "Restoring Touch":        "When you use Lay on Hands on a creature, you can also remove one of the following conditions from it: Blinded, Charmed, Deafened, Frightened, Paralyzed, or Stunned.",
+      "Aura Expansion":         "Your Aura of Protection now extends 30 feet from you instead of 10 feet.",
+      "Epic Boon":              "You gain an Epic Boon feat, or another feat of your choice for which you qualify. Boon of Truesight is recommended.",
     },
   },
   {
