@@ -345,6 +345,14 @@ export const SRD_CLASSES: SrdClass[] = [
       18: ["Feral Senses"],
       20: ["Foe Slayer"],
     },
+    featureDescriptions: {
+      "Ranger Archetype Feature": "Your Ranger Archetype grants you an additional feature at this level.",
+      "Favored Enemy (2)": "Choose one additional type of favored enemy and one additional language associated with your favored enemies.",
+      "Favored Enemy (3)": "Choose one additional type of favored enemy and one additional language associated with your favored enemies.",
+      "Natural Explorer (2)": "Choose one additional favored terrain type.",
+      "Natural Explorer (3)": "Choose one additional favored terrain type.",
+      "Foe Slayer": "At 20th level you become an unparalleled hunter of your enemies. Once on each of your turns, you can add your Wisdom modifier to the attack roll or the damage roll of an attack you make against one of your favored enemies.",
+    },
   },
   {
     id: "ID_CLASS_ROGUE",
@@ -375,6 +383,12 @@ export const SRD_CLASSES: SrdClass[] = [
       18: ["Elusive"],
       20: ["Stroke of Luck"],
     },
+    featureDescriptions: {
+      "Roguish Archetype Feature": "Your Roguish Archetype grants you an additional feature at this level.",
+      "Expertise (2)": "Choose two more of your skill proficiencies or your proficiency with thieves' tools. Your proficiency bonus is doubled for any ability check you make using each of the chosen proficiencies.",
+      "Slippery Mind": "You have acquired greater mental strength. You gain proficiency in Wisdom saving throws.",
+      "Stroke of Luck": "You have an uncanny knack for succeeding when you need to. If your attack misses a target within range, you can turn the miss into a hit. Alternatively, if you fail an ability check, you can treat the d20 roll as a 20. Once you use this feature, you can't use it again until you finish a short or long rest.",
+    },
   },
   {
     id: "ID_CLASS_SORCERER",
@@ -398,6 +412,11 @@ export const SRD_CLASSES: SrdClass[] = [
       17: ["Metamagic (3)"],
       18: ["Sorcerous Origin Feature"],
       20: ["Sorcerous Restoration"],
+    },
+    featureDescriptions: {
+      "Sorcerous Origin Feature": "Your Sorcerous Origin grants you an additional feature at this level.",
+      "Metamagic (2)": "You learn one additional Metamagic option of your choice.",
+      "Metamagic (3)": "You learn one additional Metamagic option of your choice.",
     },
   },
   {
@@ -425,6 +444,13 @@ export const SRD_CLASSES: SrdClass[] = [
       17: ["Mystic Arcanum (9th level)"],
       20: ["Eldritch Master"],
     },
+    featureDescriptions: {
+      "Otherworldly Patron Feature": "Your Otherworldly Patron grants you an additional feature at this level.",
+      "Mystic Arcanum (6th level)": "Your patron bestows upon you a magical secret called an arcanum. Choose one 6th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+      "Mystic Arcanum (7th level)": "Your patron bestows upon you a magical secret called an arcanum. Choose one 7th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+      "Mystic Arcanum (8th level)": "Your patron bestows upon you a magical secret called an arcanum. Choose one 8th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+      "Mystic Arcanum (9th level)": "Your patron bestows upon you a magical secret called an arcanum. Choose one 9th-level spell from the warlock spell list as this arcanum. You can cast your arcanum spell once without expending a spell slot. You must finish a long rest before you can do so again.",
+    },
   },
   {
     id: "ID_CLASS_WIZARD",
@@ -446,6 +472,9 @@ export const SRD_CLASSES: SrdClass[] = [
       14: ["Arcane Tradition Feature"],
       18: ["Spell Mastery"],
       20: ["Signature Spells"],
+    },
+    featureDescriptions: {
+      "Arcane Tradition Feature": "Your Arcane Tradition grants you an additional feature at this level.",
     },
   },
 ];

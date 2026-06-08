@@ -1,0 +1,2947 @@
+[
+  {
+    "id": "ID_DMG_SUBRACE_ELADRIN",
+    "name": "Eladrin",
+    "source": "Dungeon Master’s Guide",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_ELADRIN",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_DMG_RACIAL_TRAIT_FEY_STEP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Eladrin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_HILL_DWARF",
+    "name": "Hill Dwarf",
+    "source": "Player’s Handbook",
+    "parentRace": "Dwarf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_DWARVEN_TOUGHNESS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Hill Dwarf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!(ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_MOUNTAIN_DWARF",
+    "name": "Mountain Dwarf",
+    "source": "Player’s Handbook",
+    "parentRace": "Dwarf",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_DWARVEN_ARMOR_TRAINING",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Mountain Dwarf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_HIGH_ELF",
+    "name": "High Elf",
+    "source": "Player’s Handbook",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_HIGH_ELF",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_CANTRIP",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_EXTRA_LANGUAGE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (High Elf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_WOOD_ELF",
+    "name": "Wood Elf",
+    "source": "Player’s Handbook",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_WOOD_ELF",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_FLEET_OF_FOOT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_MASK_OF_THE_WILD",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Wood Elf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_DARK_ELF",
+    "name": "Dark Elf",
+    "source": "Player’s Handbook",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_VISION_SUPERIORDARKVISION",
+        "name": "Superior Darkvision",
+        "type": "Vision"
+      },
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_DARK_ELF",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_SUNLIGHT_SENSITIVITY",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_DROW_MAGIC",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_DROW_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Dark Elf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_FOREST_GNOME",
+    "name": "Forest Gnome",
+    "source": "Player’s Handbook",
+    "parentRace": "Gnome",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_NATURAL_ILLUSIONIST",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_SPEAK_WITH_SMALL_BEASTS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Forest Gnome)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_ROCK_GNOME",
+    "name": "Rock Gnome",
+    "source": "Player’s Handbook",
+    "parentRace": "Gnome",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_ARTIFICERS_LORE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_TINKER",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Rock Gnome)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_LIGHTFOOT_HALFLING",
+    "name": "Lightfoot Halfling",
+    "source": "Player’s Handbook",
+    "parentRace": "Halfling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_NATURALLY_STEALTHY",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Lightfoot Halfling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SUB_RACE_STOUT_HALFLING",
+    "name": "Stout Halfling",
+    "source": "Player’s Handbook",
+    "parentRace": "Halfling",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_STOUT_RESILIENCE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Stout Halfling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_POTA_SUBRACE_GENASI_AIR",
+    "name": "Air Genasi",
+    "source": "Princes of the Apocalypse",
+    "parentRace": "Genasi",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_AIR_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_AIR_UNENDING_BREATH",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_AIR_MINGLE_WITH_THE_WIND",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Air Genasi)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_POTA_SUBRACE_GENASI_EARTH",
+    "name": "Earth Genasi",
+    "source": "Princes of the Apocalypse",
+    "parentRace": "Genasi",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_EARTH_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_EARTH_EARTH_WALK",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_EARTH_MERGE_WITH_STONE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Earth Genasi)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_POTA_SUBRACE_GENASI_FIRE",
+    "name": "Fire Genasi",
+    "source": "Princes of the Apocalypse",
+    "parentRace": "Genasi",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_VISION_DARKVISION",
+        "name": "Darkvision",
+        "type": "Vision"
+      },
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_FIRE_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_FIRE_FIRE_RESISTANCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_FIRE_REACH_TO_THE_BLAZE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Fire Genasi)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_POTA_SUBRACE_GENASI_WATER",
+    "name": "Water Genasi",
+    "source": "Princes of the Apocalypse",
+    "parentRace": "Genasi",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_WATER_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_WATER_ACID_RESISTANCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_WATER_AMPHIBIOUS",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_WATER_SWIM",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_POTA_RACIAL_TRAIT_GENASI_WATER_CALL_TO_THE_WAVE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Water Genasi)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SCAG_SUBRACE_GRAY_DWARF",
+    "name": "Duergar",
+    "source": "Sword Coast Adventurer’s Guide",
+    "parentRace": "Dwarf",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_VISION_SUPERIORDARKVISION",
+        "name": "Superior Darkvision",
+        "type": "Vision"
+      },
+      {
+        "id": "ID_LANGUAGE_UNDERCOMMON",
+        "name": "Undercommon",
+        "type": "Language",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      },
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_DUERGAR",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_DUERGAR_RESILIENCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_DUERGAR_MAGIC",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_SUNLIGHT_SENSITIVITY",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Duergar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Customized Language",
+        "type": "Language",
+        "number": 1,
+        "supports": "Custom Race Language",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_SCAG_SUB_RACE_GHOSTWISE_HALFLING",
+    "name": "Ghostwise Halfling",
+    "source": "Sword Coast Adventurer’s Guide",
+    "parentRace": "Halfling",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_SCAG_RACIAL_TRAIT_SILENT_SPEECH",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Ghostwise Halfling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_SCAG_SUBRACE_SVIRFNEBLIN",
+    "name": "Svirfneblin",
+    "source": "Sword Coast Adventurer’s Guide",
+    "parentRace": "Gnome",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_VISION_SUPERIORDARKVISION",
+        "name": "Superior Darkvision",
+        "type": "Vision"
+      },
+      {
+        "id": "ID_SCAG_RACIAL_TRAIT_SVIRFNEBLIN_STONE_CAMOUFLAGE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_LANGUAGE_UNDERCOMMON",
+        "name": "Undercommon",
+        "type": "Language",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      },
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_DEEP_GNOME",
+        "type": "Grants"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Svirfneblin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Customized Language",
+        "type": "Language",
+        "number": 1,
+        "supports": "Custom Race Language",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_SCAG_SUBRACE_TIEFLING_FERAL",
+    "name": "Feral Tiefling",
+    "source": "Sword Coast Adventurer’s Guide",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Feral Tiefling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Feral Tiefling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Feral Trait",
+        "type": "Racial Trait",
+        "number": 1,
+        "supports": "Feral Tiefling, Feral Trait"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_VGTM_SUB_RACE_PROTECTOR_AASIMAR",
+    "name": "Protector Aasimar",
+    "source": "Volo’s Guide to Monsters",
+    "parentRace": "Aasimar",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_AASIMAR_RADIANT_SOUL",
+        "type": "Racial Trait",
+        "level": 3
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Protector Aasimar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_VGTM_SUB_RACE_Scourge_AASIMAR",
+    "name": "Scourge Aasimar",
+    "source": "Volo’s Guide to Monsters",
+    "parentRace": "Aasimar",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_AASIMAR_RADIANT_CONSUMPTION",
+        "type": "Racial Trait",
+        "level": 3
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Scourge Aasimar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_VGTM_SUB_RACE_FALLEN_AASIMAR",
+    "name": "Fallen Aasimar",
+    "source": "Volo’s Guide to Monsters",
+    "parentRace": "Aasimar",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_AASIMAR_NECROTIC_SHROUD",
+        "type": "Racial Trait",
+        "level": 3
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Fallen Aasimar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUB_RACE_GITHYANKI",
+    "name": "Githyanki",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Gith",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_GITHYANKI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_GITHYANKI_DECADENT_MASTERY",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_GITHYANKI_MARTIAL_PRODIGY",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_GITHYANKI_GITHYANKI_PSIONICS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Githyanki)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUB_RACE_GITHZERAI",
+    "name": "Githzerai",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Gith",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_GITHZERAI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_GITHZERAI_MENTAL_DISCIPLINE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_GITHZERAI_GITHZERAI_PSIONICS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Githzerai)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_ELADRIN",
+    "name": "Eladrin",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_ELADRIN",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_SUBRACE_ELADRIN_FEYSTEP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Eladrin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Eladrin’s Season",
+        "type": "Racial Trait",
+        "number": 1,
+        "supports": "Eladrin Season"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_SEA_ELF",
+    "name": "Sea Elf",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_SEA_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_SEA_ELF_CHILD_OF_THE_SEA",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_SEA_ELF_FRIEND_OF_THE_SEA",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_MM_LANGUAGE_AQUAN",
+        "type": "Language",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      },
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_SEA_ELF",
+        "type": "Grants"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Sea Elf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Customized Language",
+        "type": "Language",
+        "number": 1,
+        "supports": "Custom Race Language||Sea Elf Language",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_SHADAR_KAI",
+    "name": "Shadar-Kai",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_SHADAR_KAI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_SHADAR_KAI_NECROTIC_RESISTANCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_SHADAR_KAI_BLESSING_OF_THE_RAVEN_QUEEN",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Shadar-Kai)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_ASMODEUS",
+    "name": "Tiefling (Asmodeus)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [],
+    "grants": [],
+    "choices": []
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_BAALZEBUB",
+    "name": "Tiefling (Baalzebub)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_BAALZEBUB_LEGACY_OF_MALADOMINI",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Baalzebub)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Baalzebub)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_DISPATER",
+    "name": "Tiefling (Dispater)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_DISPATER_LEGACY_OF_DIS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Dispater)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Dispater)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_FIERNA",
+    "name": "Tiefling (Fierna)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_FIERNA_LEGACY_OF_PHLEGETHOS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Fierna)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Fierna)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_GLASYA",
+    "name": "Tiefling (Glasya)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_GLASYA_LEGACY_OF_MALBOLGE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Glasya)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Glasya)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_LEVISTUS",
+    "name": "Tiefling (Levistus)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_LEVISTUS_LEGACY_OF_STYGIA",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Levistus)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Levistus)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_MAMMON",
+    "name": "Tiefling (Mammon)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_MAMMON_LEGACY_OF_MINAUROS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Mammon)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mammon)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_MEPHISTOPHELES",
+    "name": "Tiefling (Mephistopheles)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_MEPHISTOPHELES_LEGACY_OF_CANIA",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Mephistopheles)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mephistopheles)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MTOF_SUBRACE_TIEFLING_ZARIEL",
+    "name": "Tiefling (Zariel)",
+    "source": "Mordenkainen’s Tome of Foes",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MTOF_RACIAL_TRAIT_ZARIEL_LEGACY_OF_AVERNUS",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Zariel)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Zariel)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_SHIFTER_BEASTHIDE",
+    "name": "Beasthide",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Shifter",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_BEASTHIDE_NATURAL_ATHLETE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_BEASTHIDE_SHIFTING_FEATURE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Beasthide)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Beasthide)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_SHIFTER_LONGTOOTH",
+    "name": "Longtooth",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Shifter",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_LONGTOOTH_FIERCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_LONGTOOTH_SHIFTING_FEATURE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Longtooth)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Longtooth)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_SHIFTER_SWIFTSTRIDE",
+    "name": "Swiftstride",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Shifter",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_SWIFTSTRIDE_GRACEFUL",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_SWIFTSTRIDE_SHIFTING_FEATURE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Swiftstride)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Swiftstride)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_SHIFTER_WILDHUNT",
+    "name": "Wildhunt",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Shifter",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_WILDHUNT_NATURAL_TRACKER",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_WILDHUNT_SHIFTING_FEATURE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Wildhunt)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Wildhunt)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_MARK_OF_HEALING",
+    "name": "Mark of Healing",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Halfling",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_DRAGONMARK_MARK_OF_HEALING",
+        "type": "Dragonmark"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_HEALING_MEDICAL_INTUITION",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_HEALING_HEALING_TOUCH",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_HEALING_SPELLS_OF_THE_MARK",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mark of Healing)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_MARK_OF_HOSPITALITY",
+    "name": "Mark of Hospitality",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Halfling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_DRAGONMARK_MARK_OF_HOSPITALITY",
+        "type": "Dragonmark"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_HOSPITALITY_EVER_HOSPITABLE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_HOSPITALITY_INNKEEPERS_MAGIC",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_HOSPITALITY_SPELLS_OF_THE_MARK",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mark of Hospitality)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_MARK_OF_SCRIBING",
+    "name": "Mark of Scribing",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Gnome",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_DRAGONMARK_MARK_OF_SCRIBING",
+        "type": "Dragonmark"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_SCRIBING_GIFTED_SCRIBE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_SCRIBING_SCRIBES_INSIGHT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_SCRIBING_SPELLS_OF_THE_MARK",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mark of Scribing)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_MARK_OF_SHADOW",
+    "name": "Mark of Shadow",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_DRAGONMARK_MARK_OF_SHADOW",
+        "type": "Dragonmark"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_SHADOW_CUNNING_INTUITION",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_SHADOW_SHAPE_SHADOWS",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_SHADOW_SPELLS_OF_THE_MARK",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mark of Shadow)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_ERLW_SUB_RACE_MARK_OF_WARDING",
+    "name": "Mark of Warding",
+    "source": "Eberron: Rising from the Last War",
+    "parentRace": "Dwarf",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_ERLW_DRAGONMARK_MARK_OF_WARDING",
+        "type": "Dragonmark"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_WARDING_WARDERS_INTUITION",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_WARDING_WARDS_AND_SEALS",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_ERLW_RACIAL_TRAIT_MARK_OF_WARDING_SPELLS_OF_THE_MARK",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mark of Finding)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_EGTW_SUB_RACE_PALLID_ELF",
+    "name": "Pallid Elf",
+    "source": "Explorer’s Guide to Wildemount",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_EGTW_RACIAL_TRAIT_PALLID_INCISIVE_SENSE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_EGTW_RACIAL_TRAIT_PALLID_BLESSING_OF_THE_MOON_WEAVER",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Pallid Elf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_EGTW_SUB_RACE_LOTUSDEN_HALFLING",
+    "name": "Lotusden Halfling",
+    "source": "Explorer’s Guide to Wildemount",
+    "parentRace": "Halfling",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_EGTW_RACIAL_TRAIT_LOTUSDEN_CHILD_OF_THE_WOOD",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_EGTW_RACIAL_TRAIT_LOTUSDEN_TIMBERWALK",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Lotusden Halfling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_MOTM_SUBRACE_AIR_GENASI",
+    "name": "Air Genasi",
+    "source": "Monsters of the Multiverse",
+    "parentRace": "MOTM Genasi",
+    "statModifiers": [
+      {
+        "stat": "innate speed",
+        "bonus": "base",
+        "value": 35
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_AIR_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_AIR_GENASI_UNENDING_BREATH",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_AIR_GENASI_LIGHTNING_RESISTANCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_AIR_GENASI_MINGLE_WITH_THE_WIND",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": []
+  },
+  {
+    "id": "ID_WOTC_MOTM_SUBRACE_EARTH_GENASI",
+    "name": "Earth Genasi",
+    "source": "Monsters of the Multiverse",
+    "parentRace": "MOTM Genasi",
+    "statModifiers": [],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_EARTH_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_EARTH_GENASI_EARTH_WALK",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_EARTH_GENASI_MERGE_WITH_STONE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": []
+  },
+  {
+    "id": "ID_WOTC_MOTM_SUBRACE_FIRE_GENASI",
+    "name": "Fire Genasi",
+    "source": "Monsters of the Multiverse",
+    "parentRace": "MOTM Genasi",
+    "statModifiers": [],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_FIRE_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_FIRE_GENASI_FIRE_RESISTANCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_FIRE_GENASI_REACH_TO_THE_BLAZE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": []
+  },
+  {
+    "id": "ID_WOTC_MOTM_SUBRACE_WATER_GENASI",
+    "name": "Water Genasi",
+    "source": "Monsters of the Multiverse",
+    "parentRace": "MOTM Genasi",
+    "statModifiers": [],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANT_RACE_WATER_GENASI",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_WATER_GENASI_ACID_RESISTANCE",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_WATER_GENASI_AMPHIBIOUS",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_MOTM_RACIAL_TRAIT_WATER_GENASI_CALL_TO_THE_WAVE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": []
+  },
+  {
+    "id": "ID_WOTC_UA_SUBRACE_BEASTHIDE",
+    "name": "Beasthide Shifter",
+    "source": "Unearthed Arcana: Eberron",
+    "parentRace": "UA Shifter",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Beasthide)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA_SUBRACE_Cliffwalk",
+    "name": "Cliffwalk Shifter",
+    "source": "Unearthed Arcana: Eberron",
+    "parentRace": "UA Shifter",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Cliffwalk)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA_SUBRACE_Longstride",
+    "name": "Longstride Shifter",
+    "source": "Unearthed Arcana: Eberron",
+    "parentRace": "UA Shifter",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Longstride)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA_SUBRACE_Longtooth",
+    "name": "Longtooth Shifter",
+    "source": "Unearthed Arcana: Eberron",
+    "parentRace": "UA Shifter",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Longtooth)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA_SUBRACE_Razorclaw",
+    "name": "Razorclaw Shifter",
+    "source": "Unearthed Arcana: Eberron",
+    "parentRace": "UA Shifter",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Razorclaw)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA_SUBRACE_Wildhunt",
+    "name": "Wildhunt Shifter",
+    "source": "Unearthed Arcana: Eberron",
+    "parentRace": "UA Shifter",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Wildhunt)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA20151207_SUBRACE_TIEFLING_ABYSSAL",
+    "name": "Abyssal Tiefling",
+    "source": "Unearthed Arcana: That Old Black Magic",
+    "parentRace": "Tiefling",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "constitution",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_INTERNAL_GRANTS_TIEFLING_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_INTERNAL_LANGUAGE_REPLACEMENT_TIEFLING_INFERNAL",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_INTERNAL_RACIAL_TRAIT_REPLACEMENT_TIEFLING_HELLISH_RESISTANCE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_LANGUAGE_ABYSSAL",
+        "name": "Abyssal",
+        "type": "Language",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      },
+      {
+        "id": "ID_WOTC_UA20151207_RACIAL_TRAIT_ABYSSAL_ABYSSAL_ARCANA",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_UA20151207_RACIAL_TRAIT_ABYSSAL_ABYSSAL_FORTITUDE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Abyssal Tiefling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Abyssal Tiefling)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA20171113_SUB_RACE_AVARIEL",
+    "name": "Avariel",
+    "source": "Unearthed Arcana: Elf Subraces",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "innate speed:fly",
+        "bonus": "base",
+        "value": 30
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_MM_LANGUAGE_AURAN",
+        "type": "Language",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Customized Language",
+        "type": "Language",
+        "number": 1,
+        "supports": "Custom Race Language||Avariel Language",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_UA20171113_SUB_RACE_GRUGACH",
+    "name": "Grugach",
+    "source": "Unearthed Arcana: Elf Subraces",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_LANGUAGE_SYLVAN",
+        "name": "Sylvan",
+        "type": "Language",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Grugach)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Customized Language",
+        "type": "Language",
+        "number": 1,
+        "supports": "Custom Race Language",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_LANGUAGE"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSA_AVEN_SUBRACE_IBIS",
+    "name": "Ibis-Headed Aven",
+    "source": "Plane Shift: Amonkhet",
+    "parentRace": "Aven Subrace",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSA_RACIAL_TRAIT_AVEN_KEFNETS_BLESSING",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Ibis-Headed Aven)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSA_AVEN_SUBRACE_HAWK",
+    "name": "Hawk-Headed Aven",
+    "source": "Plane Shift: Amonkhet",
+    "parentRace": "Aven Subrace",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSA_RACIAL_TRAIT_AVEN_HAWKEYED",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Hawk-Headed Aven)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSI_CREED_GREEN",
+    "name": "Merfolk (Green)",
+    "source": "Plane Shift: Ixalan",
+    "parentRace": "Merfolk Creed",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_GREEN_CREED_MASK_OF_THE_WILD",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_GREEN_CREED_CANTRIP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Merfolk (Green))",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSI_CREED_BLUE_CREED",
+    "name": "Merfolk (Blue)",
+    "source": "Plane Shift: Ixalan",
+    "parentRace": "Merfolk Creed",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_BLUE_CREED_LORE_OF_THE_WATERS",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_BLUE_CREED_CANTRIP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Merfolk (Blue))",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_KALADESH_DWARF",
+    "name": "Kaladesh Dwarf",
+    "source": "Plane Shift: Kaladesh",
+    "parentRace": "Dwarf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_DWARVEN_TOUGHNESS",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSK_RACIAL_TRAIT_ARTISANS_EXPERTISE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Kaladesh Dwarf)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_BISHTAHAR",
+    "name": "Bishtahar",
+    "source": "Plane Shift: Kaladesh",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_FLEET_OF_FOOT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_MASK_OF_THE_WILD",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Bishtahar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_TIRAHAR",
+    "name": "Tirahar",
+    "source": "Plane Shift: Kaladesh",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_FLEET_OF_FOOT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_MASK_OF_THE_WILD",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Tirahar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_VAHADAR",
+    "name": "Vahadar",
+    "source": "Plane Shift: Kaladesh",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSK_RACIAL_TRAIT_VAHADAR_CANTRIP",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_EXTRA_LANGUAGE",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Vahadar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSZ_CREED_EMERIA_WIND_CREED",
+    "name": "Merfolk (Emeria)",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Merfolk Creed",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_WIND_CREED_MANIPULATION",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_WIND_CREED_CANTRIP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Emeria)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSZ_CREED_ULA_WATER_CREED",
+    "name": "Merfolk (Ula)",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Merfolk Creed",
+    "statModifiers": [
+      {
+        "stat": "intelligence",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_WATER_CREED_NAVIGATION",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_WATER_CREED_CANTRIP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Ula)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSZ_CREED_COSI_CREED",
+    "name": "Merfolk (Cosi)",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Merfolk Creed",
+    "statModifiers": [
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_CREED_OF_THE_TRICKSTER",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_TRICKSTER_CREED_CANTRIP",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Cosi)",
+        "type": "Ability Score Improvement",
+        "number": 2,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSI_VAMPIRE_SUBRACE_ZENDIKAR",
+    "name": "Zendikar Vampire",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Vampire Subrace",
+    "statModifiers": [
+      {
+        "stat": "Intelligence",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_VAMPIRE_NULL_TRANSFORMATION",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Zendikar)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSI_VAMPIRE_SUBRACE_IXALAN",
+    "name": "Ixalan Vampire",
+    "source": "Plane Shift: Ixalan",
+    "parentRace": "Vampire Subrace",
+    "statModifiers": [
+      {
+        "stat": "Wisdom",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_VAMPIRE_FEAST_OF_BLOOD",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Ixalan)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSZ_SUBRACE_GROTAG",
+    "name": "Grotag Tribe Goblin",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Plane Shift Goblin Subrace",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_GOBLIN_GRIT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_GOBLIN_GROTAG_TAMER",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Grotag Tribe Goblin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSZ_SUBRACE_LAVASTEP",
+    "name": "Lavastep Tribe Goblin",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Plane Shift Goblin Subrace",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_GOBLIN_GRIT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_GOBLIN_LAVASTEP_GRIT",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Lavastep Tribe Goblin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSZ_SUBRACE_TUKTUK",
+    "name": "Tuktuk Tribe Goblin",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Plane Shift Goblin Subrace",
+    "statModifiers": [
+      {
+        "stat": "constitution",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_GOBLIN_GRIT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSZ_RACIAL_TRAIT_GOBLIN_TUKTUK_CUNNING",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Tuktuk Tribe Goblin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSI_SUBRACE_IXALAN_GOBLIN",
+    "name": "Ixalan Goblin",
+    "source": "Plane Shift: Ixalan",
+    "parentRace": "Plane Shift Goblin Subrace",
+    "statModifiers": [
+      {
+        "stat": "dexterity",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_WOTC_PSI_RACIAL_TRAIT_GOBLIN_AGILE_CLIMBER",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Ixalan Goblin)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_TAJURU_ELF",
+    "name": "Tajuru Elf",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "charisma",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_UA_PSK_GRANTS_ELF_SUBRACE",
+        "type": "Grants"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Tajuru)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Tajuru)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Proficiency (Tajuru Elf)",
+        "type": "Proficiency",
+        "number": 2,
+        "supports": "Tool||Skill",
+        "requirements": "!ID_WOTC_TCOE_OPTION_CUSTOMIZED_PROFICIENCY"
+      },
+      {
+        "kind": "element",
+        "name": "Skill, Simple Weapon, or Tool, Martial Training",
+        "type": "Proficiency",
+        "number": 2,
+        "supports": "Simple||Tool||Skill",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_PROFICIENCY"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_JORAGA_ELF",
+    "name": "Joraga Elf",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "dexterity",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_UA_PSK_GRANTS_ELF_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_FLEET_OF_FOOT",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_MASK_OF_THE_WILD",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Joraga)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Joraga)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  },
+  {
+    "id": "ID_WOTC_PSK_SUBRACE_MUL_DAYA_ELF",
+    "name": "Mul Daya Elf",
+    "source": "Plane Shift: Zendikar",
+    "parentRace": "Elf",
+    "statModifiers": [
+      {
+        "stat": "wisdom",
+        "value": 2,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      },
+      {
+        "stat": "strength",
+        "value": 1,
+        "requirements": "!(ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI||ID_INTERNAL_GRANTS_BACKGROUND_ASI)"
+      }
+    ],
+    "grants": [
+      {
+        "id": "ID_UA_PSK_GRANTS_ELF_SUBRACE",
+        "type": "Grants"
+      },
+      {
+        "id": "ID_VISION_SUPERIORDARKVISION",
+        "name": "Superior Darkvision",
+        "type": "Vision"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_ELF_WEAPON_TRAINING",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_RACIAL_TRAIT_SUNLIGHT_SENSITIVITY",
+        "type": "Racial Trait"
+      },
+      {
+        "id": "ID_WOTC_PSK_RACIAL_TRAIT_MUL_DAYA_MAGIC",
+        "type": "Racial Trait"
+      }
+    ],
+    "choices": [
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +2 (Mul Daya)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 2",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      },
+      {
+        "kind": "element",
+        "name": "Custom Ability Score Improvement +1 (Mul Daya)",
+        "type": "Ability Score Improvement",
+        "number": 1,
+        "supports": "Custom Ability Score Increase 1",
+        "requirements": "ID_WOTC_TCOE_OPTION_CUSTOMIZED_ASI,!ID_INTERNAL_GRANTS_BACKGROUND_ASI"
+      }
+    ]
+  }
+]

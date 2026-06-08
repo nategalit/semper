@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { toggleInspiration } from "@/app/actions/characters";
-import { signedMod } from "@/lib/character/calc";
+import { signedMod, toughHpBonus } from "@/lib/character/calc";
 import type { Character } from "@/lib/types/character";
 import type { DerivedStats } from "@/lib/character/calc";
 import { HpDialog } from "./panels/hp-dialog";
@@ -20,6 +20,7 @@ export function Header({ character, derived, onLevelTap }: Props) {
   const [conditionsOpen, setConditionsOpen] = useState(false);
   const { data } = character;
   const conditions = data.conditions ?? [];
+  const effectiveMaxHp = data.maxHp + toughHpBonus(character);
 
   function handleInspiration() {
     startInspireTransition(async () => {
@@ -77,10 +78,10 @@ export function Header({ character, derived, onLevelTap }: Props) {
             onClick={() => setHpOpen(true)}
             className="flex flex-col items-center min-w-[44px] min-h-[44px] justify-center rounded-lg px-2 -mx-2
               hover:bg-stone-800 active:bg-stone-700 transition-colors"
-            aria-label={`HP: ${data.currentHp} of ${data.maxHp}. Tap to adjust.`}
+            aria-label={`HP: ${data.currentHp} of ${effectiveMaxHp}. Tap to adjust.`}
           >
             <span className="text-base font-bold leading-tight text-amber-400 tabular-nums">
-              {data.currentHp}/{data.maxHp}
+              {data.currentHp}/{effectiveMaxHp}
               {data.tempHp > 0 && (
                 <span className="text-sky-400 ml-1">+{data.tempHp}</span>
               )}

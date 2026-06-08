@@ -1,0 +1,903 @@
+[
+  {
+    "classId": "ID_CLASS_BARBARIAN",
+    "className": "Barbarian",
+    "featuresByLevel": {
+      "1": [
+        "Rage",
+        "Unarmored Defense"
+      ],
+      "2": [
+        "Reckless Attack",
+        "Danger Sense"
+      ],
+      "3": [
+        "Primal Path"
+      ],
+      "5": [
+        "Extra Attack",
+        "Fast Movement"
+      ],
+      "6": [
+        "Path Feature"
+      ],
+      "7": [
+        "Feral Instinct"
+      ],
+      "9": [
+        "Brutal Critical"
+      ],
+      "10": [
+        "Path Feature"
+      ],
+      "11": [
+        "Relentless Rage"
+      ],
+      "13": [
+        "Brutal Critical (2)"
+      ],
+      "14": [
+        "Path Feature"
+      ],
+      "15": [
+        "Persistent Rage"
+      ],
+      "17": [
+        "Brutal Critical (3)"
+      ],
+      "18": [
+        "Indomitable Might"
+      ],
+      "20": [
+        "Primal Champion"
+      ]
+    },
+    "featureDescriptions": {
+      "Rage": "As a bonus action, rage for up to 1 minute: advantage on Strength checks and saves, bonus damage on Strength melee attacks (scales with level), and resistance to bludgeoning, piercing, and slashing damage. Uses per long rest increase with level.",
+      "Unarmored Defense": "While not wearing armor, your AC equals 10 + your Dexterity modifier + your Constitution modifier. You may still use a shield.",
+      "Reckless Attack": "When making your first attack on your turn, you can choose to attack recklessly: advantage on all Strength-based melee attack rolls this turn, but attack rolls against you also have advantage until your next turn.",
+      "Danger Sense": "You have advantage on Dexterity saving throws against effects you can see, such as traps and spells, while not blinded, deafened, or incapacitated.",
+      "Primal Path": "You choose a Primal Path, your subclass, that shapes the nature of your rage and grants features at levels 3, 6, 10, and 14.",
+      "Extra Attack": "You can attack twice instead of once whenever you take the Attack action on your turn.",
+      "Fast Movement": "Your speed increases by 10 feet while you aren't wearing heavy armor.",
+      "Path Feature": "Your Primal Path grants you an additional feature.",
+      "Feral Instinct": "You have advantage on Initiative rolls. If surprised, you can act normally on your first turn as long as you enter your rage before doing anything else.",
+      "Brutal Critical": "You roll one additional weapon damage die when determining extra damage for a critical hit with a melee attack.",
+      "Relentless Rage": "When you drop to 0 HP while raging, make a DC 10 Constitution saving throw. On a success, drop to 1 HP instead. The DC rises by 5 each use; resets on a long rest.",
+      "Brutal Critical (2)": "You roll two additional weapon damage dice on critical hits with melee attacks.",
+      "Persistent Rage": "Your rage ends early only if you fall unconscious or choose to end it — no longer from not attacking or taking damage.",
+      "Brutal Critical (3)": "You roll three additional weapon damage dice on critical hits with melee attacks.",
+      "Indomitable Might": "If your total for a Strength check is less than your Strength score, you can use your Strength score in place of the total.",
+      "Primal Champion": "Your Strength and Constitution scores each increase by 4, and their maximums each increase by 4."
+    },
+    "allFeatureNames": [
+      "Rage",
+      "Unarmored Defense",
+      "Reckless Attack",
+      "Danger Sense",
+      "Primal Path",
+      "Extra Attack",
+      "Fast Movement",
+      "Path Feature",
+      "Feral Instinct",
+      "Brutal Critical",
+      "Path Feature",
+      "Relentless Rage",
+      "Brutal Critical (2)",
+      "Path Feature",
+      "Persistent Rage",
+      "Brutal Critical (3)",
+      "Indomitable Might",
+      "Primal Champion"
+    ],
+    "describedCount": 16,
+    "totalCount": 18
+  },
+  {
+    "classId": "ID_CLASS_BARD",
+    "className": "Bard",
+    "featuresByLevel": {
+      "1": [
+        "Bardic Inspiration",
+        "Spellcasting"
+      ],
+      "2": [
+        "Jack of All Trades",
+        "Song of Rest"
+      ],
+      "3": [
+        "Bard College",
+        "Expertise"
+      ],
+      "5": [
+        "Font of Inspiration"
+      ],
+      "6": [
+        "Countercharm",
+        "College Feature"
+      ],
+      "9": [
+        "Song of Rest (d8)"
+      ],
+      "10": [
+        "Magical Secrets",
+        "Expertise (2)"
+      ],
+      "13": [
+        "Song of Rest (d10)"
+      ],
+      "14": [
+        "College Feature"
+      ],
+      "17": [
+        "Song of Rest (d12)"
+      ],
+      "18": [
+        "Magical Secrets (2)",
+        "College Feature"
+      ],
+      "20": [
+        "Superior Inspiration"
+      ]
+    },
+    "featureDescriptions": {
+      "Bardic Inspiration": "As a bonus action, grant a creature within 60 feet a Bardic Inspiration die (d6, scaling with level). They can add it to one ability check, attack roll, or saving throw within 10 minutes. Uses equal to your Charisma modifier per long rest.",
+      "Spellcasting": "You cast bard spells using Charisma as your spellcasting ability. You know a fixed number of spells from the bard list and can replace one known spell each time you gain a bard level.",
+      "Jack of All Trades": "You can add half your proficiency bonus (rounded down) to any ability check that doesn't already use your proficiency bonus.",
+      "Song of Rest": "During a short rest, you perform music or oration. Creatures who hear you regain an extra 1d6 HP when they spend Hit Dice at the end of that rest.",
+      "Bard College": "You delve into the traditions of a Bard College, your subclass, gaining proficiencies and features at levels 3, 6, and 14.",
+      "Expertise": "Choose two skill proficiencies. Your proficiency bonus is doubled for ability checks using those skills.",
+      "Font of Inspiration": "You now regain all your Bardic Inspiration uses on a short or long rest, instead of only on a long rest.",
+      "Countercharm": "As an action, begin a performance lasting until the end of your next turn. Friendly creatures within 30 feet have advantage on saving throws against being frightened or charmed.",
+      "College Feature": "Your Bard College grants you an additional feature.",
+      "Song of Rest (d8)": "Your Song of Rest die improves to a d8.",
+      "Magical Secrets": "Choose two spells from any class's spell list. They count as bard spells for you and are added to your spells known.",
+      "Expertise (2)": "Choose two more skill proficiencies to gain doubled proficiency bonus.",
+      "Song of Rest (d10)": "Your Song of Rest die improves to a d10.",
+      "Song of Rest (d12)": "Your Song of Rest die improves to a d12.",
+      "Magical Secrets (2)": "Choose two more spells from any class's spell list to add to your spells known.",
+      "Superior Inspiration": "When you roll initiative with no Bardic Inspiration uses remaining, you immediately regain one use."
+    },
+    "allFeatureNames": [
+      "Bardic Inspiration",
+      "Spellcasting",
+      "Jack of All Trades",
+      "Song of Rest",
+      "Bard College",
+      "Expertise",
+      "Font of Inspiration",
+      "Countercharm",
+      "College Feature",
+      "Song of Rest (d8)",
+      "Magical Secrets",
+      "Expertise (2)",
+      "Song of Rest (d10)",
+      "College Feature",
+      "Song of Rest (d12)",
+      "Magical Secrets (2)",
+      "College Feature",
+      "Superior Inspiration"
+    ],
+    "describedCount": 16,
+    "totalCount": 18
+  },
+  {
+    "classId": "ID_CLASS_CLERIC",
+    "className": "Cleric",
+    "featuresByLevel": {
+      "1": [
+        "Spellcasting",
+        "Divine Domain",
+        "Domain Spells"
+      ],
+      "2": [
+        "Channel Divinity",
+        "Domain Feature"
+      ],
+      "5": [
+        "Destroy Undead (CR 1/2)"
+      ],
+      "6": [
+        "Channel Divinity (2)",
+        "Domain Feature"
+      ],
+      "8": [
+        "Destroy Undead (CR 1)",
+        "Domain Feature"
+      ],
+      "10": [
+        "Divine Intervention"
+      ],
+      "11": [
+        "Destroy Undead (CR 2)"
+      ],
+      "14": [
+        "Destroy Undead (CR 3)"
+      ],
+      "17": [
+        "Destroy Undead (CR 4)",
+        "Domain Feature"
+      ],
+      "18": [
+        "Channel Divinity (3)"
+      ],
+      "20": [
+        "Divine Intervention Improvement"
+      ]
+    },
+    "featureDescriptions": {
+      "Spellcasting": "You cast cleric spells using Wisdom as your spellcasting ability. You prepare a number of spells equal to your Wisdom modifier + your cleric level, choosing from the full cleric spell list.",
+      "Divine Domain": "You choose a domain tied to your deity's portfolio, shaping your cleric with domain spells, Channel Divinity options, and additional features at higher levels.",
+      "Domain Spells": "Your domain grants a list of spells that are always prepared. These don't count against the number of spells you can prepare each day.",
+      "Channel Divinity": "You channel divine energy to power magical effects. All clerics can use Turn Undead; your domain grants additional options. One use per short or long rest.",
+      "Domain Feature": "Your Divine Domain grants you an additional feature.",
+      "Destroy Undead (CR 1/2)": "When an undead of CR 1/2 or lower fails its saving throw against your Turn Undead, it is instantly destroyed rather than just turned.",
+      "Channel Divinity (2)": "You can use Channel Divinity twice between short or long rests.",
+      "Destroy Undead (CR 1)": "Your Turn Undead now instantly destroys undead of CR 1 or lower on a failed save.",
+      "Divine Intervention": "As an action, implore your deity for aid. Roll d100; if the result ≤ your cleric level, your deity intervenes with an effect of their choosing. Once per long rest (seven days if successful).",
+      "Destroy Undead (CR 2)": "Your Turn Undead now instantly destroys undead of CR 2 or lower on a failed save.",
+      "Destroy Undead (CR 3)": "Your Turn Undead now instantly destroys undead of CR 3 or lower on a failed save.",
+      "Destroy Undead (CR 4)": "Your Turn Undead now instantly destroys undead of CR 4 or lower on a failed save.",
+      "Channel Divinity (3)": "You can use Channel Divinity three times between short or long rests.",
+      "Divine Intervention Improvement": "Your deity always answers when you use Divine Intervention — no roll required."
+    },
+    "allFeatureNames": [
+      "Spellcasting",
+      "Divine Domain",
+      "Domain Spells",
+      "Channel Divinity",
+      "Domain Feature",
+      "Destroy Undead (CR 1/2)",
+      "Channel Divinity (2)",
+      "Domain Feature",
+      "Destroy Undead (CR 1)",
+      "Domain Feature",
+      "Divine Intervention",
+      "Destroy Undead (CR 2)",
+      "Destroy Undead (CR 3)",
+      "Destroy Undead (CR 4)",
+      "Domain Feature",
+      "Channel Divinity (3)",
+      "Divine Intervention Improvement"
+    ],
+    "describedCount": 14,
+    "totalCount": 17
+  },
+  {
+    "classId": "ID_CLASS_DRUID",
+    "className": "Druid",
+    "featuresByLevel": {
+      "1": [
+        "Druidic",
+        "Spellcasting"
+      ],
+      "2": [
+        "Wild Shape",
+        "Druid Circle"
+      ],
+      "4": [
+        "Wild Shape Improvement"
+      ],
+      "6": [
+        "Circle Feature"
+      ],
+      "8": [
+        "Wild Shape Improvement (2)"
+      ],
+      "10": [
+        "Circle Feature"
+      ],
+      "14": [
+        "Circle Feature"
+      ],
+      "18": [
+        "Timeless Body",
+        "Beast Spells"
+      ],
+      "20": [
+        "Archdruid"
+      ]
+    },
+    "featureDescriptions": {
+      "Druidic": "You know the secret Druidic language. You can speak it and use it to leave hidden messages; non-druids automatically fail to notice them.",
+      "Spellcasting": "You cast druid spells using Wisdom as your spellcasting ability. You prepare a number of spells equal to your Wisdom modifier + your druid level from the full druid spell list.",
+      "Wild Shape": "As an action, magically transform into a beast you have seen. CR limit and allowed speeds increase with level. You retain mental stats and class features but gain the beast's physical stats. Two uses per short or long rest.",
+      "Druid Circle": "You align yourself with a circle of druids, your subclass, granting features at levels 2, 6, 10, and 14.",
+      "Wild Shape Improvement": "You can now transform into beasts of CR 1/2 or lower, including those with a swim speed.",
+      "Circle Feature": "Your Druid Circle grants you an additional feature.",
+      "Wild Shape Improvement (2)": "You can now transform into beasts of CR 1 or lower, including those with a fly speed.",
+      "Timeless Body": "Your druidic magic grants immunity to aging effects, and you age at one-tenth the normal rate.",
+      "Beast Spells": "While in Wild Shape form, you can cast druid spells that have no material components.",
+      "Archdruid": "You can use Wild Shape an unlimited number of times. You may also ignore verbal, somatic, and non-costly material components of druid spells."
+    },
+    "allFeatureNames": [
+      "Druidic",
+      "Spellcasting",
+      "Wild Shape",
+      "Druid Circle",
+      "Wild Shape Improvement",
+      "Circle Feature",
+      "Wild Shape Improvement (2)",
+      "Circle Feature",
+      "Circle Feature",
+      "Timeless Body",
+      "Beast Spells",
+      "Archdruid"
+    ],
+    "describedCount": 10,
+    "totalCount": 12
+  },
+  {
+    "classId": "ID_CLASS_FIGHTER",
+    "className": "Fighter",
+    "featuresByLevel": {
+      "1": [
+        "Fighting Style",
+        "Second Wind"
+      ],
+      "2": [
+        "Action Surge"
+      ],
+      "3": [
+        "Martial Archetype"
+      ],
+      "5": [
+        "Extra Attack"
+      ],
+      "7": [
+        "Martial Archetype Feature"
+      ],
+      "9": [
+        "Indomitable"
+      ],
+      "10": [
+        "Martial Archetype Feature"
+      ],
+      "11": [
+        "Extra Attack (2)"
+      ],
+      "13": [
+        "Indomitable (2)"
+      ],
+      "15": [
+        "Martial Archetype Feature"
+      ],
+      "17": [
+        "Action Surge (2)",
+        "Indomitable (3)"
+      ],
+      "18": [
+        "Martial Archetype Feature"
+      ],
+      "20": [
+        "Extra Attack (3)"
+      ]
+    },
+    "featureDescriptions": {
+      "Fighting Style": "You adopt a particular style of fighting as your specialty. Choose one option. You can't take a Fighting Style option more than once.",
+      "Second Wind": "As a bonus action, regain HP equal to 1d10 + your fighter level. Recharges on a short or long rest.",
+      "Action Surge": "On your turn, take one additional action on top of your regular action. Recharges on a short or long rest.",
+      "Martial Archetype": "You choose an archetype that you strive to emulate in your combat style and techniques, shaping how you fight at higher levels.",
+      "Extra Attack": "You can attack twice instead of once whenever you take the Attack action on your turn.",
+      "Extra Attack (2)": "You can attack three times whenever you take the Attack action on your turn.",
+      "Extra Attack (3)": "You can attack four times whenever you take the Attack action on your turn.",
+      "Indomitable": "You can reroll a saving throw that you fail. You must use the new roll. Once per long rest.",
+      "Indomitable (2)": "You can use Indomitable twice between long rests.",
+      "Indomitable (3)": "You can use Indomitable three times between long rests.",
+      "Action Surge (2)": "You can use Action Surge twice before needing a rest.",
+      "Martial Archetype Feature": "Your Martial Archetype grants you a new feature."
+    },
+    "allFeatureNames": [
+      "Fighting Style",
+      "Second Wind",
+      "Action Surge",
+      "Martial Archetype",
+      "Extra Attack",
+      "Martial Archetype Feature",
+      "Indomitable",
+      "Martial Archetype Feature",
+      "Extra Attack (2)",
+      "Indomitable (2)",
+      "Martial Archetype Feature",
+      "Action Surge (2)",
+      "Indomitable (3)",
+      "Martial Archetype Feature",
+      "Extra Attack (3)"
+    ],
+    "describedCount": 12,
+    "totalCount": 15
+  },
+  {
+    "classId": "ID_CLASS_MONK",
+    "className": "Monk",
+    "featuresByLevel": {
+      "1": [
+        "Unarmored Defense",
+        "Martial Arts"
+      ],
+      "2": [
+        "Ki",
+        "Unarmored Movement"
+      ],
+      "3": [
+        "Monastic Tradition",
+        "Deflect Missiles"
+      ],
+      "4": [
+        "Slow Fall"
+      ],
+      "5": [
+        "Extra Attack",
+        "Stunning Strike"
+      ],
+      "6": [
+        "Ki-Empowered Strikes",
+        "Tradition Feature"
+      ],
+      "7": [
+        "Evasion",
+        "Stillness of Mind"
+      ],
+      "9": [
+        "Unarmored Movement Improvement"
+      ],
+      "10": [
+        "Purity of Body",
+        "Tradition Feature"
+      ],
+      "11": [
+        "Tongue of the Sun and Moon"
+      ],
+      "13": [
+        "Diamond Soul"
+      ],
+      "14": [
+        "Timeless Body"
+      ],
+      "15": [
+        "Empty Body",
+        "Tradition Feature"
+      ],
+      "18": [
+        "Tradition Feature"
+      ],
+      "20": [
+        "Perfect Self"
+      ]
+    },
+    "featureDescriptions": {
+      "Unarmored Defense": "While not wearing armor or wielding a shield, your AC equals 10 + your Dexterity modifier + your Wisdom modifier.",
+      "Martial Arts": "Your unarmed strikes and monk weapons deal a martial arts die (d4, scaling with level). You can use Dexterity for their attack and damage rolls, and you can make one unarmed strike as a bonus action after attacking with an unarmed strike or monk weapon.",
+      "Ki": "You have ki points equal to your monk level. Spend them to use Flurry of Blows (2 unarmed strikes as a bonus action), Patient Defense (Dodge as a bonus action), or Step of the Wind (Dash or Disengage as a bonus action). Regain all ki on a short or long rest.",
+      "Unarmored Movement": "Your speed increases by 10 feet while not wearing armor or wielding a shield. This bonus improves at levels 9, 13, and 17.",
+      "Monastic Tradition": "You commit to a Monastic Tradition, your subclass, granting features at levels 3, 6, 11, and 17.",
+      "Deflect Missiles": "As a reaction when hit by a ranged weapon attack, reduce the damage by 1d10 + Dexterity modifier + monk level. If reduced to 0, you can spend 1 ki to catch and throw the missile as a ranged attack.",
+      "Slow Fall": "As a reaction when you fall, reduce the falling damage you take by 5 × your monk level.",
+      "Extra Attack": "You can attack twice instead of once whenever you take the Attack action on your turn.",
+      "Stunning Strike": "When you hit a creature with a melee weapon attack, spend 1 ki point to force a Constitution saving throw. On a failure, the creature is stunned until the end of your next turn.",
+      "Ki-Empowered Strikes": "Your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks.",
+      "Tradition Feature": "Your Monastic Tradition grants you an additional feature.",
+      "Evasion": "When subjected to an effect that allows a Dexterity saving throw for half damage, you take no damage on a success and only half on a failure.",
+      "Stillness of Mind": "As an action, end one effect on yourself causing you to be charmed or frightened.",
+      "Unarmored Movement Improvement": "You can now move along vertical surfaces and across liquids without falling, as long as you end your movement on a horizontal surface.",
+      "Purity of Body": "Your mastery of ki makes you immune to disease and poison.",
+      "Tongue of the Sun and Moon": "You can understand all spoken languages, and any creature that speaks at least one language can understand you.",
+      "Diamond Soul": "You are proficient in all saving throws. When you fail a saving throw, you can spend 1 ki point to reroll it and must use the new result.",
+      "Timeless Body": "Your ki sustains you so you suffer no frailty from old age and can't be aged magically. You also no longer need food or water.",
+      "Empty Body": "Spend 4 ki points to become invisible for 1 minute with resistance to all damage except force. Spend 8 ki points to cast astral projection on yourself without a silver cord.",
+      "Perfect Self": "When you roll initiative with no ki points remaining, you regain 4 ki points."
+    },
+    "allFeatureNames": [
+      "Unarmored Defense",
+      "Martial Arts",
+      "Ki",
+      "Unarmored Movement",
+      "Monastic Tradition",
+      "Deflect Missiles",
+      "Slow Fall",
+      "Extra Attack",
+      "Stunning Strike",
+      "Ki-Empowered Strikes",
+      "Tradition Feature",
+      "Evasion",
+      "Stillness of Mind",
+      "Unarmored Movement Improvement",
+      "Purity of Body",
+      "Tradition Feature",
+      "Tongue of the Sun and Moon",
+      "Diamond Soul",
+      "Timeless Body",
+      "Empty Body",
+      "Tradition Feature",
+      "Tradition Feature",
+      "Perfect Self"
+    ],
+    "describedCount": 20,
+    "totalCount": 23
+  },
+  {
+    "classId": "ID_CLASS_PALADIN",
+    "className": "Paladin",
+    "featuresByLevel": {
+      "1": [
+        "Divine Sense",
+        "Lay on Hands"
+      ],
+      "2": [
+        "Fighting Style",
+        "Spellcasting",
+        "Divine Smite"
+      ],
+      "3": [
+        "Divine Health",
+        "Sacred Oath",
+        "Channel Divinity"
+      ],
+      "5": [
+        "Extra Attack"
+      ],
+      "6": [
+        "Aura of Protection"
+      ],
+      "7": [
+        "Sacred Oath Feature"
+      ],
+      "10": [
+        "Aura of Courage"
+      ],
+      "11": [
+        "Improved Divine Smite"
+      ],
+      "14": [
+        "Cleansing Touch"
+      ],
+      "15": [
+        "Sacred Oath Feature"
+      ],
+      "18": [
+        "Aura Improvements"
+      ],
+      "20": [
+        "Sacred Oath Feature"
+      ]
+    },
+    "featureDescriptions": {
+      "Divine Sense": "As an action, know the location of any celestial, fiend, or undead within 60 feet that isn't behind total cover. Usable 1 + Charisma modifier times per long rest.",
+      "Lay on Hands": "Touch a creature to restore HP from a pool equal to 5 × your paladin level. You can also spend 5 HP from the pool to cure a disease or neutralize one poison. Recharges on a long rest.",
+      "Fighting Style": "You adopt a particular style of fighting as your specialty. Choose one option from the Paladin list (Defense, Dueling, Great Weapon Fighting, or Protection).",
+      "Spellcasting": "You can cast paladin spells using Charisma as your spellcasting ability. You prepare spells from the paladin list equal to your Charisma modifier + half your paladin level.",
+      "Divine Smite": "When you hit a creature with a melee weapon attack, you can expend one spell slot to deal 2d8 radiant damage plus 1d8 per spell slot level above 1st. Damage increases by 1d8 against undead or fiends.",
+      "Divine Health": "Your divine magic grants you immunity to disease.",
+      "Sacred Oath": "You swear the oath that binds you as a paladin forever, choosing your subclass and gaining its oath spells and Channel Divinity options.",
+      "Channel Divinity": "You can channel divine energy to fuel magical effects granted by your Sacred Oath. You have one use, regained on a short or long rest.",
+      "Extra Attack": "You can attack twice instead of once whenever you take the Attack action on your turn.",
+      "Aura of Protection": "While you are conscious, you and friendly creatures within 10 feet of you add your Charisma modifier (minimum +1) to all saving throws.",
+      "Sacred Oath Feature": "Your Sacred Oath grants you an additional feature.",
+      "Aura of Courage": "While you are conscious, you and friendly creatures within 10 feet of you can't be frightened.",
+      "Improved Divine Smite": "Your melee weapon attacks deal an additional 1d8 radiant damage on every hit, stacking with any Divine Smite you use.",
+      "Cleansing Touch": "As an action, end one spell affecting a willing creature you touch. Usable a number of times equal to your Charisma modifier per long rest.",
+      "Aura Improvements": "Your Aura of Protection and Aura of Courage now extend to 30 feet instead of 10.",
+      "Paladin's Smite": "When you hit with a melee weapon or Unarmed Strike, you can expend a spell slot to deal extra Radiant damage: 2d8 for a 1st-level slot, plus 1d8 per slot level above 1st (maximum 5d8). The damage increases by 1d8 against Undead or Fiends. On a critical hit, one of the dice is doubled.",
+      "Faithful Steed": "You can cast Find Steed without expending a spell slot. The steed gains immunity to the Charmed and Frightened conditions.",
+      "Abjure Foes": "As a Magic action, expend one use of Channel Divinity to awe creatures you can see within 60 feet. Each target must succeed on a Wisdom saving throw or be Frightened of you for 1 minute or until it takes any damage.",
+      "Radiant Strikes": "Your melee weapon attacks and Unarmed Strikes deal an extra 1d8 Radiant damage on each hit.",
+      "Restoring Touch": "When you use Lay on Hands on a creature, you can also remove one of the following conditions from it: Blinded, Charmed, Deafened, Frightened, Paralyzed, or Stunned.",
+      "Aura Expansion": "Your Aura of Protection now extends 30 feet from you instead of 10 feet.",
+      "Epic Boon": "You gain an Epic Boon feat, or another feat of your choice for which you qualify. Boon of Truesight is recommended."
+    },
+    "allFeatureNames": [
+      "Divine Sense",
+      "Lay on Hands",
+      "Fighting Style",
+      "Spellcasting",
+      "Divine Smite",
+      "Divine Health",
+      "Sacred Oath",
+      "Channel Divinity",
+      "Extra Attack",
+      "Aura of Protection",
+      "Sacred Oath Feature",
+      "Aura of Courage",
+      "Improved Divine Smite",
+      "Cleansing Touch",
+      "Sacred Oath Feature",
+      "Aura Improvements",
+      "Sacred Oath Feature"
+    ],
+    "describedCount": 22,
+    "totalCount": 17
+  },
+  {
+    "classId": "ID_CLASS_RANGER",
+    "className": "Ranger",
+    "featuresByLevel": {
+      "1": [
+        "Favored Enemy",
+        "Natural Explorer"
+      ],
+      "2": [
+        "Fighting Style",
+        "Spellcasting"
+      ],
+      "3": [
+        "Ranger Archetype",
+        "Primeval Awareness"
+      ],
+      "5": [
+        "Extra Attack"
+      ],
+      "6": [
+        "Favored Enemy (2)",
+        "Natural Explorer (2)"
+      ],
+      "7": [
+        "Ranger Archetype Feature"
+      ],
+      "8": [
+        "Land's Stride"
+      ],
+      "10": [
+        "Hide in Plain Sight",
+        "Natural Explorer (3)"
+      ],
+      "11": [
+        "Ranger Archetype Feature"
+      ],
+      "14": [
+        "Vanish",
+        "Favored Enemy (3)"
+      ],
+      "15": [
+        "Ranger Archetype Feature"
+      ],
+      "18": [
+        "Feral Senses"
+      ],
+      "20": [
+        "Foe Slayer"
+      ]
+    },
+    "featureDescriptions": {},
+    "allFeatureNames": [
+      "Favored Enemy",
+      "Natural Explorer",
+      "Fighting Style",
+      "Spellcasting",
+      "Ranger Archetype",
+      "Primeval Awareness",
+      "Extra Attack",
+      "Favored Enemy (2)",
+      "Natural Explorer (2)",
+      "Ranger Archetype Feature",
+      "Land's Stride",
+      "Hide in Plain Sight",
+      "Natural Explorer (3)",
+      "Ranger Archetype Feature",
+      "Vanish",
+      "Favored Enemy (3)",
+      "Ranger Archetype Feature",
+      "Feral Senses",
+      "Foe Slayer"
+    ],
+    "describedCount": 0,
+    "totalCount": 19
+  },
+  {
+    "classId": "ID_CLASS_ROGUE",
+    "className": "Rogue",
+    "featuresByLevel": {
+      "1": [
+        "Expertise",
+        "Sneak Attack",
+        "Thieves' Cant"
+      ],
+      "2": [
+        "Cunning Action"
+      ],
+      "3": [
+        "Roguish Archetype"
+      ],
+      "5": [
+        "Uncanny Dodge"
+      ],
+      "6": [
+        "Expertise (2)"
+      ],
+      "7": [
+        "Evasion"
+      ],
+      "9": [
+        "Roguish Archetype Feature"
+      ],
+      "11": [
+        "Reliable Talent"
+      ],
+      "13": [
+        "Roguish Archetype Feature"
+      ],
+      "14": [
+        "Blindsense"
+      ],
+      "15": [
+        "Slippery Mind"
+      ],
+      "17": [
+        "Roguish Archetype Feature"
+      ],
+      "18": [
+        "Elusive"
+      ],
+      "20": [
+        "Stroke of Luck"
+      ]
+    },
+    "featureDescriptions": {},
+    "allFeatureNames": [
+      "Expertise",
+      "Sneak Attack",
+      "Thieves' Cant",
+      "Cunning Action",
+      "Roguish Archetype",
+      "Uncanny Dodge",
+      "Expertise (2)",
+      "Evasion",
+      "Roguish Archetype Feature",
+      "Reliable Talent",
+      "Roguish Archetype Feature",
+      "Blindsense",
+      "Slippery Mind",
+      "Roguish Archetype Feature",
+      "Elusive",
+      "Stroke of Luck"
+    ],
+    "describedCount": 0,
+    "totalCount": 16
+  },
+  {
+    "classId": "ID_CLASS_SORCERER",
+    "className": "Sorcerer",
+    "featuresByLevel": {
+      "1": [
+        "Spellcasting",
+        "Sorcerous Origin"
+      ],
+      "2": [
+        "Font of Magic"
+      ],
+      "3": [
+        "Metamagic"
+      ],
+      "6": [
+        "Sorcerous Origin Feature"
+      ],
+      "10": [
+        "Metamagic (2)"
+      ],
+      "14": [
+        "Sorcerous Origin Feature"
+      ],
+      "17": [
+        "Metamagic (3)"
+      ],
+      "18": [
+        "Sorcerous Origin Feature"
+      ],
+      "20": [
+        "Sorcerous Restoration"
+      ]
+    },
+    "featureDescriptions": {},
+    "allFeatureNames": [
+      "Spellcasting",
+      "Sorcerous Origin",
+      "Font of Magic",
+      "Metamagic",
+      "Sorcerous Origin Feature",
+      "Metamagic (2)",
+      "Sorcerous Origin Feature",
+      "Metamagic (3)",
+      "Sorcerous Origin Feature",
+      "Sorcerous Restoration"
+    ],
+    "describedCount": 0,
+    "totalCount": 10
+  },
+  {
+    "classId": "ID_CLASS_WARLOCK",
+    "className": "Warlock",
+    "featuresByLevel": {
+      "1": [
+        "Otherworldly Patron",
+        "Pact Magic"
+      ],
+      "2": [
+        "Eldritch Invocations"
+      ],
+      "3": [
+        "Pact Boon"
+      ],
+      "6": [
+        "Otherworldly Patron Feature"
+      ],
+      "10": [
+        "Otherworldly Patron Feature"
+      ],
+      "11": [
+        "Mystic Arcanum (6th level)"
+      ],
+      "13": [
+        "Mystic Arcanum (7th level)"
+      ],
+      "14": [
+        "Otherworldly Patron Feature"
+      ],
+      "15": [
+        "Mystic Arcanum (8th level)"
+      ],
+      "17": [
+        "Mystic Arcanum (9th level)"
+      ],
+      "20": [
+        "Eldritch Master"
+      ]
+    },
+    "featureDescriptions": {},
+    "allFeatureNames": [
+      "Otherworldly Patron",
+      "Pact Magic",
+      "Eldritch Invocations",
+      "Pact Boon",
+      "Otherworldly Patron Feature",
+      "Otherworldly Patron Feature",
+      "Mystic Arcanum (6th level)",
+      "Mystic Arcanum (7th level)",
+      "Otherworldly Patron Feature",
+      "Mystic Arcanum (8th level)",
+      "Mystic Arcanum (9th level)",
+      "Eldritch Master"
+    ],
+    "describedCount": 0,
+    "totalCount": 12
+  },
+  {
+    "classId": "ID_CLASS_WIZARD",
+    "className": "Wizard",
+    "featuresByLevel": {
+      "1": [
+        "Spellcasting",
+        "Arcane Recovery"
+      ],
+      "2": [
+        "Arcane Tradition"
+      ],
+      "6": [
+        "Arcane Tradition Feature"
+      ],
+      "10": [
+        "Arcane Tradition Feature"
+      ],
+      "14": [
+        "Arcane Tradition Feature"
+      ],
+      "18": [
+        "Spell Mastery"
+      ],
+      "20": [
+        "Signature Spells"
+      ]
+    },
+    "featureDescriptions": {},
+    "allFeatureNames": [
+      "Spellcasting",
+      "Arcane Recovery",
+      "Arcane Tradition",
+      "Arcane Tradition Feature",
+      "Arcane Tradition Feature",
+      "Arcane Tradition Feature",
+      "Spell Mastery",
+      "Signature Spells"
+    ],
+    "describedCount": 0,
+    "totalCount": 8
+  }
+]

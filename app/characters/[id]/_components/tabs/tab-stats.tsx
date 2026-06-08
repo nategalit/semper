@@ -24,7 +24,7 @@ const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "cha"];
 
 export function TabStats({ character, derived, srdClass, srdBackground }: Props) {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const { abilityScores } = character.data;
+  const abilityScores = derived.effectiveAbilityScores;
 
   // Show the migration banner when: has a class with skill choices, but none of
   // those class skill options appear in the stored skillProficiencies yet.

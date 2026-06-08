@@ -2,18 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { useWizardStore } from "@/lib/stores/wizard-store";
-import type { SrdRace, ContentSource } from "@/lib/content/srd";
+import type { SrdRace } from "@/lib/content/srd";
 import type { FeatureEntry } from "@/app/actions/content";
-
-const SOURCE_COLORS: Record<ContentSource, string> = {
-  SRD:    "bg-stone-700 text-stone-300",
-  Aurora: "bg-indigo-900/60 text-indigo-300 border border-indigo-700/50",
-};
-
-const SOURCE_CHIP_ACTIVE: Record<ContentSource, string> = {
-  SRD:    "bg-stone-500 text-stone-100",
-  Aurora: "bg-indigo-600 text-indigo-100",
-};
+import { sourceChipClass } from "@/lib/ui-tokens";
 
 function cleanHtml(html: string, featureMap?: Map<string, FeatureEntry>, depth = 3): string {
   if (!html) return "";
@@ -141,7 +132,7 @@ export function StepRace({
                   </p>
                   <div className="flex items-center gap-2 shrink-0">
                     {!isMulti && activeVariant.sourceLabel && (
-                      <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium ${SOURCE_COLORS[activeVariant.source ?? "SRD"]}`}>
+                      <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium ${sourceChipClass(activeVariant.source)}`}>
                         {activeVariant.sourceLabel}
                       </span>
                     )}
@@ -167,9 +158,7 @@ export function StepRace({
                       key={variant.id}
                       onClick={() => { setRaceId(variant.id); setSubraceId(""); }}
                       className={`text-[10px] rounded px-1.5 py-0.5 font-medium transition-colors ${
-                        raceId === variant.id
-                          ? SOURCE_CHIP_ACTIVE[variant.source ?? "SRD"]
-                          : SOURCE_COLORS[variant.source ?? "SRD"]
+                        sourceChipClass(variant.source, raceId === variant.id)
                       } hover:opacity-80`}
                     >
                       {variant.sourceLabel ?? "SRD"}

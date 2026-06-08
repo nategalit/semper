@@ -1,12 +1,13 @@
 import { getCharacter } from "@/app/actions/characters";
 import { listRolls } from "@/app/actions/rolls";
-import { getEnabledSpells, getEnabledFeatures, getEnabledFightingStyles, getEnabledSubclasses } from "@/app/actions/content";
+import { getEnabledSpells, getEnabledFeatures, getEnabledFightingStyles, getEnabledSubclasses, getEnabledFeats } from "@/app/actions/content";
 import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
+import type { FeatElement } from "@/lib/content/schema";
 import { SRD_RACES, SRD_CLASSES, SRD_BACKGROUNDS, SRD_SUBCLASSES } from "@/lib/content/srd";
 import type { SrdSubclass } from "@/lib/content/srd";
 import { adaptAuroraSubclass, SUBCLASS_PARENT_TO_CLASS_ID } from "@/lib/content/aurora/adapters";
 import { dedupSubclasses } from "@/lib/content/dedup";
-import { deriveStats } from "@/lib/character/calc";
+import { deriveStats, collectFeatStatMods } from "@/lib/character/calc";
 import { CharacterSheet } from "./_components/character-sheet";
 
 interface Props {
@@ -17,13 +18,14 @@ export default async function CharacterPage({ params }: Props) {
   const { id } = await params;
 
   const t0 = Date.now();
-  const [character, initialRolls, importedSpells, featureEls, importedFightingStyles, rawSubclasses] = await Promise.all([
+  const [character, initialRolls, importedSpells, featureEls, importedFightingStyles, rawSubclasses, importedFeats] = await Promise.all([
     getCharacter(id),
     listRolls(id),
     getEnabledSpells(),
     getEnabledFeatures(),
     getEnabledFightingStyles(),
     getEnabledSubclasses(),
+    getEnabledFeats(),
   ]);
   const featureMap = new Map<string, FeatureEntry>(featureEls.map((f) => [f.id, f]));
   const auroraSubclasses: SrdSubclass[] = rawSubclasses.flatMap((el) => {
@@ -34,7 +36,7 @@ export default async function CharacterPage({ params }: Props) {
     ...SRD_SUBCLASSES.map((s) => ({ ...s, source: "SRD" as const, sourceLabel: "SRD" })),
     ...auroraSubclasses,
   ]);
-  console.log(`[CharacterPage] parallel fetch total: ${Date.now() - t0}ms (getCharacter + listRolls + getEnabledSpells + getEnabledFeatures + getEnabledFightingStyles + getEnabledSubclasses)`);
+  console.log(`[CharacterPage] parallel fetch total: ${Date.now() - t0}ms (getCharacter + listRolls + getEnabledSpells + getEnabledFeatures + getEnabledFightingStyles + getEnabledSubclasses + getEnabledFeats)`);
 
   // Post-6C characters store resolved objects; pre-6C fall back to SRD lookup.
   const srdRace = character.data.resolvedRace ?? SRD_RACES.find((r) => r.id === character.raceId) ?? undefined;
@@ -54,7 +56,8 @@ export default async function CharacterPage({ params }: Props) {
     (b) => b.id === character.data.backgroundId
   ) ?? undefined;
 
-  const derived = deriveStats(character, srdClass, srdRace, srdBackground);
+  const featStatMods = collectFeatStatMods(character.data.levelChoices, importedFeats);
+  const derived = deriveStats(character, srdClass, srdRace, srdBackground, featStatMods);
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100">
@@ -69,6 +72,7 @@ export default async function CharacterPage({ params }: Props) {
         featureMap={featureMap}
         importedFightingStyles={importedFightingStyles}
         allSubclasses={allSubclasses}
+        importedFeats={importedFeats}
       />
     </div>
   );

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import {
-  getClassFeatures, currentChargesFor, maxChargesFor,
+  getClassFeatures, getFeatFeatures, currentChargesFor, maxChargesFor,
   resolveRechargesOn, UNLIMITED,
 } from "@/lib/character/features";
 import { setFeatureCharge } from "@/app/actions/characters";
@@ -11,6 +11,9 @@ import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
 import type { SrdClass, SrdRace, SrdBackground, SrdSubclass } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
 import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
+import type { FeatElement } from "@/lib/content/schema";
+import { abbreviateSource } from "@/lib/content/source-abbreviations";
+import { sourceChipClass } from "@/lib/ui-tokens";
 import { SectionCard } from "../shared/section-card";
 import { EmptyState } from "../shared/empty-state";
 import { SubclassPicker } from "../panels/subclass-picker";
@@ -36,10 +39,11 @@ interface Props {
   featureMap: Map<string, FeatureEntry>;
   importedFightingStyles?: FightingStyleEntry[];
   allSubclasses?: SrdSubclass[];
+  importedFeats?: FeatElement[];
   onChangeLevelRequest?: () => void;
 }
 
-export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, importedFightingStyles, allSubclasses = [], onChangeLevelRequest }: Props) {
+export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, importedFightingStyles, allSubclasses = [], importedFeats = [], onChangeLevelRequest }: Props) {
   const { character, mutate } = useMutation();
   const [subclassPickerOpen, setSubclassPickerOpen] = useState(false);
   const subrace = srdRace?.subraces.find((s) => s.id === character.data.subraceId);
@@ -68,9 +72,23 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
     character.level >= srdClass.subclassUnlockLevel &&
     !character.data.subclassId;
 
-  const features = character.classId
+  const classFeatures = character.classId
     ? getClassFeatures(character.classId, character.level, {})
     : [];
+  const featFeatures = getFeatFeatures(character.data.levelChoices, character.level, {});
+  const features = [...classFeatures, ...featFeatures];
+
+  // All feats the character has taken, in the order they were picked (by level).
+  const pickedFeats: { feat: FeatElement; level: number }[] = [];
+  if (character.data.levelChoices) {
+    const featMap = new Map(importedFeats.map((f) => [f.id, f]));
+    for (const [lvl, choice] of Object.entries(character.data.levelChoices).sort((a, b) => Number(a[0]) - Number(b[0]))) {
+      if (choice.featId) {
+        const feat = featMap.get(choice.featId);
+        if (feat) pickedFeats.push({ feat, level: Number(lvl) });
+      }
+    }
+  }
 
   const chargeLabels = new Set(features.map((d) => d.label));
   const activeClass = srdClass ?? character.data.resolvedClass;
@@ -153,6 +171,38 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
                   recharge={recharge}
                   onSet={(next) => handleChargeChange(def.key, next)}
                 />
+              );
+            })}
+          </div>
+        </SectionCard>
+      )}
+
+      {/* Feats */}
+      {pickedFeats.length > 0 && (
+        <SectionCard title="Feats">
+          <div className="space-y-3">
+            {pickedFeats.map(({ feat, level }) => {
+              const desc = (feat.description || feat.sheetText || "")
+                .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+              const sourceLabel = abbreviateSource(feat.source);
+              return (
+                <div key={`${level}-${feat.id}`} className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-stone-200">{feat.name}</span>
+                    {sourceLabel && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${sourceChipClass(sourceLabel)}`}>
+                        {sourceLabel}
+                      </span>
+                    )}
+                    <span className="text-[10px] text-stone-600 ml-auto">L{level}</span>
+                  </div>
+                  {feat.prerequisite && (
+                    <p className="text-[10px] text-amber-600/80">Requires: {feat.prerequisite}</p>
+                  )}
+                  {desc && (
+                    <p className="text-xs text-stone-400 leading-relaxed">{desc}</p>
+                  )}
+                </div>
               );
             })}
           </div>
@@ -287,7 +337,9 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
             <div className="border-t border-stone-800 pt-3 mt-1">
               <p className="text-xs text-stone-500 uppercase tracking-wider mb-2">{subrace.name}</p>
               {subrace.description && (
-                <p className="text-sm text-stone-400 mb-2">{subrace.description}</p>
+                <p className="text-sm text-stone-400 mb-2">
+                  {subrace.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
+                </p>
               )}
               {subrace.traits && subrace.traits.length > 0 && (
                 <ul className="space-y-1">

@@ -27,7 +27,17 @@
       "Bash(git commit *)",
       "Bash(python3 -c \"import sys,json; data=json.load\\(sys.stdin\\); [print\\(item['path']\\) for item in data.get\\('tree',[]\\) if 'fighting' in item['path'].lower\\(\\) or 'tasha' in item['path'].lower\\(\\)]\")",
       "Bash(node -e \"let d=''; process.stdin.on\\('data',c=>d+=c\\); process.stdin.on\\('end',\\(\\)=>{ let j=JSON.parse\\(d\\); j.tree.filter\\(i=>/fight|tasha/i.test\\(i.path\\)\\).forEach\\(i=>console.log\\(i.path\\)\\); }\\)\")",
-      "Bash(git diff *)"
+      "Bash(git diff *)",
+      "Bash(grep -E \"\\\\.xml$|expected\")",
+      "Bash(node -e ' *)",
+      "Bash(node *)",
+      "Bash(python3 *)",
+      "Bash(sed -n '1,20p' app/characters/new/_components/step-background.tsx)",
+      "Bash(sed -n '1,20p' app/characters/new/_components/step-class.tsx)",
+      "Bash(sed -n '1,20p' app/characters/new/_components/step-race.tsx)",
+      "Bash(sed -n '1,15p' app/characters/new/_components/step-subclass.tsx)",
+      "Bash(sed -n '780,792p' app/characters/[id]/_components/panels/level-up-panel.tsx)",
+      "Bash(sed -n '40,48p' app/characters/new/_components/step-class-features.tsx)"
     ]
   }
 }

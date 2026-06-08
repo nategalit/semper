@@ -5,6 +5,7 @@ import type { Character, CharacterData } from "@/lib/types/character";
 import type { DerivedStats } from "@/lib/character/calc";
 import type { SrdClass, SrdRace, SrdBackground, SrdSpell, SrdSubclass } from "@/lib/content/srd";
 import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
+import type { FeatElement } from "@/lib/content/schema";
 import type { RollEntry } from "@/lib/types/roll";
 import type { DisplaySpell } from "@/lib/types/spell";
 import { SRD_SPELLS } from "@/lib/content/srd";
@@ -38,6 +39,7 @@ interface Props {
   featureMap: Map<string, FeatureEntry>;
   importedFightingStyles: FightingStyleEntry[];
   allSubclasses: SrdSubclass[];
+  importedFeats: FeatElement[];
 }
 
 function srdToDisplay(s: SrdSpell): DisplaySpell {
@@ -55,6 +57,7 @@ export function CharacterSheet({
   featureMap,
   importedFightingStyles,
   allSubclasses,
+  importedFeats,
 }: Props) {
   const allSpells: DisplaySpell[] = [
     ...SRD_SPELLS.map(srdToDisplay),
@@ -187,6 +190,7 @@ export function CharacterSheet({
           featureMap={featureMap}
           importedFightingStyles={importedFightingStyles}
           allSubclasses={allSubclasses}
+          importedFeats={importedFeats}
           onChangeLevelRequest={() => setLevelUpOpen(true)}
         />
       )}
@@ -219,6 +223,7 @@ export function CharacterSheet({
             srdClass={srdClass}
             importedFightingStyles={importedFightingStyles}
             allSubclasses={allSubclasses}
+            importedFeats={importedFeats}
           />
 
           <TabShellMobile

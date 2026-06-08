@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import { applyHpChange, setTempHp, setMaxHp } from "@/app/actions/characters";
+import { toughHpBonus } from "@/lib/character/calc";
 import type { CharacterData } from "@/lib/types/character";
 
 interface Props {
@@ -21,6 +22,7 @@ export function HpDialog({ open, onClose }: Props) {
   const amountRef = useRef<HTMLInputElement>(null);
 
   const { currentHp, maxHp, tempHp } = character.data;
+  const effectiveMaxHp = maxHp + toughHpBonus(character);
 
   // Reset form and focus amount input each time dialog opens.
   useEffect(() => {
@@ -40,7 +42,7 @@ export function HpDialog({ open, onClose }: Props) {
     // Mirror server logic client-side for the optimistic patch.
     let patch: Partial<CharacterData>;
     if (mode === "heal") {
-      patch = { currentHp: Math.min(maxHp, currentHp + n) };
+      patch = { currentHp: Math.min(effectiveMaxHp, currentHp + n) };
     } else {
       const tempAbsorbed = Math.min(tempHp, n);
       patch = {
@@ -95,7 +97,7 @@ export function HpDialog({ open, onClose }: Props) {
           <span className="text-4xl font-bold tabular-nums text-amber-400">
             {currentHp}
           </span>
-          <span className="text-2xl text-stone-500">/{maxHp}</span>
+          <span className="text-2xl text-stone-500">/{effectiveMaxHp}</span>
           {tempHp > 0 && (
             <span className="ml-3 text-xl font-semibold text-sky-400">
               +{tempHp} temp

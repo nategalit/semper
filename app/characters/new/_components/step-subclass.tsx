@@ -3,13 +3,9 @@
 import { useState, useMemo } from "react";
 import { useWizardStore } from "@/lib/stores/wizard-store";
 import { SRD_CLASSES } from "@/lib/content/srd";
-import type { SrdClass, SrdSubclass, ContentSource } from "@/lib/content/srd";
+import type { SrdClass, SrdSubclass } from "@/lib/content/srd";
 import type { FeatureEntry } from "@/app/actions/content";
-
-const SOURCE_COLORS: Record<ContentSource, string> = {
-  SRD:    "bg-stone-700 text-stone-300",
-  Aurora: "bg-indigo-900/60 text-indigo-300 border border-indigo-700/50",
-};
+import { sourceChipClass } from "@/lib/ui-tokens";
 
 function cleanHtml(html: string, featureMap?: Map<string, FeatureEntry>, depth = 3): string {
   if (!html) return "";
@@ -180,7 +176,7 @@ export function StepSubclass({ classes, subclasses, featureMap }: Props) {
                     {displaySub.name}
                   </p>
                   {!isMulti && displaySub.sourceLabel && (
-                    <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${SOURCE_COLORS[displaySub.source ?? "SRD"]}`}>
+                    <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${sourceChipClass(displaySub.source)}`}>
                       {displaySub.sourceLabel}
                     </span>
                   )}

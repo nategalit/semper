@@ -5,6 +5,7 @@ import { useMutation } from "@/lib/character/mutation-context";
 import { setSubclass } from "@/app/actions/characters";
 import type { SrdClass, SrdSubclass } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
+import { sourceChipClass } from "@/lib/ui-tokens";
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -73,11 +74,7 @@ export function SubclassPicker({ open, onClose, srdClass, allSubclasses = [] }: 
                 <p className={`text-sm font-semibold ${picked === sub.id ? "text-amber-300" : "text-stone-200"}`}>
                   {sub.name}
                 </p>
-                <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${
-                  sub.source === "SRD"
-                    ? "bg-stone-700 text-stone-300"
-                    : "bg-indigo-900/60 text-indigo-300 border border-indigo-700/50"
-                }`}>
+                <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${sourceChipClass(sub.source)}`}>
                   {sub.sourceLabel ?? "SRD"}
                 </span>
               </div>

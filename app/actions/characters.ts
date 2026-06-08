@@ -15,11 +15,21 @@ import {
 import type { AbilityKey } from "@/lib/content/srd";
 import {
   getClassFeatures,
+  getFeatFeatures,
   resolveRechargesOn,
   maxChargesFor,
 } from "@/lib/character/features";
 import { getSpellSlotsForClass } from "@/lib/content/srd/progression";
 import { SRD_CLASSES } from "@/lib/content/srd/classes";
+
+const TOUGH_FEAT_IDS = new Set(["ID_PHB_FEAT_TOUGH", "ID_WOTC_PHB24_FEAT_TOUGH"]);
+
+function toughBonusFromData(current: CharacterData, level: number): number {
+  const hasTough = Object.values(current.levelChoices ?? {}).some(
+    (c) => c.featId && TOUGH_FEAT_IDS.has(c.featId)
+  );
+  return hasTough ? 2 * level : 0;
+}
 
 // Snake_case row as returned by Supabase Postgres.
 interface CharacterRow {
@@ -380,13 +390,15 @@ export async function shortRest(
 
   const merged: CharacterData = {
     ...current,
-    currentHp: Math.min(current.maxHp, current.currentHp + Math.max(0, hpGained)),
+    currentHp: Math.min(current.maxHp + toughBonusFromData(current, level), current.currentHp + Math.max(0, hpGained)),
     hitDiceRemaining: Math.max(0, current.hitDiceRemaining - diceSpent),
     featureCharges: (() => {
-      if (!classId) return current.featureCharges;
-      const features = getClassFeatures(classId, level, {});
+      const allFeatures = [
+        ...(classId ? getClassFeatures(classId, level, {}) : []),
+        ...getFeatFeatures(current.levelChoices, level, {}),
+      ];
       const updated = { ...current.featureCharges };
-      for (const def of features) {
+      for (const def of allFeatures) {
         if (resolveRechargesOn(def, level) === "short") {
           updated[def.key] = maxChargesFor(def, level, {});
         }
@@ -433,7 +445,7 @@ export async function longRest(id: string): Promise<void> {
 
   const merged: CharacterData = {
     ...current,
-    currentHp: current.maxHp,
+    currentHp: current.maxHp + toughBonusFromData(current, level),
     hitDiceRemaining: Math.min(
       current.hitDiceTotal,
       current.hitDiceRemaining + Math.max(1, Math.floor(current.hitDiceTotal / 2))
@@ -449,10 +461,12 @@ export async function longRest(id: string): Promise<void> {
       (c) => !LONG_REST_CLEARS.has(c)
     ),
     featureCharges: (() => {
-      if (!classId) return current.featureCharges;
-      const features = getClassFeatures(classId, level, {});
+      const allFeatures = [
+        ...(classId ? getClassFeatures(classId, level, {}) : []),
+        ...getFeatFeatures(current.levelChoices, level, {}),
+      ];
       const updated = { ...current.featureCharges };
-      for (const def of features) {
+      for (const def of allFeatures) {
         updated[def.key] = maxChargesFor(def, level, {});
       }
       return updated;
@@ -486,6 +500,8 @@ export async function levelUpCharacter(
   newSubclassId?: string,
   /** Fighting Style choice keyed by the level it was granted. */
   fightingStyleByLevel?: Record<number, string>,
+  /** Feat ID chosen at each ASI level (instead of ASI). */
+  featByLevel?: Record<number, string>,
 ): Promise<void> {
   const { userId } = await requireAuth();
   const supabase = await createSupabaseServerClient();
@@ -558,6 +574,7 @@ export async function levelUpCharacter(
         ...(asiByLevel[lvl] ? { asi: asiByLevel[lvl] } : {}),
         ...(newSubclassId && lvl === subclassUnlockLevel ? { subclassId: newSubclassId } : {}),
         ...(fightingStyleByLevel?.[lvl] ? { fightingStyle: fightingStyleByLevel[lvl] } : {}),
+        ...(featByLevel?.[lvl] ? { featId: featByLevel[lvl] } : {}),
       };
     }
   } else if (isDown) {

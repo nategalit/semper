@@ -55,6 +55,12 @@ export async function AppHeader({ backHref, backLabel, title }: Props) {
               Spells
             </Link>
             <Link
+              href="/feats"
+              className="text-sm text-stone-400 hover:text-stone-200 transition-colors"
+            >
+              Feats
+            </Link>
+            <Link
               href="/settings/content"
               className="text-sm text-stone-400 hover:text-stone-200 transition-colors"
             >

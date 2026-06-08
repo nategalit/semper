@@ -1,6 +1,7 @@
 "use client";
 
 import { useWizardStore } from "@/lib/stores/wizard-store";
+import { sourceChipClass } from "@/lib/ui-tokens";
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -41,7 +42,7 @@ export function StepClassFeatures({ allFightingStyles }: Props) {
               }`}>
                 {style.name}
               </p>
-              <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-700 text-stone-500 shrink-0">
+              <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 ${sourceChipClass(style.sourceLabel)}`}>
                 {style.sourceLabel}
               </span>
             </div>

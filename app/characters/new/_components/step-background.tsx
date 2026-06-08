@@ -2,18 +2,9 @@
 
 import { useState, useMemo } from "react";
 import { useWizardStore } from "@/lib/stores/wizard-store";
-import type { SrdBackground, ContentSource } from "@/lib/content/srd";
+import type { SrdBackground } from "@/lib/content/srd";
 import type { FeatureEntry } from "@/app/actions/content";
-
-const SOURCE_COLORS: Record<ContentSource, string> = {
-  SRD:    "bg-stone-700 text-stone-300",
-  Aurora: "bg-indigo-900/60 text-indigo-300 border border-indigo-700/50",
-};
-
-const SOURCE_CHIP_ACTIVE: Record<ContentSource, string> = {
-  SRD:    "bg-stone-500 text-stone-100",
-  Aurora: "bg-indigo-600 text-indigo-100",
-};
+import { sourceChipClass } from "@/lib/ui-tokens";
 
 function cleanHtml(html: string, featureMap?: Map<string, FeatureEntry>, depth = 3): string {
   if (!html) return "";
@@ -139,7 +130,7 @@ export function StepBackground({
                     {activeVariant.name}
                   </span>
                   {!isMulti && activeVariant.sourceLabel && (
-                    <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${SOURCE_COLORS[activeVariant.source ?? "SRD"]}`}>
+                    <span className={`text-[10px] rounded px-1.5 py-0.5 font-medium shrink-0 ${sourceChipClass(activeVariant.source)}`}>
                       {activeVariant.sourceLabel}
                     </span>
                   )}
@@ -161,9 +152,7 @@ export function StepBackground({
                       key={bgKey(variant)}
                       onClick={() => setBackgroundId(bgKey(variant))}
                       className={`text-[10px] rounded px-1.5 py-0.5 font-medium transition-colors ${
-                        backgroundId === bgKey(variant)
-                          ? SOURCE_CHIP_ACTIVE[variant.source ?? "SRD"]
-                          : SOURCE_COLORS[variant.source ?? "SRD"]
+                        sourceChipClass(variant.source, backgroundId === bgKey(variant))
                       } hover:opacity-80`}
                     >
                       {variant.sourceLabel ?? "SRD"}

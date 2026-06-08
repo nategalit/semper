@@ -1,4 +1,5 @@
 import type { AbilityKey } from "@/lib/content/srd";
+import type { LevelChoiceRecord } from "@/lib/types/character";
 
 export interface FeatureDef {
   key: string;
@@ -154,6 +155,54 @@ const CLASS_FEATURES: Record<string, FeatureDef[]> = {
     },
   ],
 };
+
+// ─── Feat features ────────────────────────────────────────────────────────────
+
+const LUCKY_DEF: FeatureDef = {
+  key: "lucky",
+  label: "Lucky",
+  description: "Spend a luck point to roll an extra d20 for an attack roll, ability check, or saving throw (choose after rolling, before outcome). You can also spend one to impose disadvantage on an attack roll made against you. Recharges on a long rest.",
+  maxCharges: () => 3,
+  rechargesOn: "long",
+};
+
+const INSPIRING_LEADER_DEF: FeatureDef = {
+  key: "inspiring_leader",
+  label: "Inspiring Leader",
+  description: "Over 10 minutes, inspire up to 6 creatures you can see (including yourself). Each gains temporary HP equal to your level + your Charisma modifier. Once per short or long rest.",
+  maxCharges: () => 1,
+  rechargesOn: "short",
+};
+
+const FEAT_FEATURES: Record<string, FeatureDef> = {
+  ID_PHB_FEAT_LUCKY:                      LUCKY_DEF,
+  ID_WOTC_PHB24_FEAT_LUCKY:              LUCKY_DEF,
+  ID_PHB_FEAT_INSPIRINGLEADER:            INSPIRING_LEADER_DEF,
+  ID_WOTC_PHB24_FEAT_INSPIRING_LEADER:   INSPIRING_LEADER_DEF,
+};
+
+/**
+ * Returns FeatureDefs for any feats the character has taken that have tracked charges.
+ * Deduplicates by key (e.g. both PHB and PHB24 Lucky resolve to the same def).
+ */
+export function getFeatFeatures(
+  levelChoices: Record<number, LevelChoiceRecord> | undefined,
+  level: number,
+  abilityMods: Partial<Record<AbilityKey, number>> = {}
+): FeatureDef[] {
+  if (!levelChoices) return [];
+  const seen = new Set<string>();
+  const result: FeatureDef[] = [];
+  for (const choice of Object.values(levelChoices)) {
+    if (!choice.featId) continue;
+    const def = FEAT_FEATURES[choice.featId];
+    if (!def || seen.has(def.key)) continue;
+    if (def.maxCharges(level, abilityMods) === 0) continue;
+    seen.add(def.key);
+    result.push(def);
+  }
+  return result;
+}
 
 /**
  * Returns the feature definitions for a class at the given level,

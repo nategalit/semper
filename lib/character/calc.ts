@@ -1,5 +1,6 @@
 import type { Character, EquipmentItem, WeaponStats } from "@/lib/types/character";
 import type { AbilityKey, SrdBackground, SrdClass, SrdRace } from "@/lib/content/srd";
+import type { FeatElement, StatModifier } from "@/lib/content/schema";
 
 // ─── Skill → ability mapping ──────────────────────────────────────────────────
 
@@ -25,6 +26,51 @@ export const SKILL_ABILITIES: Record<string, AbilityKey> = {
 };
 
 export const ALL_SKILLS = Object.keys(SKILL_ABILITIES).sort();
+
+// Feats whose initiative bonus equals the character's proficiency bonus (not a flat value).
+// Aurora stores these with an empty statModifiers array; we handle them here.
+const PROF_BONUS_INITIATIVE_FEAT_IDS = new Set([
+  "ID_WOTC_PHB24_FEAT_ALERT",
+]);
+
+// ─── Tough feat HP bonus ──────────────────────────────────────────────────────
+
+const TOUGH_FEAT_IDS = new Set(["ID_PHB_FEAT_TOUGH", "ID_WOTC_PHB24_FEAT_TOUGH"]);
+
+/** Returns the bonus max HP from the Tough feat: 2 × level, or 0 if not taken. */
+export function toughHpBonus(character: Character): number {
+  const hasTough = Object.values(character.data.levelChoices ?? {}).some(
+    (c) => c.featId && TOUGH_FEAT_IDS.has(c.featId)
+  );
+  return hasTough ? 2 * character.level : 0;
+}
+
+// ─── Feat stat modifiers ──────────────────────────────────────────────────────
+
+const FEAT_ABILITY_STAT: Record<string, AbilityKey> = {
+  strength: "str",    str: "str",
+  dexterity: "dex",  dex: "dex",
+  constitution: "con", con: "con",
+  intelligence: "int", int: "int",
+  wisdom: "wis",     wis: "wis",
+  charisma: "cha",   cha: "cha",
+};
+
+/** Collects all static stat modifiers from feats the character has taken. */
+export function collectFeatStatMods(
+  levelChoices: Character["data"]["levelChoices"],
+  feats: FeatElement[]
+): StatModifier[] {
+  if (!levelChoices) return [];
+  const pickedIds = new Set(
+    Object.values(levelChoices).map((c) => c.featId).filter((id): id is string => !!id)
+  );
+  const result: StatModifier[] = [];
+  for (const feat of feats) {
+    if (pickedIds.has(feat.id)) result.push(...feat.rules.statModifiers);
+  }
+  return result;
+}
 
 // ─── Core formulas ────────────────────────────────────────────────────────────
 
@@ -73,6 +119,8 @@ export interface WeaponAttack {
 export interface DerivedStats {
   proficiencyBonus: number;
   abilityMods: Record<AbilityKey, number>;
+  /** Ability scores after applying feat static bonuses (e.g. Actor +1 CHA). Use for display; raw scores are in character.data.abilityScores. */
+  effectiveAbilityScores: Record<AbilityKey, number>;
   savingThrows: Record<AbilityKey, SavingThrowResult>;
   skills: Record<string, SkillResult>;
   armorClass: number;
@@ -92,10 +140,17 @@ export function deriveStats(
   character: Character,
   srdClass: SrdClass | undefined,
   srdRace: SrdRace | undefined,
-  srdBackground: SrdBackground | undefined
+  srdBackground: SrdBackground | undefined,
+  featStatMods: StatModifier[] = [],
 ): DerivedStats {
   const pb = proficiencyBonus(character.level);
-  const { abilityScores } = character.data;
+
+  // Apply feat ability score bonuses before computing mods.
+  const abilityScores = { ...character.data.abilityScores };
+  for (const mod of featStatMods) {
+    const key = FEAT_ABILITY_STAT[mod.stat.toLowerCase()];
+    if (key) abilityScores[key] += mod.value;
+  }
 
   const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "cha"];
 
@@ -220,15 +275,40 @@ export function deriveStats(
     srdClass?.weaponProficiencies ?? []
   );
 
+  // Apply remaining feat stat mods (initiative, speed, AC, passive perception).
+  let featInitiative = 0;
+  let featSpeed = 0;
+  let featAc = 0;
+  let featPassivePerc = 0;
+  for (const mod of featStatMods) {
+    const s = mod.stat.toLowerCase();
+    if (s === "initiative") { featInitiative += mod.value; continue; }
+    if (s === "ac:misc" || s === "ac") { featAc += mod.value; continue; }
+    if (s === "perception:passive") { featPassivePerc += mod.value; continue; }
+    // Exclude all non-base speed variants (climb, fly, swim, burrow) and conditional bonuses.
+    if (s.includes("speed") && !s.includes("climb") && !s.includes("fly") && !s.includes("swim") && !s.includes("burrow")) {
+      featSpeed += mod.value;
+    }
+  }
+
+  // Feats whose initiative bonus equals proficiency bonus (Aurora omits these from statModifiers).
+  const pickedFeatIds = new Set(
+    Object.values(character.data.levelChoices ?? {}).map((c) => c.featId).filter((id): id is string => !!id)
+  );
+  if ([...PROF_BONUS_INITIATIVE_FEAT_IDS].some((id) => pickedFeatIds.has(id))) {
+    featInitiative += pb;
+  }
+
   return {
     proficiencyBonus: pb,
     abilityMods,
+    effectiveAbilityScores: abilityScores,
     savingThrows,
     skills,
-    armorClass,
-    initiative,
-    passivePerception,
-    speed,
+    armorClass:        armorClass + featAc,
+    initiative:        initiative + featInitiative,
+    passivePerception: passivePerception + featPassivePerc,
+    speed:             speed + featSpeed,
     ...(spellcastingAbility !== undefined && {
       spellcastingAbility,
       spellcastingModifier,
