@@ -64,6 +64,8 @@ export interface SrdSubclass {
   featuresByLevel?: Record<number, string[]>;
   /** Human-readable descriptions for subclass features, keyed by feature name. */
   featureDescriptions?: Record<string, string>;
+  /** Spells always prepared by this subclass, unlocked at the given character level. */
+  grantedSpells?: Array<{ id: string; level: number }>;
   source?: ContentSource;
   sourceLabel?: string;
 }
