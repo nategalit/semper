@@ -1,18 +1,57 @@
 # Semper — Project Status
-Last updated: 2026-06-07
+Last updated: 2026-06-08
 
 ---
 
 ## Current State
 
-**Phase:** UI Overhaul (Phase 8.5 complete, Phase 8.6 queued)
+**Phase:** UI Overhaul complete — Phase 8.6 (subclass completeness) is next
 
 **Latest commits:**
+- `d2e3001` — Phase 9: UI polish, editing flows, and functional improvements
 - `1fe46a0` — Phase 8 fix: feature rendering pipeline (bugs 1 & 2)
 - `624d817` — Phase 8: Level Up flow complete
-- `0ec4043` — Initial commit: Phases 1-7 complete, Phase 8 in progress
 
-**Phase 8.5 complete:**
+**UI Overhaul complete (`d2e3001`):**
+
+*Editing flows:*
+- Description tab: alignment picker (9-button grid), personality trait list editor, Ideal/Bond/Flaw textareas — all save on blur with dirty-ref pattern
+- Extras tab: XP editor (tap-to-edit, shows XP-to-next-level, warns when XP implies different level), Notes textarea
+- Character name: inline edit from header (tap name → underline input, save on blur/Enter)
+- Back nav: `‹ Dashboard` link in sticky character header
+
+*Features tab restructure (E3/E4):*
+- Merged Class Features + Class Progression + Fighting Style into one "Class" section with sub-headers
+- Section order: Class → Subclass → Race → Background → Feats → Items (stub)
+- All sections collapsible; state persisted to `localStorage` per character
+- Sticky section headers (`top-44 z-20`) scroll under character header without obscuring content
+- Full-text search replaces all sections when active
+
+*Stats tab:*
+- Proficiencies section added: armor, weapons, tools (from background), languages (from race + background)
+
+*Dice roller:*
+- Multi-die count stepper (1–9); Advantage/Disadvantage hidden when count > 1
+- Roll label and history use full notation (e.g., `3d8+2`)
+
+*Dashboard:*
+- Character cards show real class/race names, HP with amber accent, inspiration badge
+- `+ New character` button uses design tokens
+
+*Design token sweep (F3/F4):*
+- `btn.primary`/`btn.secondary` tokens applied to all panel confirm buttons
+- `rounded-xl` enforced across all primary interactive surfaces; `rounded-md` restricted to marketing/auth pages
+- Stat popover Confirm: `orange-600` → `amber-600`, `text-white` → `text-stone-950`
+- Alignment picker, condition buttons, XP input, HP dialog Set buttons all updated
+
+*New files:*
+- `app/not-found.tsx`, `app/characters/[id]/error.tsx`, `app/characters/[id]/loading.tsx`, `app/dashboard/loading.tsx`
+- `app/manifest.ts` (PWA manifest, replaces `public/manifest.json`)
+- `lib/content/aurora/clean-html.ts` (HTML sanitizer for Aurora content in browse views)
+
+*Server actions added:* `renameCharacter`, `updateNotes`, `updateXp`, `updateDescription`
+
+**Phase 8.5 complete (prior):**
 - Feat picker UI: ASI/Feat toggle, feat browser with search/filter in level-up panel
 - Half-feat ASI sub-choice surfaced (ability picker inline in feat card)
 - Tough HP augmentation: `2 × level` bonus applied at render time
@@ -22,7 +61,7 @@ Last updated: 2026-06-07
 - All 12 SRD classes have full `featureDescriptions` coverage
 - Fallen Aasimar subrace HTML stripped in Features tab
 - Dev routes deleted
-- Standalone Feats browse page (`/feats`) with source + type filters
+- Standalone Feats browse page (`/feats`) with source + type filters; sort by Name/Source
 - Feat filter + source filter added to level-up feat picker (shared `FilterPill` component)
 - Level-up modal viewport expanded (96dvh, feat list max-h min(52vh,480px))
 - Foundational audits: `docs/feature-taxonomy-audit.md`, `docs/class-completeness-audit.md`
@@ -42,19 +81,7 @@ Last updated: 2026-06-07
 
 ## What's Next
 
-### UI Overhaul (active)
-
-Design doc: `docs/ui-overhaul-plan.md`. Six areas:
-- A: Tap-to-expand card pattern (spells, feats, features)
-- B: D&D-style description formatting (preserve bold/italic/paragraphs from Aurora HTML)
-- C: Click-stat-to-show-calculation (AC, initiative, saves, skills — breakdown popover)
-- D: Manual stat overrides (DM buffs, magic items not in data)
-- E: Features tab restructure (collapsible, reordered, searchable)
-- F: Visual language consistency (design tokens, chip/button standardization)
-
-Build sequence in `docs/ui-overhaul-plan.md`.
-
-### Phase 8.6 — Subclass completeness (queued)
+### Phase 8.6 — Subclass completeness (next up)
 
 Mirrors Phase 8.5 but for subclasses. Key gaps found in testing:
 - Battle Master: features show as chips without descriptions
@@ -69,7 +96,7 @@ Will require a dedicated audit before building. Plan when UI overhaul is done.
 
 After 8.6. Structured test pass with diverse character archetypes.
 
-### Phase 9 — Action bar (queued, deferred behind UI overhaul and 8.6)
+### Phase 9 — Action bar (queued, deferred behind 8.6)
 
 BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`.
 Must be built into the finalized visual language — cannot start before UI overhaul lands.
@@ -93,10 +120,10 @@ Performance, CSS edge cases, `unstable_cache` for content getters, optimistic up
 | 7 — PWA polish | ✅ Done | Offline support, install prompt, manifest, service worker |
 | 8 — Level Up flow | ✅ Done | Guided level-up/down panel; subclass picker; Fighting Style picker (SRD + Aurora) |
 | 8.5 — Feat picker + class completeness | ✅ Done | Feat picker; half-feat ASI; Tough HP; Lucky/Inspiring Leader; feat stat mods; class featureDescriptions (all 12); Feats browse page; level-up filters; modal viewport |
-| UI Overhaul | 🔨 Active | Tap-to-expand cards, formatted descriptions, stat breakdown popovers, manual overrides, Features tab restructure, design tokens. Plan: `docs/ui-overhaul-plan.md` |
-| 8.6 — Subclass completeness | ⏳ Queued | Battle Master descriptions, Monster Hunter mechanics, subclass-granted spellcasting, Champion L10 choice, Remarkable Athlete. Mirrors Phase 8.5 scope for subclasses. |
+| UI Overhaul | ✅ Done | Tap-to-expand cards, formatted descriptions, stat breakdown popovers, manual overrides, Features tab restructure, design tokens, editing flows (description/extras/name), dashboard polish, PWA manifest, error/loading pages, multi-die dice roller, proficiencies section |
+| 8.6 — Subclass completeness | 🔜 Next | Battle Master descriptions, Monster Hunter mechanics, subclass-granted spellcasting, Champion L10 choice, Remarkable Athlete. Mirrors Phase 8.5 scope for subclasses. |
 | Heavy testing pass | ⏳ Queued | Diverse character archetypes, integration bugs at scale |
-| 9 — Action bar | ⏳ Queued | BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Deferred until UI overhaul and 8.6 land. |
+| 9 — Action bar | ⏳ Queued | BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Deferred until 8.6 lands. |
 | 10 — Polish pass | ⏳ Queued | Performance (AC recalc lag, content re-fetch), CSS bugs (class description heading overlap), optimistic updates |
 | — | ✅ Done | **Feature taxonomy audit** — `docs/feature-taxonomy-audit.md` |
 | — | ✅ Done | **Class completeness audit** — `docs/class-completeness-audit.md` |
