@@ -34,11 +34,11 @@ export function CharacterList({ initialCharacters }: Props) {
 
   if (characters.length === 0) {
     return (
-      <div className="rounded-lg border border-stone-800 bg-stone-900/50 p-12 text-center">
+      <div className="rounded-xl border border-stone-800 bg-stone-900/50 p-12 text-center">
         <p className="text-stone-400 mb-4">You have no characters yet.</p>
         <Link
           href="/characters/new"
-          className="rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 transition-colors"
+          className="inline-block rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-bold text-stone-950 hover:bg-amber-500 transition-colors"
         >
           Create your first character
         </Link>
@@ -49,31 +49,49 @@ export function CharacterList({ initialCharacters }: Props) {
   return (
     <>
       <ul className="grid gap-4 sm:grid-cols-2">
-        {characters.map((c) => (
+        {characters.map((c) => {
+          const className = c.data.resolvedClass?.name
+            ?? (c.classId ? c.classId.replace(/^ID_CLASS_/i, "").replace(/_/g, " ") : null);
+          const raceName = c.data.resolvedRace?.name
+            ?? (c.raceId ? c.raceId.replace(/^ID_RACE_/i, "").replace(/_/g, " ") : null);
+          const hpCurrent = c.data.currentHp;
+          const hpMax = c.data.maxHp;
+
+          return (
           <li key={c.id} className="relative group">
             <Link
               href={`/characters/${c.id}`}
-              className="block rounded-lg border border-stone-800 bg-stone-900 p-5 hover:border-amber-700 transition-colors"
+              className="block rounded-xl border border-stone-800 bg-stone-900 p-5 hover:border-amber-700 transition-colors"
             >
-              <div className="flex items-start justify-between pr-8">
-                <div>
-                  <p className="font-semibold text-stone-100">{c.name}</p>
-                  <p className="mt-1 text-sm text-stone-400">
+              <div className="flex items-start justify-between pr-8 mb-3">
+                <div className="min-w-0">
+                  <p className="font-bold text-stone-100 truncate">{c.name}</p>
+                  <p className="mt-0.5 text-sm text-stone-400">
                     Level {c.level}
-                    {c.classId && ` · ${c.classId.replace(/^ID_CLASS_/, "")}`}
-                    {c.raceId && ` · ${c.raceId.replace(/^ID_RACE_/, "")}`}
+                    {className && ` · ${className}`}
+                    {raceName && ` · ${raceName}`}
                   </p>
                 </div>
-                <span className="text-xs text-stone-500">
+                <span className="text-xs text-stone-600 shrink-0 ml-2">
                   {new Date(c.updatedAt).toLocaleDateString()}
                 </span>
+              </div>
+              <div className="flex items-center gap-4 text-xs text-stone-500">
+                <span>
+                  <span className="font-semibold text-amber-400">{hpCurrent}</span>
+                  <span className="text-stone-600">/{hpMax}</span>
+                  <span className="ml-1 text-stone-600">HP</span>
+                </span>
+                {c.data.inspiration && (
+                  <span className="text-amber-400">★ Inspired</span>
+                )}
               </div>
             </Link>
             <button
               onClick={(e) => openConfirm(c.id, e)}
               disabled={isPending}
               aria-label={`Delete ${c.name}`}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-md
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-lg
                 text-stone-600 hover:text-red-400 hover:bg-stone-800 transition-colors
                 opacity-0 group-hover:opacity-100 focus:opacity-100"
             >
@@ -91,7 +109,8 @@ export function CharacterList({ initialCharacters }: Props) {
               </svg>
             </button>
           </li>
-        ))}
+          );
+        })}
       </ul>
 
       {/* Delete confirmation dialog */}

@@ -1,4 +1,4 @@
-import type { Character, EquipmentItem, WeaponStats } from "@/lib/types/character";
+import type { Character, EquipmentItem, WeaponStats, OverridableStatKey } from "@/lib/types/character";
 import type { AbilityKey, SrdBackground, SrdClass, SrdRace } from "@/lib/content/srd";
 import type { FeatElement, StatModifier } from "@/lib/content/schema";
 
@@ -116,6 +116,11 @@ export interface WeaponAttack {
   enhancement?: number;
 }
 
+export interface StatBreakdown {
+  components: { label: string; value: number }[];
+  total: number;
+}
+
 export interface DerivedStats {
   proficiencyBonus: number;
   abilityMods: Record<AbilityKey, number>;
@@ -132,6 +137,14 @@ export interface DerivedStats {
   spellSaveDC?: number;
   spellAttackBonus?: number;
   weaponAttacks: WeaponAttack[];
+  acBreakdown: StatBreakdown;
+  initiativeBreakdown: StatBreakdown;
+  savingThrowBreakdowns: Record<AbilityKey, StatBreakdown>;
+  skillBreakdowns: Record<string, StatBreakdown>;
+  speedBreakdown: StatBreakdown;
+  passivePerceptionBreakdown: StatBreakdown;
+  spellSaveDCBreakdown?: StatBreakdown;
+  spellAttackBonusBreakdown?: StatBreakdown;
 }
 
 // ─── Main deriver ─────────────────────────────────────────────────────────────
@@ -170,6 +183,11 @@ export function deriveStats(
     ])
   ) as Record<AbilityKey, SavingThrowResult>;
 
+  // Extra save components from magic items, accumulated below.
+  const saveExtraComponents = Object.fromEntries(
+    ABILITY_KEYS.map(k => [k, [] as { label: string; value: number }[]])
+  ) as Record<AbilityKey, { label: string; value: number }[]>;
+
   // Skills — use stored skillProficiencies if present; fall back to background
   // skills only for characters created before Phase 6A (migration path).
   const storedSkills = character.data.skillProficiencies;
@@ -195,21 +213,51 @@ export function deriveStats(
   const liveEquipment = character.data.equipment ?? [];
   const armorItem  = liveEquipment.find(i => i.equipped && i.equipSlot === "armor");
   const shieldItem = liveEquipment.find(i => i.equipped && i.equipSlot === "shield");
+
+  const acComponents: { label: string; value: number }[] = [];
   let armorClass: number;
+
   if (armorItem?.armor) {
-    const dexBonus =
-      armorItem.armor.type === "heavy"  ? 0 :
-      armorItem.armor.type === "medium" ? Math.min(abilityMods.dex, 2) :
-      abilityMods.dex;
+    acComponents.push({ label: armorItem.name, value: armorItem.armor.baseAc });
+    if (armorItem.enhancement) {
+      acComponents.push({ label: `+${armorItem.enhancement} Enhancement`, value: armorItem.enhancement });
+    }
+    let dexBonus: number;
+    if (armorItem.armor.type === "heavy") {
+      dexBonus = 0;
+    } else if (armorItem.armor.type === "medium") {
+      dexBonus = Math.min(abilityMods.dex, 2);
+      if (dexBonus !== 0) acComponents.push({ label: "DEX (max 2)", value: dexBonus });
+    } else {
+      dexBonus = abilityMods.dex;
+      if (dexBonus !== 0) acComponents.push({ label: "DEX", value: dexBonus });
+    }
     armorClass = armorItem.armor.baseAc + (armorItem.enhancement ?? 0) + dexBonus;
   } else {
-    armorClass = 10 + abilityMods.dex;
-    if (srdClass?.id === "ID_CLASS_BARBARIAN")
+    acComponents.push({ label: "Base", value: 10 });
+    if (srdClass?.id === "ID_CLASS_BARBARIAN") {
       armorClass = 10 + abilityMods.dex + abilityMods.con;
-    else if (srdClass?.id === "ID_CLASS_MONK")
+      if (abilityMods.dex !== 0) acComponents.push({ label: "DEX", value: abilityMods.dex });
+      if (abilityMods.con !== 0) acComponents.push({ label: "CON", value: abilityMods.con });
+    } else if (srdClass?.id === "ID_CLASS_MONK") {
       armorClass = 10 + abilityMods.dex + abilityMods.wis;
+      if (abilityMods.dex !== 0) acComponents.push({ label: "DEX", value: abilityMods.dex });
+      if (abilityMods.wis !== 0) acComponents.push({ label: "WIS", value: abilityMods.wis });
+    } else {
+      armorClass = 10 + abilityMods.dex;
+      if (abilityMods.dex !== 0) acComponents.push({ label: "DEX", value: abilityMods.dex });
+    }
   }
-  if (shieldItem) armorClass += 2 + (shieldItem.enhancement ?? 0);
+
+  if (shieldItem) {
+    const shieldEnh = shieldItem.enhancement ?? 0;
+    const shieldTotal = 2 + shieldEnh;
+    acComponents.push({
+      label: shieldEnh > 0 ? `Shield (+${shieldEnh})` : "Shield",
+      value: shieldTotal,
+    });
+    armorClass += shieldTotal;
+  }
 
   // Passive magic item bonuses: statModifiers from equipped + condition-met items.
   // Items requiring attunement only contribute when attuned.
@@ -220,9 +268,13 @@ export function deriveStats(
 
   if (magicStatMods.length > 0) {
     // AC bonus
-    armorClass += magicStatMods
+    const magicAcBonus = magicStatMods
       .filter(m => { const s = m.stat.toLowerCase(); return s === "ac" || s.includes("armor class"); })
       .reduce((sum, m) => sum + m.value, 0);
+    if (magicAcBonus !== 0) {
+      acComponents.push({ label: "Magic Bonus", value: magicAcBonus });
+      armorClass += magicAcBonus;
+    }
 
     // All-saves bonus (e.g. Cloak of Protection)
     const allSaveBonus = magicStatMods
@@ -236,6 +288,7 @@ export function deriveStats(
     if (allSaveBonus !== 0) {
       for (const k of ABILITY_KEYS) {
         savingThrows[k] = { ...savingThrows[k], modifier: savingThrows[k].modifier + allSaveBonus };
+        saveExtraComponents[k].push({ label: "Magic Bonus", value: allSaveBonus });
       }
     }
 
@@ -250,6 +303,7 @@ export function deriveStats(
         .reduce((sum, m) => sum + m.value, 0);
       if (perBonus !== 0) {
         savingThrows[k] = { ...savingThrows[k], modifier: savingThrows[k].modifier + perBonus };
+        saveExtraComponents[k].push({ label: "Magic Bonus", value: perBonus });
       }
     }
   }
@@ -299,23 +353,149 @@ export function deriveStats(
     featInitiative += pb;
   }
 
+  // ─── Build breakdowns ──────────────────────────────────────────────────────
+
+  const ABILITY_LABEL: Record<AbilityKey, string> = {
+    str: "STR", dex: "DEX", con: "CON", int: "INT", wis: "WIS", cha: "CHA",
+  };
+
+  if (featAc !== 0) acComponents.push({ label: "Feat Bonus", value: featAc });
+  const acBreakdown: StatBreakdown = { components: acComponents, total: armorClass + featAc };
+
+  const initiativeComponents: { label: string; value: number }[] = [
+    { label: "DEX", value: abilityMods.dex },
+  ];
+  if (featInitiative !== 0) initiativeComponents.push({ label: "Feat Bonus", value: featInitiative });
+  const initiativeBreakdown: StatBreakdown = { components: initiativeComponents, total: initiative + featInitiative };
+
+  const savingThrowBreakdowns = Object.fromEntries(
+    ABILITY_KEYS.map(k => {
+      const components: { label: string; value: number }[] = [
+        { label: ABILITY_LABEL[k], value: abilityMods[k] },
+      ];
+      if (classSaves.has(k)) components.push({ label: "Proficiency", value: pb });
+      components.push(...saveExtraComponents[k]);
+      return [k, { components, total: savingThrows[k].modifier }];
+    })
+  ) as Record<AbilityKey, StatBreakdown>;
+
+  const skillBreakdowns = Object.fromEntries(
+    ALL_SKILLS.map(skill => {
+      const ability = SKILL_ABILITIES[skill];
+      const proficient = proficientSkills.has(skill);
+      const components: { label: string; value: number }[] = [
+        { label: ABILITY_LABEL[ability], value: abilityMods[ability] },
+      ];
+      if (proficient) components.push({ label: "Proficiency", value: pb });
+      return [skill, { components, total: skills[skill].modifier }];
+    })
+  ) as Record<string, StatBreakdown>;
+
+  const speedComponents: { label: string; value: number }[] = [
+    { label: "Base", value: srdRace?.speed ?? 30 },
+  ];
+  if (featSpeed !== 0) speedComponents.push({ label: "Feat Bonus", value: featSpeed });
+  const speedBreakdown: StatBreakdown = { components: speedComponents, total: speed + featSpeed };
+
+  const percProficient = proficientSkills.has("Perception");
+  const passivePercComponents: { label: string; value: number }[] = [
+    { label: "Base", value: 10 },
+    { label: "WIS", value: abilityMods.wis },
+  ];
+  if (percProficient) passivePercComponents.push({ label: "Proficiency", value: pb });
+  if (featPassivePerc !== 0) passivePercComponents.push({ label: "Feat Bonus", value: featPassivePerc });
+  const passivePerceptionBreakdown: StatBreakdown = {
+    components: passivePercComponents,
+    total: passivePerception + featPassivePerc,
+  };
+
+  const spellSaveDCBreakdown: StatBreakdown | undefined =
+    spellcastingAbility !== undefined && spellSaveDC !== undefined
+      ? {
+          components: [
+            { label: "Base", value: 8 },
+            { label: "Proficiency", value: pb },
+            { label: ABILITY_LABEL[spellcastingAbility], value: spellcastingModifier! },
+          ],
+          total: spellSaveDC,
+        }
+      : undefined;
+
+  const spellAttackBonusBreakdown: StatBreakdown | undefined =
+    spellcastingAbility !== undefined && spellAttackBonus !== undefined
+      ? {
+          components: [
+            { label: "Proficiency", value: pb },
+            { label: ABILITY_LABEL[spellcastingAbility], value: spellcastingModifier! },
+          ],
+          total: spellAttackBonus,
+        }
+      : undefined;
+
+  // ─── Apply otherModifiers and overrides ───────────────────────────────────
+
+  const allOverrides = character.data.overrides ?? {};
+  const allOtherMods = character.data.otherModifiers ?? {};
+
+  function applyAdj(bd: StatBreakdown, key: OverridableStatKey): StatBreakdown {
+    const om = allOtherMods[key];
+    const ov = allOverrides[key];
+    if (!om && ov === undefined) return bd;
+    const components = [...bd.components];
+    let total = bd.total;
+    if (om) { components.push({ label: "Other Modifier", value: om }); total += om; }
+    if (ov !== undefined) { total = ov; }
+    return { components, total };
+  }
+
+  const adjAc               = applyAdj(acBreakdown,               "ac");
+  const adjInitiative       = applyAdj(initiativeBreakdown,       "initiative");
+  const adjSpeed            = applyAdj(speedBreakdown,            "speed");
+  const adjPassivePerc      = applyAdj(passivePerceptionBreakdown,"passivePerception");
+  const adjSaveDC           = spellSaveDCBreakdown     ? applyAdj(spellSaveDCBreakdown,     "spellSaveDC")     : undefined;
+  const adjSpellAtk         = spellAttackBonusBreakdown ? applyAdj(spellAttackBonusBreakdown,"spellAttackBonus") : undefined;
+
+  const adjSavingThrowBreakdowns = Object.fromEntries(
+    ABILITY_KEYS.map(k => [k, applyAdj(savingThrowBreakdowns[k], `save_${k}` as OverridableStatKey)])
+  ) as Record<AbilityKey, StatBreakdown>;
+
+  const adjSkillBreakdowns = Object.fromEntries(
+    ALL_SKILLS.map(s => [s, applyAdj(skillBreakdowns[s], `skill_${s}` as OverridableStatKey)])
+  ) as Record<string, StatBreakdown>;
+
+  const adjSavingThrows = Object.fromEntries(
+    ABILITY_KEYS.map(k => [k, { ...savingThrows[k], modifier: adjSavingThrowBreakdowns[k].total }])
+  ) as Record<AbilityKey, SavingThrowResult>;
+
+  const adjSkills = Object.fromEntries(
+    ALL_SKILLS.map(s => [s, { ...skills[s], modifier: adjSkillBreakdowns[s].total }])
+  ) as Record<string, SkillResult>;
+
   return {
     proficiencyBonus: pb,
     abilityMods,
     effectiveAbilityScores: abilityScores,
-    savingThrows,
-    skills,
-    armorClass:        armorClass + featAc,
-    initiative:        initiative + featInitiative,
-    passivePerception: passivePerception + featPassivePerc,
-    speed:             speed + featSpeed,
+    savingThrows: adjSavingThrows,
+    skills: adjSkills,
+    armorClass:        adjAc.total,
+    initiative:        adjInitiative.total,
+    passivePerception: adjPassivePerc.total,
+    speed:             adjSpeed.total,
     ...(spellcastingAbility !== undefined && {
       spellcastingAbility,
       spellcastingModifier,
-      spellSaveDC,
-      spellAttackBonus,
+      spellSaveDC:        adjSaveDC?.total  ?? spellSaveDC,
+      spellAttackBonus:   adjSpellAtk?.total ?? spellAttackBonus,
     }),
     weaponAttacks,
+    acBreakdown:               adjAc,
+    initiativeBreakdown:       adjInitiative,
+    savingThrowBreakdowns:     adjSavingThrowBreakdowns,
+    skillBreakdowns:           adjSkillBreakdowns,
+    speedBreakdown:            adjSpeed,
+    passivePerceptionBreakdown: adjPassivePerc,
+    ...(adjSaveDC   && { spellSaveDCBreakdown:      adjSaveDC   }),
+    ...(adjSpellAtk && { spellAttackBonusBreakdown: adjSpellAtk }),
   };
 }
 

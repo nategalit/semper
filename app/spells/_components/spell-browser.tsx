@@ -3,6 +3,10 @@
 import { useState, useMemo } from "react";
 import type { DisplaySpell } from "@/lib/types/spell";
 import type { SpellSchool } from "@/lib/content/srd";
+import { FilterPill } from "@/app/_components/filter-pill";
+import { ExpandableCard } from "@/app/_components/expandable-card";
+import { sourceChipClass } from "@/lib/ui-tokens";
+import { cleanHtmlBrowse } from "@/lib/content/aurora/clean-html";
 
 const SCHOOLS: SpellSchool[] = [
   "abjuration","conjuration","divination","enchantment",
@@ -58,8 +62,8 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
   const [classFilters, setClassFilters] = useState<Set<string>>(() => new Set());
   const [sourceFilters, setSourceFilters] = useState<Set<string>>(() => new Set());
   const [sortBy, setSortBy] = useState<SortBy>("name");
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
 
-  // Build canonical spell groups
   const spellGroups = useMemo(() => {
     const groups = new Map<string, DisplaySpell[]>();
     for (const spell of allSpells) {
@@ -71,7 +75,6 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
     return groups;
   }, [allSpells]);
 
-  // Deduplicated canonical list (best version per name, preserving insertion order)
   const dedupedAll = useMemo((): DedupedSpell[] => {
     const seen = new Set<string>();
     const result: DedupedSpell[] = [];
@@ -126,8 +129,7 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
   function toggleClass(id: string) {
     setClassFilters((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (next.has(id)) next.delete(id); else next.add(id);
       return next;
     });
   }
@@ -135,8 +137,15 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
   function toggleSource(label: string) {
     setSourceFilters((prev) => {
       const next = new Set(prev);
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
+      if (next.has(label)) next.delete(label); else next.add(label);
+      return next;
+    });
+  }
+
+  function toggleExpand(key: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(key)) next.delete(key); else next.add(key);
       return next;
     });
   }
@@ -146,7 +155,6 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
       {/* Sticky filter bar */}
       <div className="sticky top-0 z-10 bg-stone-950 border-b border-stone-800 px-4 py-4 space-y-3">
         <div className="max-w-5xl mx-auto space-y-3">
-          {/* Search + sort row */}
           <div className="flex gap-2">
             <input
               type="search"
@@ -200,7 +208,6 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
             ))}
           </div>
 
-          {/* Class multi-select pills */}
           {uniqueClassIds.length > 0 && (
             <div className="space-y-1">
               <span className="text-[10px] uppercase tracking-widest text-stone-600 font-medium">
@@ -219,7 +226,6 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
             </div>
           )}
 
-          {/* Source pills (multi-select) — only when multiple sources */}
           {uniqueSources.length > 1 && (
             <div className="space-y-1">
               <span className="text-[10px] uppercase tracking-widest text-stone-600 font-medium">
@@ -247,7 +253,7 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
 
       {/* Spell list */}
       <main className="max-w-5xl mx-auto px-4 py-4">
-        <p className="text-xs text-stone-600 mb-4 tabular-nums">
+        <p className="text-xs text-stone-600 mb-3 tabular-nums">
           {displaySpells.length} spell{displaySpells.length !== 1 ? "s" : ""}
         </p>
 
@@ -256,7 +262,7 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
             No spells match your filters.
           </p>
         ) : (
-          <ul className="divide-y divide-stone-800/60">
+          <ul className="space-y-1.5">
             {displaySpells.map(({ key, spell }) => {
               const classNames = spell.classes
                 .map((c) => CASTER_CLASS_NAMES[c])
@@ -265,46 +271,53 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
                 .join(" · ");
 
               return (
-                <li key={key} className="py-4">
-                  <div className="flex items-baseline gap-2 flex-wrap mb-1">
-                    <span className="text-sm font-semibold text-stone-100">{spell.name}</span>
-                    <span className="text-[10px] uppercase tracking-widest text-stone-500 font-medium">
-                      {spell.level === 0 ? "Cantrip" : `Level ${spell.level}`}
-                    </span>
-                    <span className="text-[10px] uppercase tracking-widest text-stone-600">
-                      {SCHOOL_LABEL[spell.school as SpellSchool] ?? spell.school}
-                    </span>
-                    {spell.concentration && (
-                      <span className="text-[10px] text-violet-400">Conc.</span>
-                    )}
-                    {spell.ritual && (
-                      <span className="text-[10px] text-emerald-500">Ritual</span>
-                    )}
-                    <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded bg-sky-900/40 text-sky-400 border border-sky-800/50">
-                      {spell.sourceLabel}
-                    </span>
-                  </div>
-
-                  <p className="text-xs text-stone-500 mb-1">
-                    {spell.castingTime} · {spell.range} · {spell.duration}
-                    {spell.components && ` · ${spell.components}`}
-                  </p>
-
-                  {spell.description ? (
-                    <div
-                      className="mt-2 text-xs text-stone-300 leading-relaxed prose prose-invert prose-sm max-w-none
-                        [&_p]:mb-2 [&_ul]:pl-4 [&_ul]:list-disc [&_em]:italic [&_strong]:font-semibold"
-                      dangerouslySetInnerHTML={{ __html: spell.description }}
-                    />
-                  ) : (
-                    <p className="mt-1 text-xs text-stone-600 italic">No description available. Import Aurora Legacy for full text.</p>
-                  )}
-
-                  {classNames && (
-                    <p className="mt-2 text-[10px] text-stone-600">
-                      {classNames}
+                <li key={key}>
+                  <ExpandableCard
+                    expanded={expandedIds.has(key)}
+                    onToggle={() => toggleExpand(key)}
+                    header={
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="text-sm font-semibold text-stone-200">
+                          {spell.name}
+                        </span>
+                        <span className="text-[10px] uppercase tracking-widest text-stone-500 font-medium">
+                          {spell.level === 0 ? "Cantrip" : `L${spell.level}`}
+                        </span>
+                        <span className="text-[10px] uppercase tracking-widest text-stone-600">
+                          {SCHOOL_LABEL[spell.school as SpellSchool] ?? spell.school}
+                        </span>
+                        {spell.concentration && (
+                          <span className="text-[10px] text-violet-400">Conc.</span>
+                        )}
+                        {spell.ritual && (
+                          <span className="text-[10px] text-emerald-500">Ritual</span>
+                        )}
+                        <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded ${sourceChipClass(spell.sourceLabel)}`}>
+                          {spell.sourceLabel}
+                        </span>
+                      </div>
+                    }
+                  >
+                    <p className="text-xs text-stone-500 mb-3">
+                      {spell.castingTime} · {spell.range} · {spell.duration}
+                      {spell.components && ` · ${spell.components}`}
                     </p>
-                  )}
+
+                    {spell.description ? (
+                      <div
+                        className="aurora-content text-xs text-stone-300 leading-relaxed"
+                        dangerouslySetInnerHTML={{ __html: cleanHtmlBrowse(spell.description) }}
+                      />
+                    ) : (
+                      <p className="text-xs text-stone-600 italic">
+                        No description available. Import Aurora Legacy for full text.
+                      </p>
+                    )}
+
+                    {classNames && (
+                      <p className="mt-3 text-[10px] text-stone-600">{classNames}</p>
+                    )}
+                  </ExpandableCard>
                 </li>
               );
             })}
@@ -312,20 +325,5 @@ export function SpellBrowser({ allSpells, initialSearch = "", initialLevel = nul
         )}
       </main>
     </>
-  );
-}
-
-function FilterPill({ active, onClick, label }: { active: boolean; onClick: () => void; label: string }) {
-  return (
-    <button
-      onClick={onClick}
-      className={`shrink-0 min-h-[32px] px-3 rounded-full text-xs font-medium transition-colors ${
-        active
-          ? "bg-amber-600 text-stone-950"
-          : "bg-stone-800 text-stone-400 hover:text-stone-200"
-      }`}
-    >
-      {label}
-    </button>
   );
 }

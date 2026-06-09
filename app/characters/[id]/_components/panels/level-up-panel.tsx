@@ -12,7 +12,8 @@ import type { FightingStyleEntry } from "@/app/actions/content";
 import type { FeatElement } from "@/lib/content/schema";
 import { abbreviateSource } from "@/lib/content/source-abbreviations";
 import { FilterPill } from "@/app/_components/filter-pill";
-import { sourceChipClass } from "@/lib/ui-tokens";
+import { btn, sourceChipClass } from "@/lib/ui-tokens";
+import { cleanHtmlBrowse } from "@/lib/content/aurora/clean-html";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -450,9 +451,7 @@ export function LevelUpPanel({
           <button
             onClick={handleConfirm}
             disabled={!canConfirm}
-            className="w-full min-h-[48px] rounded-xl bg-amber-600 text-stone-950 font-bold
-              hover:bg-amber-500 active:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed
-              transition-colors"
+            className={`w-full ${btn.primary} disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             {isPending
               ? "Saving…"
@@ -810,6 +809,7 @@ function FeatPicker({ feats, pickedFeatId, onPick, disabledFeatIds, halfFeatAbil
   const [query, setQuery] = useState("");
   const [sourceFilters, setSourceFilters] = useState<Set<string>>(() => new Set());
   const [typeFilter, setTypeFilter] = useState<"all" | "full" | "half">("all");
+  const [expandedFeatIds, setExpandedFeatIds] = useState<Set<string>>(() => new Set());
 
   const uniqueSources = useMemo(
     () => [...new Set(feats.map((f) => abbreviateSource(f.source)))].sort(),
@@ -891,23 +891,38 @@ function FeatPicker({ feats, pickedFeatId, onPick, disabledFeatIds, halfFeatAbil
           {filtered.map((feat) => {
             const picked = feat.id === pickedFeatId;
             const disabled = disabledFeatIds.has(feat.id);
-            // Collapsed: prefer sheetText (brief). Expanded (picked): prefer description (full).
-            const collapsedDesc = (feat.sheetText || feat.description || "")
-              .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-            const expandedDesc = (feat.description || feat.sheetText || "")
-              .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+            const expanded = expandedFeatIds.has(feat.id);
+            const htmlDesc = cleanHtmlBrowse(feat.description || feat.sheetText || "");
             const sourceLabel = abbreviateSource(feat.source);
+
+            function toggleExpand(e: React.MouseEvent) {
+              e.stopPropagation();
+              setExpandedFeatIds((prev) => {
+                const next = new Set(prev);
+                if (next.has(feat.id)) next.delete(feat.id); else next.add(feat.id);
+                return next;
+              });
+            }
+
             return (
               // div instead of button so inner ability buttons are valid HTML
               <div
                 key={feat.id}
                 role="button"
                 tabIndex={disabled ? -1 : 0}
-                onClick={() => !disabled && onPick(picked ? "" : feat.id)}
+                onClick={() => {
+                  if (disabled) return;
+                  const nextId = picked ? "" : feat.id;
+                  onPick(nextId);
+                  // Auto-expand on pick so the description is readable immediately.
+                  if (nextId) setExpandedFeatIds((prev) => new Set(prev).add(nextId));
+                }}
                 onKeyDown={(e) => {
                   if ((e.key === "Enter" || e.key === " ") && !disabled) {
                     e.preventDefault();
-                    onPick(picked ? "" : feat.id);
+                    const nextId = picked ? "" : feat.id;
+                    onPick(nextId);
+                    if (nextId) setExpandedFeatIds((prev) => new Set(prev).add(nextId));
                   }
                 }}
                 aria-pressed={picked}
@@ -926,21 +941,38 @@ function FeatPicker({ feats, pickedFeatId, onPick, disabledFeatIds, halfFeatAbil
                   }`}>
                     {feat.name}
                   </p>
-                  {sourceLabel && (
-                    <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 ${sourceChipClass(sourceLabel)}`}>
-                      {sourceLabel}
-                    </span>
-                  )}
+                  <div className="flex items-center gap-1.5 shrink-0">
+                    {sourceLabel && (
+                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${sourceChipClass(sourceLabel)}`}>
+                        {sourceLabel}
+                      </span>
+                    )}
+                    {htmlDesc && (
+                      <button
+                        onClick={toggleExpand}
+                        className="text-stone-500 hover:text-stone-300 transition-colors p-0.5"
+                        aria-label={expanded ? "Collapse" : "Expand"}
+                      >
+                        <svg
+                          className={`w-3.5 h-3.5 transition-transform duration-150 ${expanded ? "rotate-180" : ""}`}
+                          viewBox="0 0 20 20" fill="currentColor" aria-hidden
+                        >
+                          <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+                        </svg>
+                      </button>
+                    )}
+                  </div>
                 </div>
                 {feat.prerequisite && (
                   <p className="text-[10px] text-amber-600/80 mt-0.5 leading-tight">
                     Requires: {feat.prerequisite}
                   </p>
                 )}
-                {(picked ? expandedDesc : collapsedDesc) && (
-                  <p className={`text-xs text-stone-500 mt-1 leading-relaxed ${picked ? "" : "line-clamp-2"}`}>
-                    {picked ? expandedDesc : collapsedDesc}
-                  </p>
+                {expanded && htmlDesc && (
+                  <div
+                    className="aurora-content text-xs text-stone-400 leading-relaxed mt-2"
+                    dangerouslySetInnerHTML={{ __html: htmlDesc }}
+                  />
                 )}
                 {picked && isHalfFeat(feat) && (
                   <div className="mt-3 pt-2 border-t border-stone-700">

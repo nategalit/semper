@@ -111,7 +111,7 @@ export function HpDialog({ open, onClose }: Props) {
             <button
               key={m}
               onClick={() => setMode(m)}
-              className={`flex-1 py-2.5 rounded-md text-sm font-semibold capitalize transition-colors ${
+              className={`flex-1 py-2.5 rounded-lg text-sm font-semibold capitalize transition-colors ${
                 mode === m
                   ? m === "damage"
                     ? "bg-red-700 text-stone-100"
@@ -183,7 +183,7 @@ export function HpDialog({ open, onClose }: Props) {
             />
             <button
               onClick={applyTempHp}
-              className="min-h-[44px] px-5 rounded-lg bg-sky-800 hover:bg-sky-700 active:bg-sky-900 text-stone-100 text-sm font-semibold transition-colors"
+              className="min-h-[44px] px-5 rounded-xl bg-sky-800 hover:bg-sky-700 active:bg-sky-900 text-stone-100 text-sm font-semibold transition-colors"
             >
               Set
             </button>
@@ -207,7 +207,7 @@ export function HpDialog({ open, onClose }: Props) {
             />
             <button
               onClick={applyMaxHp}
-              className="min-h-[44px] px-5 rounded-lg bg-stone-700 hover:bg-stone-600 active:bg-stone-800 text-stone-100 text-sm font-semibold transition-colors"
+              className="min-h-[44px] px-5 rounded-xl bg-stone-700 hover:bg-stone-600 active:bg-stone-800 text-stone-100 text-sm font-semibold transition-colors"
             >
               Set
             </button>

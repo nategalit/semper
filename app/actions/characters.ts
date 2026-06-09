@@ -11,6 +11,7 @@ import {
   type EquipmentItem,
   type NewCharacterInput,
   type UpdateCharacterInput,
+  type OverridableStatKey,
 } from "@/lib/types/character";
 import type { AbilityKey } from "@/lib/content/srd";
 import {
@@ -624,6 +625,65 @@ export async function levelUpCharacter(
   if (error) throw new Error(error.message);
   revalidatePath(`/characters/${characterId}`);
   revalidatePath("/dashboard");
+}
+
+// ─── Stat adjustments ────────────────────────────────────────────────────────
+
+export async function updateStatAdjustment(
+  characterId: string,
+  key: OverridableStatKey,
+  otherModifier: number | null,
+  override: number | null
+): Promise<void> {
+  await patchCharacterData(characterId, (current) => {
+    const overrides = { ...(current.overrides ?? {}) };
+    const otherMods = { ...(current.otherModifiers ?? {}) };
+
+    if (override === null) delete overrides[key];
+    else overrides[key] = override;
+
+    if (otherModifier === null || otherModifier === 0) delete otherMods[key];
+    else otherMods[key] = otherModifier;
+
+    return { overrides, otherModifiers: otherMods };
+  });
+}
+
+// ─── Character name ───────────────────────────────────────────────────────────
+
+export async function renameCharacter(id: string, name: string): Promise<void> {
+  const trimmed = name.trim();
+  if (!trimmed) return;
+  await updateCharacter(id, { name: trimmed });
+}
+
+// ─── Character description / notes / XP ─────────────────────────────────────
+
+export async function updateNotes(id: string, notes: string): Promise<void> {
+  await patchCharacterData(id, () => ({ notes: notes.trim() || undefined }));
+}
+
+export async function updateXp(id: string, xp: number): Promise<void> {
+  await patchCharacterData(id, () => ({ xp: Math.max(0, Math.floor(xp)) }));
+}
+
+export async function updateDescription(
+  id: string,
+  fields: {
+    alignment?: string;
+    personalityTraits?: string[];
+    ideal?: string;
+    bond?: string;
+    flaw?: string;
+  }
+): Promise<void> {
+  await patchCharacterData(id, () => ({
+    alignment: fields.alignment?.trim() || undefined,
+    personalityTraits: fields.personalityTraits?.map((t) => t.trim()).filter(Boolean),
+    ideal: fields.ideal?.trim() || undefined,
+    bond: fields.bond?.trim() || undefined,
+    flaw: fields.flaw?.trim() || undefined,
+  }));
 }
 
 export async function deleteCharacter(id: string): Promise<void> {

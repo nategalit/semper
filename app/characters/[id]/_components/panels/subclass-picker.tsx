@@ -5,7 +5,7 @@ import { useMutation } from "@/lib/character/mutation-context";
 import { setSubclass } from "@/app/actions/characters";
 import type { SrdClass, SrdSubclass } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
-import { sourceChipClass } from "@/lib/ui-tokens";
+import { btn, sourceChipClass } from "@/lib/ui-tokens";
 
 function stripHtml(html: string): string {
   return html.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -96,8 +96,7 @@ export function SubclassPicker({ open, onClose, srdClass, allSubclasses = [] }: 
           <button
             onClick={handleSave}
             disabled={!picked}
-            className="w-full min-h-[48px] rounded-xl bg-amber-600 text-stone-950 font-bold
-              hover:bg-amber-500 active:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className={`w-full ${btn.primary} disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             {selected ? `Choose ${selected.name}` : "Select a subclass"}
           </button>

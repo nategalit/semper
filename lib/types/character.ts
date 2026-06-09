@@ -1,6 +1,16 @@
 import type { AbilityKey, SrdBackground, SrdClass, SrdRace, SrdSubrace } from "../content/srd/types";
 export type { Edition } from "../content/edition-filter";
 
+/**
+ * Keys for stats that support manual adjustments (Other Modifier + Override).
+ * Covers every stat wired to a StatPopover.
+ */
+export type OverridableStatKey =
+  | "ac" | "initiative" | "speed" | "passivePerception"
+  | "spellSaveDC" | "spellAttackBonus"
+  | `save_${AbilityKey}`
+  | `skill_${string}`;
+
 /** Per-level record written when the player takes a level-up. */
 export interface LevelChoiceRecord {
   hpGained: number;
@@ -104,6 +114,10 @@ export interface CharacterData {
   abilityChoices?: Partial<Record<AbilityKey, number>>;
   /** Rules edition chosen at character creation. Defaults to "mix" when absent. */
   edition?: "2014" | "2024" | "mix";
+  /** Additive manual bonus applied on top of the calculated value for a stat. */
+  otherModifiers?: Partial<Record<OverridableStatKey, number>>;
+  /** Replacement value that overrides the calculated total for a stat entirely. */
+  overrides?: Partial<Record<OverridableStatKey, number>>;
 }
 
 export interface WeaponStats {

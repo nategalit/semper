@@ -397,9 +397,10 @@ export function TabInventory() {
 
         <button
           onClick={() => setManagerOpen(true)}
-          className="mt-4 w-full rounded-lg border border-stone-700 bg-stone-900 px-3 py-2.5 text-sm text-stone-400 hover:border-amber-600 hover:text-amber-300 transition-colors"
+          className="mt-4 w-full min-h-[48px] rounded-xl border border-stone-700 text-stone-300 text-sm font-semibold
+            hover:border-amber-600 hover:text-amber-400 active:bg-stone-800 transition-colors"
         >
-          + Add Equipment
+          Manage Equipment
         </button>
       </SectionCard>
     </div>

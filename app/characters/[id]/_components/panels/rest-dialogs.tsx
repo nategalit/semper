@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import { shortRest, longRest } from "@/app/actions/characters";
+import { btn } from "@/lib/ui-tokens";
 import { toughHpBonus } from "@/lib/character/calc";
 import type { DerivedStats } from "@/lib/character/calc";
 import type { SrdClass } from "@/lib/content/srd";
@@ -120,8 +121,7 @@ export function ShortRestDialog({ open, onClose, srdClass, derived }: ShortRestP
         <div className="px-5 pb-4 pt-2 border-t border-stone-800 space-y-2">
           <button
             onClick={handleFinish}
-            className="w-full min-h-[48px] rounded-xl bg-stone-700 text-stone-100 font-semibold
-              hover:bg-stone-600 active:bg-stone-800 transition-colors"
+            className={`w-full ${btn.secondary}`}
           >
             Finish Rest {hpRolled > 0 ? `(+${hpRolled} HP)` : ""}
           </button>
@@ -206,8 +206,7 @@ export function LongRestDialog({ open, onClose }: LongRestProps) {
               </button>
               <button
                 onClick={() => setConfirming(true)}
-                className="flex-1 min-h-[48px] rounded-xl bg-amber-600 text-stone-950 font-bold
-                  hover:bg-amber-500 active:bg-amber-700 transition-colors"
+                className={`flex-1 ${btn.primary}`}
               >
                 Take Long Rest
               </button>

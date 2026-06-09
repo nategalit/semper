@@ -22,44 +22,45 @@ export function DiceRollerFab() {
 
   const [open, setOpen] = useState(false);
   const [selectedDie, setSelectedDie] = useState<DieFaces>(20);
+  const [count, setCount] = useState(1);
   const [modifier, setModifier] = useState(0);
   const [mode, setMode] = useState<RollMode>(null);
-  const [lastResult, setLastResult] = useState<number[] | null>(null);
+
+  const useAdvMode = selectedDie === 20 && count === 1;
 
   function handleRoll() {
     const faces = selectedDie === 100 ? 100 : selectedDie;
     let results: number[];
 
-    if (selectedDie === 20 && mode) {
+    if (useAdvMode && mode) {
       // Roll 2 dice, take higher (advantage) or lower (disadvantage)
       results = [rollDie(faces), rollDie(faces)];
     } else {
-      results = [rollDie(faces)];
+      results = Array.from({ length: count }, () => rollDie(faces));
     }
 
-    const kept = mode === "advantage"
+    const kept = useAdvMode && mode === "advantage"
       ? Math.max(...results)
-      : mode === "disadvantage"
+      : useAdvMode && mode === "disadvantage"
       ? Math.min(...results)
-      : results[0];
+      : results.reduce((a, b) => a + b, 0);
 
     const total = kept + modifier;
-    const isCrit = selectedDie === 20 && kept === 20;
+    const isCrit = selectedDie === 20 && count === 1 && kept === 20;
     const diceLabel = selectedDie === 100 ? "d%" : `d${selectedDie}`;
+    const countedLabel = count > 1 ? `${count}${diceLabel}` : diceLabel;
     const label = modifier !== 0
-      ? `${diceLabel} ${modifier >= 0 ? "+" : ""}${modifier}`
-      : diceLabel;
-
-    setLastResult(results);
+      ? `${countedLabel} ${modifier >= 0 ? "+" : ""}${modifier}`
+      : countedLabel;
 
     roll({
       characterId: character.id,
       label: isCrit ? `${label} — NAT 20!` : label,
-      dice: diceLabel,
+      dice: countedLabel,
       results,
       modifier,
       total,
-      mode: selectedDie === 20 ? mode : null,
+      mode: useAdvMode ? mode : null,
       rollType: "other",
     });
   }
@@ -119,6 +120,7 @@ export function DiceRollerFab() {
                     onClick={() => {
                       setSelectedDie(d);
                       if (d !== 20) setMode(null);
+                      if (d === 100) setCount(1);
                     }}
                     className={`min-h-[44px] rounded-xl text-sm font-bold transition-colors ${
                       selectedDie === d
@@ -131,8 +133,58 @@ export function DiceRollerFab() {
                 ))}
               </div>
 
-              {/* Advantage/Disadvantage — d20 only */}
-              {selectedDie === 20 && (
+              {/* Dice count + modifier row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-stone-500 w-10 shrink-0">Dice</span>
+                  <button
+                    onClick={() => setCount((c) => Math.max(1, c - 1))}
+                    disabled={count <= 1}
+                    className="w-8 h-8 rounded-lg bg-stone-800 border border-stone-700 text-stone-200
+                      flex items-center justify-center hover:border-stone-500 disabled:opacity-30"
+                    aria-label="Decrease count"
+                  >
+                    −
+                  </button>
+                  <span className="flex-1 text-center text-base font-bold text-stone-100 tabular-nums">
+                    {count}
+                  </span>
+                  <button
+                    onClick={() => setCount((c) => Math.min(9, c + 1))}
+                    disabled={selectedDie === 100 || count >= 9}
+                    className="w-8 h-8 rounded-lg bg-stone-800 border border-stone-700 text-stone-200
+                      flex items-center justify-center hover:border-stone-500 disabled:opacity-30"
+                    aria-label="Increase count"
+                  >
+                    +
+                  </button>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-stone-500 w-5 shrink-0">Mod</span>
+                  <button
+                    onClick={() => setModifier((m) => m - 1)}
+                    className="w-8 h-8 rounded-lg bg-stone-800 border border-stone-700 text-stone-200
+                      flex items-center justify-center hover:border-stone-500"
+                    aria-label="Decrease modifier"
+                  >
+                    −
+                  </button>
+                  <span className="flex-1 text-center text-base font-bold text-stone-100 tabular-nums">
+                    {modifier >= 0 ? `+${modifier}` : modifier}
+                  </span>
+                  <button
+                    onClick={() => setModifier((m) => m + 1)}
+                    className="w-8 h-8 rounded-lg bg-stone-800 border border-stone-700 text-stone-200
+                      flex items-center justify-center hover:border-stone-500"
+                    aria-label="Increase modifier"
+                  >
+                    +
+                  </button>
+                </div>
+              </div>
+
+              {/* Advantage/Disadvantage — d20 only, single die */}
+              {useAdvMode && (
                 <div className="flex gap-2">
                   <button
                     onClick={() => setMode(mode === "advantage" ? null : "advantage")}
@@ -157,38 +209,14 @@ export function DiceRollerFab() {
                 </div>
               )}
 
-              {/* Modifier */}
-              <div className="flex items-center gap-3">
-                <span className="text-xs text-stone-500 w-20 shrink-0">Modifier</span>
-                <button
-                  onClick={() => setModifier((m) => m - 1)}
-                  className="w-11 h-11 rounded-xl bg-stone-800 border border-stone-700 text-stone-200 text-lg
-                    flex items-center justify-center hover:border-stone-500"
-                  aria-label="Decrease modifier"
-                >
-                  −
-                </button>
-                <span className="flex-1 text-center text-lg font-bold text-stone-100 tabular-nums">
-                  {modifier >= 0 ? `+${modifier}` : modifier}
-                </span>
-                <button
-                  onClick={() => setModifier((m) => m + 1)}
-                  className="w-11 h-11 rounded-xl bg-stone-800 border border-stone-700 text-stone-200 text-lg
-                    flex items-center justify-center hover:border-stone-500"
-                  aria-label="Increase modifier"
-                >
-                  +
-                </button>
-              </div>
-
               {/* Roll button */}
               <button
                 onClick={handleRoll}
                 className="w-full min-h-[52px] rounded-xl bg-amber-600 text-stone-950 font-bold text-base
                   hover:bg-amber-500 active:scale-95 transition-all"
               >
-                Roll {formatDie(selectedDie)}
-                {mode && <span className="text-xs ml-1.5 opacity-70">({mode === "advantage" ? "adv" : "disadv"})</span>}
+                Roll {count > 1 ? `${count}${formatDie(selectedDie)}` : formatDie(selectedDie)}
+                {useAdvMode && mode && <span className="text-xs ml-1.5 opacity-70">({mode === "advantage" ? "adv" : "disadv"})</span>}
               </button>
 
               {/* Recent rolls */}

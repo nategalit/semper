@@ -64,7 +64,7 @@ export function StepAbilities({ races }: Props) {
           <button
             key={m}
             onClick={() => setAbilityMethod(m)}
-            className={`rounded-md px-4 py-1.5 text-sm font-medium transition-colors ${
+            className={`rounded-lg px-4 py-1.5 text-sm font-medium transition-colors ${
               abilityMethod === m
                 ? "bg-amber-600 text-stone-950"
                 : "border border-stone-700 text-stone-400 hover:text-stone-200"
@@ -122,7 +122,7 @@ export function StepAbilities({ races }: Props) {
                       key={k}
                       onClick={() => !isFixed && toggleFlexiblePick(k, race.flexibleBonuses!.count)}
                       disabled={isFixed || isFull}
-                      className={`rounded-md border px-3 py-1 text-xs font-medium transition-colors ${
+                      className={`rounded-lg border px-3 py-1 text-xs font-medium transition-colors ${
                         isPicked
                           ? "border-amber-500 bg-amber-900/30 text-amber-300"
                           : isFixed
@@ -182,7 +182,7 @@ function StandardArrayPanel({
             <select
               value={assignments[i]}
               onChange={(e) => onAssign(i, e.target.value as AbilityKey | "")}
-              className="flex-1 rounded-md border border-stone-700 bg-stone-900 px-3 py-1.5 text-sm text-stone-100 focus:border-amber-500 focus:outline-none"
+              className="flex-1 rounded-lg border border-stone-700 bg-stone-900 px-3 py-1.5 text-sm text-stone-100 focus:border-amber-500 focus:outline-none"
             >
               <option value="">— assign to —</option>
               {ABILITIES.map((key) => (

@@ -176,6 +176,7 @@ export function CharacterSheet({
           character={optimisticCharacter}
           derived={derived}
           srdClass={srdClass}
+          srdRace={srdRace}
           srdBackground={srdBackground}
         />
       )}
@@ -194,7 +195,7 @@ export function CharacterSheet({
           onChangeLevelRequest={() => setLevelUpOpen(true)}
         />
       )}
-      {activeTab === "description" && <TabDescription character={optimisticCharacter} />}
+      {activeTab === "description" && <TabDescription />}
       {activeTab === "extras"      && <TabExtras srdClass={srdClass} derived={derived} />}
     </>
   );

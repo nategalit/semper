@@ -13,6 +13,7 @@ import type { SrdClass } from "@/lib/content/srd";
 import type { DerivedStats } from "@/lib/character/calc";
 import type { DisplaySpell } from "@/lib/types/spell";
 import { FilterPill } from "@/app/_components/filter-pill";
+import { cleanHtmlBrowse } from "@/lib/content/aurora/clean-html";
 
 interface Props {
   open: boolean;
@@ -607,9 +608,8 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
                         )}
                         {isExpanded && activeSpell.description && (
                           <div
-                            className="mt-2 text-xs text-stone-300 leading-relaxed prose prose-invert prose-sm max-w-none
-                              [&_p]:mb-2 [&_ul]:pl-4 [&_ul]:list-disc [&_em]:italic [&_strong]:font-semibold"
-                            dangerouslySetInnerHTML={{ __html: activeSpell.description }}
+                            className="aurora-content mt-2 text-xs text-stone-300 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: cleanHtmlBrowse(activeSpell.description) }}
                           />
                         )}
                       </div>

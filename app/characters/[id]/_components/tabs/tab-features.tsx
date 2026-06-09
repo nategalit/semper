@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useMemo } from "react";
+import type { ReactNode } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import {
   getClassFeatures, getFeatFeatures, currentChargesFor, maxChargesFor,
@@ -14,23 +15,24 @@ import type { FeatureEntry, FightingStyleEntry } from "@/app/actions/content";
 import type { FeatElement } from "@/lib/content/schema";
 import { abbreviateSource } from "@/lib/content/source-abbreviations";
 import { sourceChipClass } from "@/lib/ui-tokens";
-import { SectionCard } from "../shared/section-card";
+import { cleanHtml } from "@/lib/content/aurora/clean-html";
 import { EmptyState } from "../shared/empty-state";
 import { SubclassPicker } from "../panels/subclass-picker";
 
-function cleanHtml(html: string, featureMap?: Map<string, FeatureEntry>, depth = 3): string {
-  if (!html) return "";
-  let result = html.replace(/<div\s+element="([^"]+)"[^>]*\/?>/gi, (_, id) => {
-    if (depth > 0 && featureMap && featureMap.size > 0) {
-      const f = featureMap.get(id);
-      if (f) return `<h5>${f.name}</h5>${cleanHtml(f.description, featureMap, depth - 1)}`;
-    }
-    return "";
-  });
-  result = result.replace(/<div[^>]*class="reference"[^>]*>[\s\S]*?<\/div>/gi, "");
-  result = result.replace(/<\/?div[^>]*>/gi, "");
-  return result.trim();
-}
+// ─── Section collapse state ───────────────────────────────────────────────────
+
+type SectionKey = "class" | "subclass" | "race" | "background" | "feats" | "items";
+
+const SECTION_DEFAULTS: Record<SectionKey, boolean> = {
+  class: true,
+  subclass: true,
+  race: false,
+  background: false,
+  feats: true,
+  items: false,
+};
+
+// ─── Props ────────────────────────────────────────────────────────────────────
 
 interface Props {
   srdClass: SrdClass | undefined;
@@ -43,12 +45,38 @@ interface Props {
   onChangeLevelRequest?: () => void;
 }
 
-export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, importedFightingStyles, allSubclasses = [], importedFeats = [], onChangeLevelRequest }: Props) {
+// ─── Component ────────────────────────────────────────────────────────────────
+
+export function TabFeatures({
+  srdClass, srdRace, srdBackground, featureMap,
+  importedFightingStyles, allSubclasses = [], importedFeats = [], onChangeLevelRequest,
+}: Props) {
   const { character, mutate } = useMutation();
   const [subclassPickerOpen, setSubclassPickerOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const storageKey = `features-sections-${character.id}`;
+  const [sectionOpen, setSectionOpen] = useState<Record<SectionKey, boolean>>(() => {
+    if (typeof window === "undefined") return { ...SECTION_DEFAULTS };
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (raw) return { ...SECTION_DEFAULTS, ...JSON.parse(raw) };
+    } catch {}
+    return { ...SECTION_DEFAULTS };
+  });
+
+  function toggleSection(key: SectionKey) {
+    setSectionOpen((prev) => {
+      const next = { ...prev, [key]: !prev[key] };
+      try { localStorage.setItem(storageKey, JSON.stringify(next)); } catch {}
+      return next;
+    });
+  }
+
+  // ── Data resolution ──────────────────────────────────────────────────────
+
   const subrace = srdRace?.subraces.find((s) => s.id === character.data.subraceId);
 
-  // Resolve chosen Fighting Style (if any).
   const fightingStyleGrantLevel = FIGHTING_STYLE_BY_CLASS[character.classId ?? ""] ?? 0;
   const chosenFightingStyleId =
     fightingStyleGrantLevel > 0 && fightingStyleGrantLevel <= character.level
@@ -58,8 +86,7 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
     ? (() => {
         const srd = FIGHTING_STYLES.find((s) => s.id === chosenFightingStyleId);
         if (srd) return { name: srd.name, description: srd.description, sourceLabel: "SRD" };
-        const imported = importedFightingStyles?.find((s) => s.id === chosenFightingStyleId);
-        return imported ?? undefined;
+        return importedFightingStyles?.find((s) => s.id === chosenFightingStyleId) ?? undefined;
       })()
     : undefined;
 
@@ -78,7 +105,6 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
   const featFeatures = getFeatFeatures(character.data.levelChoices, character.level, {});
   const features = [...classFeatures, ...featFeatures];
 
-  // All feats the character has taken, in the order they were picked (by level).
   const pickedFeats: { feat: FeatElement; level: number }[] = [];
   if (character.data.levelChoices) {
     const featMap = new Map(importedFeats.map((f) => [f.id, f]));
@@ -93,9 +119,6 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
   const chargeLabels = new Set(features.map((d) => d.label));
   const activeClass = srdClass ?? character.data.resolvedClass;
 
-  // Case-insensitive description lookup with two-level fallback:
-  // 1. SRD hand-written descriptions (plain text, curated) — added last so they win
-  // 2. Aurora ClassFeature descriptions from featureMap (HTML-stripped) — covers PHB24-unique features
   const descByNameLower = new Map<string, string>();
   for (const f of featureMap.values()) {
     const stripped = f.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -123,6 +146,63 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
           )
       : [];
 
+  // ── Search index ─────────────────────────────────────────────────────────
+
+  type SearchItem = { name: string; category: string; description?: string; meta?: string };
+
+  const searchItems = useMemo((): SearchItem[] => {
+    const items: SearchItem[] = [];
+
+    for (const f of features) {
+      items.push({ name: f.label, category: "Class Feature", description: f.description });
+    }
+    for (const { feat, level } of pickedFeats) {
+      const desc = (feat.description || feat.sheetText || "")
+        .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      items.push({ name: feat.name, category: "Feat", description: desc || undefined, meta: `L${level}` });
+    }
+    for (const f of nonChargeFeatures) {
+      items.push({ name: f.name, category: "Class Progression", description: f.description, meta: `Lv${f.level}` });
+    }
+    if (chosenFightingStyle) {
+      const desc = chosenFightingStyle.description?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+      items.push({ name: chosenFightingStyle.name, category: "Fighting Style", description: desc });
+    }
+    if (currentSubclass) {
+      if (currentSubclass.featuresByLevel) {
+        for (const [lvl, names] of Object.entries(currentSubclass.featuresByLevel)) {
+          if (Number(lvl) > character.level) continue;
+          for (const name of names) {
+            items.push({ name, category: "Subclass", description: currentSubclass.featureDescriptions?.[name], meta: `Lv${lvl}` });
+          }
+        }
+      } else {
+        for (const name of currentSubclass.features) {
+          items.push({ name, category: "Subclass" });
+        }
+      }
+    }
+    if (srdRace) {
+      for (const trait of srdRace.traits) items.push({ name: trait, category: "Race Trait" });
+    }
+    if (subrace) {
+      for (const trait of subrace.traits ?? []) items.push({ name: trait, category: "Subrace Trait" });
+    }
+    if (srdBackground?.featureName) {
+      items.push({ name: srdBackground.featureName, category: "Background Feature" });
+    }
+
+    return items;
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [features, pickedFeats, nonChargeFeatures, chosenFightingStyle, currentSubclass, srdRace, subrace, srdBackground, character.level]);
+
+  const q = search.toLowerCase();
+  const filteredItems = q
+    ? searchItems.filter((item) => item.name.toLowerCase().includes(q))
+    : [];
+
+  // ── Charge handler ───────────────────────────────────────────────────────
+
   function handleChargeChange(key: string, next: number) {
     const patch: Partial<CharacterData> = {
       featureCharges: { ...character.data.featureCharges, [key]: next },
@@ -130,301 +210,429 @@ export function TabFeatures({ srdClass, srdRace, srdBackground, featureMap, impo
     mutate(patch, () => setFeatureCharge(character.id, key, next));
   }
 
+  // ── Render ───────────────────────────────────────────────────────────────
+
   return (
     <>
-    <div className="space-y-4">
-      {/* Level button */}
-      {onChangeLevelRequest && (
-        <button
-          onClick={onChangeLevelRequest}
-          className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-stone-700
-            bg-stone-800/50 hover:bg-stone-800 hover:border-stone-600 transition-colors"
-        >
-          <div className="text-left">
-            <p className="text-sm font-semibold text-stone-200">
-              Level {character.level} {srdClass ? `· ${srdClass.name}` : ""}
-            </p>
-            <p className="text-xs text-stone-500 mt-0.5">Tap to level up or down</p>
-          </div>
-          <span className="text-stone-500 text-lg">›</span>
-        </button>
-      )}
+      <div className="space-y-3">
 
-      {/* Feature Charges */}
-      {features.length > 0 && (
-        <SectionCard title="Class Features">
-          <div className="space-y-4">
-            {features.map((def) => {
-              const max = maxChargesFor(def, character.level, {});
-              const current = currentChargesFor(
-                def, character.level, {}, character.data.featureCharges ?? {}
-              );
-              const recharge = resolveRechargesOn(def, character.level);
-
-              return (
-                <FeatureRow
-                  key={def.key}
-                  label={def.label}
-                  description={def.description}
-                  current={current}
-                  max={max}
-                  recharge={recharge}
-                  onSet={(next) => handleChargeChange(def.key, next)}
-                />
-              );
-            })}
-          </div>
-        </SectionCard>
-      )}
-
-      {/* Feats */}
-      {pickedFeats.length > 0 && (
-        <SectionCard title="Feats">
-          <div className="space-y-3">
-            {pickedFeats.map(({ feat, level }) => {
-              const desc = (feat.description || feat.sheetText || "")
-                .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
-              const sourceLabel = abbreviateSource(feat.source);
-              return (
-                <div key={`${level}-${feat.id}`} className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-stone-200">{feat.name}</span>
-                    {sourceLabel && (
-                      <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${sourceChipClass(sourceLabel)}`}>
-                        {sourceLabel}
-                      </span>
-                    )}
-                    <span className="text-[10px] text-stone-600 ml-auto">L{level}</span>
-                  </div>
-                  {feat.prerequisite && (
-                    <p className="text-[10px] text-amber-600/80">Requires: {feat.prerequisite}</p>
-                  )}
-                  {desc && (
-                    <p className="text-xs text-stone-400 leading-relaxed">{desc}</p>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-        </SectionCard>
-      )}
-
-      {/* Non-charge class features */}
-      {nonChargeFeatures.length > 0 && (
-        <SectionCard title="Class Progression">
-          <div className="space-y-2">
-            {nonChargeFeatures.map(({ name, level, description }) => (
-              <div key={`${level}-${name}`} className="flex gap-3">
-                <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
-                  {level}
-                </span>
-                <div>
-                  <p className="text-sm font-medium text-stone-300">{name}</p>
-                  {description && (
-                    <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{description}</p>
-                  )}
-                </div>
-              </div>
-            ))}
-          </div>
-        </SectionCard>
-      )}
-
-      {/* Fighting Style */}
-      {chosenFightingStyle && (
-        <SectionCard title="Fighting Style">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <p className="text-sm font-semibold text-stone-200">{chosenFightingStyle.name}</p>
-              {chosenFightingStyle.description && (
-                <p className="text-xs text-stone-500 mt-1 leading-relaxed">
-                  {chosenFightingStyle.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
-                </p>
-              )}
+        {/* Level button */}
+        {onChangeLevelRequest && (
+          <button
+            onClick={onChangeLevelRequest}
+            className="w-full flex items-center justify-between px-4 py-3 rounded-xl border border-stone-700
+              bg-stone-800/50 hover:bg-stone-800 hover:border-stone-600 transition-colors"
+          >
+            <div className="text-left">
+              <p className="text-sm font-semibold text-stone-200">
+                Level {character.level} {srdClass ? `· ${srdClass.name}` : ""}
+              </p>
+              <p className="text-xs text-stone-500 mt-0.5">Tap to level up or down</p>
             </div>
-            <span className="text-[10px] px-1.5 py-0.5 rounded bg-stone-800 border border-stone-700 text-stone-500 shrink-0">
-              {chosenFightingStyle.sourceLabel}
-            </span>
-          </div>
-        </SectionCard>
-      )}
+            <span className="text-stone-500 text-lg">›</span>
+          </button>
+        )}
 
-      {/* Subclass */}
-      {srdClass && (
-        needsSubclass ? (
-          <SectionCard title="Subclass">
+        {/* Search bar */}
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="Search features…"
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="w-full min-h-[40px] rounded-lg bg-stone-800 border border-stone-700 px-3 pr-8
+              text-stone-100 text-sm placeholder:text-stone-600 focus:outline-none focus:border-amber-500/50"
+          />
+          {search && (
             <button
-              onClick={() => setSubclassPickerOpen(true)}
-              className="w-full flex items-center justify-between gap-2 rounded-lg border border-amber-700/60
-                bg-amber-900/20 px-3 py-3 text-left hover:bg-amber-900/30 transition-colors"
+              onClick={() => setSearch("")}
+              aria-label="Clear search"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-stone-500 hover:text-stone-300 text-xs"
             >
-              <span className="text-xs text-amber-300">
-                Choose your {srdClass.name} subclass (available at level {srdClass.subclassUnlockLevel})
-              </span>
-              <span className="text-xs text-amber-400 font-semibold shrink-0">Choose →</span>
+              ✕
             </button>
-          </SectionCard>
-        ) : currentSubclass ? (
-          <SectionCard title={currentSubclass.name}>
-            {currentSubclass.description && (
-              <div
-                className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
-                dangerouslySetInnerHTML={{ __html: cleanHtml(currentSubclass.description, featureMap) }}
-              />
-            )}
-            {currentSubclass.featuresByLevel ? (
-              <div className="space-y-2">
-                {Object.entries(currentSubclass.featuresByLevel)
-                  .filter(([lvl]) => Number(lvl) <= character.level)
-                  .sort(([a], [b]) => Number(a) - Number(b))
-                  .flatMap(([lvl, names]) =>
-                    names.map((name) => ({ name, level: Number(lvl) }))
-                  )
-                  .map(({ name, level }) => (
-                    <div key={`${level}-${name}`} className="flex gap-3">
-                      <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
-                        {level}
-                      </span>
-                      <div>
-                        <p className="text-sm font-medium text-stone-300">{name}</p>
-                        {currentSubclass.featureDescriptions?.[name] && (
-                          <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">
-                            {currentSubclass.featureDescriptions[name]}
-                          </p>
-                        )}
+          )}
+        </div>
+
+        {/* Search results — replaces sections when active */}
+        {q ? (
+          filteredItems.length === 0 ? (
+            <p className="text-sm text-stone-500 text-center py-8">
+              No features match &ldquo;{search}&rdquo;
+            </p>
+          ) : (
+            <div className="space-y-1.5">
+              {filteredItems.map((item, i) => (
+                <div key={`${item.category}-${item.name}-${i}`}
+                  className="rounded-xl border border-stone-800 bg-stone-900/50 px-4 py-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-stone-200">{item.name}</p>
+                      {item.description && (
+                        <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{item.description}</p>
+                      )}
+                    </div>
+                    <div className="shrink-0 text-right">
+                      <p className="text-[10px] text-stone-600">{item.category}</p>
+                      {item.meta && <p className="text-[10px] text-stone-700">{item.meta}</p>}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )
+        ) : (
+          /* Normal sections */
+          <>
+            {/* Class — charge-tracked features + class progression + fighting style */}
+            {(features.length > 0 || nonChargeFeatures.length > 0 || chosenFightingStyle) && (
+              <CollapsibleSection
+                title={srdClass?.name ?? "Class"}
+                count={features.length + nonChargeFeatures.length + (chosenFightingStyle ? 1 : 0)}
+                expanded={sectionOpen.class}
+                onToggle={() => toggleSection("class")}
+              >
+                <div className="pt-3 space-y-6">
+                  {features.length > 0 && (
+                    <div className="space-y-4">
+                      {features.map((def) => {
+                        const max = maxChargesFor(def, character.level, {});
+                        const current = currentChargesFor(def, character.level, {}, character.data.featureCharges ?? {});
+                        const recharge = resolveRechargesOn(def, character.level);
+                        return (
+                          <FeatureRow
+                            key={def.key}
+                            label={def.label}
+                            description={def.description}
+                            current={current}
+                            max={max}
+                            recharge={recharge}
+                            onSet={(next) => handleChargeChange(def.key, next)}
+                          />
+                        );
+                      })}
+                    </div>
+                  )}
+
+                  {nonChargeFeatures.length > 0 && (
+                    <div>
+                      {features.length > 0 && (
+                        <p className="text-[10px] uppercase tracking-widest text-stone-600 mb-2">Progression</p>
+                      )}
+                      <div className="space-y-2">
+                        {nonChargeFeatures.map(({ name, level, description }) => (
+                          <div key={`${level}-${name}`} className="flex gap-3">
+                            <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
+                              {level}
+                            </span>
+                            <div>
+                              <p className="text-sm font-medium text-stone-300">{name}</p>
+                              {description && (
+                                <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{description}</p>
+                              )}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </div>
-                  ))
-                }
-              </div>
-            ) : (
-              <div className="flex flex-wrap gap-1.5">
-                {currentSubclass.features.map((f) => (
-                  <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-stone-800 border border-stone-700 text-stone-400">
-                    {f}
-                  </span>
-                ))}
-              </div>
+                  )}
+
+                  {chosenFightingStyle && (
+                    <div>
+                      <p className="text-[10px] uppercase tracking-widest text-stone-600 mb-2">Fighting Style</p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="text-sm font-semibold text-stone-200">{chosenFightingStyle.name}</p>
+                          {chosenFightingStyle.description && (
+                            <p className="text-xs text-stone-500 mt-1 leading-relaxed">
+                              {chosenFightingStyle.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
+                            </p>
+                          )}
+                        </div>
+                        <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium shrink-0 ${sourceChipClass(chosenFightingStyle.sourceLabel)}`}>
+                          {chosenFightingStyle.sourceLabel}
+                        </span>
+                      </div>
+                    </div>
+                  )}
+
+                  {srdClass && (
+                    <div className="border-t border-stone-800/50 pt-3">
+                      <div className="grid grid-cols-2 gap-2 text-xs text-stone-500">
+                        <span>Hit Die: d{srdClass.hitDie}</span>
+                        <span>Saves: {srdClass.savingThrows.map((s) => s.toUpperCase()).join(", ")}</span>
+                      </div>
+                      {srdClass.armorProficiencies.length > 0 && (
+                        <p className="text-xs text-stone-600 mt-1">Armor: {srdClass.armorProficiencies.join(", ")}</p>
+                      )}
+                      <p className="text-xs text-stone-600 mt-1">Weapons: {srdClass.weaponProficiencies.join(", ")}</p>
+                    </div>
+                  )}
+                </div>
+              </CollapsibleSection>
             )}
-            <button
-              onClick={() => setSubclassPickerOpen(true)}
-              className="mt-3 text-xs text-stone-600 hover:text-stone-400 transition-colors"
+
+            {/* Subclass */}
+            {srdClass && (
+              <CollapsibleSection
+                title="Subclass"
+                expanded={sectionOpen.subclass}
+                onToggle={() => toggleSection("subclass")}
+              >
+                <div className="pt-3">
+                  {needsSubclass ? (
+                    <button
+                      onClick={() => setSubclassPickerOpen(true)}
+                      className="w-full flex items-center justify-between gap-2 rounded-lg border border-amber-700/60
+                        bg-amber-900/20 px-3 py-3 text-left hover:bg-amber-900/30 transition-colors"
+                    >
+                      <span className="text-xs text-amber-300">
+                        Choose your {srdClass.name} subclass (available at level {srdClass.subclassUnlockLevel})
+                      </span>
+                      <span className="text-xs text-amber-400 font-semibold shrink-0">Choose →</span>
+                    </button>
+                  ) : currentSubclass ? (
+                    <>
+                      <p className="text-sm font-semibold text-stone-200 mb-2">{currentSubclass.name}</p>
+                      {currentSubclass.description && (
+                        <div
+                          className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
+                          dangerouslySetInnerHTML={{ __html: cleanHtml(currentSubclass.description, featureMap) }}
+                        />
+                      )}
+                      {currentSubclass.featuresByLevel ? (
+                        <div className="space-y-2">
+                          {Object.entries(currentSubclass.featuresByLevel)
+                            .filter(([lvl]) => Number(lvl) <= character.level)
+                            .sort(([a], [b]) => Number(a) - Number(b))
+                            .flatMap(([lvl, names]) => names.map((name) => ({ name, level: Number(lvl) })))
+                            .map(({ name, level }) => (
+                              <div key={`${level}-${name}`} className="flex gap-3">
+                                <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
+                                  {level}
+                                </span>
+                                <div>
+                                  <p className="text-sm font-medium text-stone-300">{name}</p>
+                                  {currentSubclass.featureDescriptions?.[name] && (
+                                    <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">
+                                      {currentSubclass.featureDescriptions[name]}
+                                    </p>
+                                  )}
+                                </div>
+                              </div>
+                            ))
+                          }
+                        </div>
+                      ) : (
+                        <div className="flex flex-wrap gap-1.5">
+                          {currentSubclass.features.map((f) => (
+                            <span key={f} className="text-xs px-2 py-0.5 rounded-full bg-stone-800 border border-stone-700 text-stone-400">
+                              {f}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                      <button
+                        onClick={() => setSubclassPickerOpen(true)}
+                        className="mt-3 text-xs text-stone-600 hover:text-stone-400 transition-colors"
+                      >
+                        Change subclass
+                      </button>
+                    </>
+                  ) : (
+                    <EmptyState message="No subclass selected." />
+                  )}
+                </div>
+              </CollapsibleSection>
+            )}
+
+            {/* Race / Subrace */}
+            <CollapsibleSection
+              title={srdRace ? (subrace ? `${srdRace.name} · ${subrace.name}` : srdRace.name) : "Race"}
+              expanded={sectionOpen.race}
+              onToggle={() => toggleSection("race")}
             >
-              Change subclass
-            </button>
-          </SectionCard>
-        ) : null
-      )}
+              <div className="pt-3">
+                {srdRace ? (
+                  <>
+                    <div
+                      className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
+                      dangerouslySetInnerHTML={{ __html: cleanHtml(srdRace.description, featureMap) }}
+                    />
+                    {srdRace.traits.length > 0 && (
+                      <ul className="space-y-1 mb-3">
+                        {srdRace.traits.map((trait) => (
+                          <li key={trait} className="text-sm text-stone-400 flex gap-2">
+                            <span className="text-amber-600 shrink-0">·</span>
+                            {trait}
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                    {subrace && (
+                      <div className="border-t border-stone-800 pt-3 mt-1">
+                        <p className="text-xs text-stone-500 uppercase tracking-wider mb-2">{subrace.name}</p>
+                        {subrace.description && (
+                          <p className="text-sm text-stone-400 mb-2">
+                            {subrace.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
+                          </p>
+                        )}
+                        {subrace.traits && subrace.traits.length > 0 && (
+                          <ul className="space-y-1">
+                            {subrace.traits.map((trait) => (
+                              <li key={trait} className="text-sm text-stone-400 flex gap-2">
+                                <span className="text-amber-600 shrink-0">·</span>
+                                {trait}
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <EmptyState message="No race selected." />
+                )}
+              </div>
+            </CollapsibleSection>
 
-      {/* Race */}
-      {srdRace ? (
-        <SectionCard title={subrace ? `${srdRace.name} — ${subrace.name}` : srdRace.name}>
-          <div
-            className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
-            dangerouslySetInnerHTML={{ __html: cleanHtml(srdRace.description, featureMap) }}
-          />
-          {srdRace.traits.length > 0 && (
-            <ul className="space-y-1 mb-3">
-              {srdRace.traits.map((trait) => (
-                <li key={trait} className="text-sm text-stone-400 flex gap-2">
-                  <span className="text-amber-600 shrink-0">·</span>
-                  {trait}
-                </li>
-              ))}
-            </ul>
-          )}
-          {subrace && (
-            <div className="border-t border-stone-800 pt-3 mt-1">
-              <p className="text-xs text-stone-500 uppercase tracking-wider mb-2">{subrace.name}</p>
-              {subrace.description && (
-                <p className="text-sm text-stone-400 mb-2">
-                  {subrace.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim()}
-                </p>
-              )}
-              {subrace.traits && subrace.traits.length > 0 && (
-                <ul className="space-y-1">
-                  {subrace.traits.map((trait) => (
-                    <li key={trait} className="text-sm text-stone-400 flex gap-2">
-                      <span className="text-amber-600 shrink-0">·</span>
-                      {trait}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
-        </SectionCard>
-      ) : (
-        <SectionCard title="Race">
-          <EmptyState message="No race selected." />
-        </SectionCard>
-      )}
+            {/* Background */}
+            <CollapsibleSection
+              title={srdBackground ? `${srdBackground.name}` : "Background"}
+              expanded={sectionOpen.background}
+              onToggle={() => toggleSection("background")}
+            >
+              <div className="pt-3">
+                {srdBackground ? (
+                  <>
+                    {srdBackground.description && (
+                      <div
+                        className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
+                        dangerouslySetInnerHTML={{ __html: cleanHtml(srdBackground.description, featureMap) }}
+                      />
+                    )}
+                    <div className="space-y-1 text-xs text-stone-500">
+                      <p>Skills: {srdBackground.skillProficiencies.join(", ")}</p>
+                      {srdBackground.toolProficiency && <p>Tools: {srdBackground.toolProficiency}</p>}
+                      {srdBackground.languages && (
+                        <p>Languages: +{srdBackground.languages} additional</p>
+                      )}
+                    </div>
+                    {srdBackground.featureName && (
+                      <div className="mt-3 pt-3 border-t border-stone-800/60">
+                        <p className="text-[10px] uppercase tracking-widest text-stone-600 mb-0.5">Feature</p>
+                        <p className="text-sm font-semibold text-stone-300">{srdBackground.featureName}</p>
+                      </div>
+                    )}
+                  </>
+                ) : (
+                  <EmptyState message="No background selected." />
+                )}
+              </div>
+            </CollapsibleSection>
 
-      {/* Class info */}
-      {srdClass ? (
-        <SectionCard title={srdClass.name}>
-          <div
-            className="aurora-content text-sm text-stone-300 overflow-x-auto mb-3"
-            dangerouslySetInnerHTML={{ __html: cleanHtml(srdClass.description, featureMap) }}
-          />
-          <div className="grid grid-cols-2 gap-2 text-xs text-stone-400">
-            <span>Hit Die: d{srdClass.hitDie}</span>
-            <span>Saves: {srdClass.savingThrows.map((s) => s.toUpperCase()).join(", ")}</span>
-          </div>
-          {srdClass.armorProficiencies.length > 0 && (
-            <p className="text-xs text-stone-500 mt-2">
-              Armor: {srdClass.armorProficiencies.join(", ")}
-            </p>
-          )}
-          <p className="text-xs text-stone-500 mt-1">
-            Weapons: {srdClass.weaponProficiencies.join(", ")}
-          </p>
-        </SectionCard>
-      ) : (
-        <SectionCard title="Class">
-          <EmptyState message="No class selected." />
-        </SectionCard>
-      )}
+            {/* Feats */}
+            {pickedFeats.length > 0 && (
+              <CollapsibleSection
+                title="Feats"
+                count={pickedFeats.length}
+                expanded={sectionOpen.feats}
+                onToggle={() => toggleSection("feats")}
+              >
+                <div className="space-y-3 pt-3">
+                  {pickedFeats.map(({ feat, level }) => {
+                    const desc = (feat.description || feat.sheetText || "")
+                      .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+                    const sourceLabel = abbreviateSource(feat.source);
+                    return (
+                      <div key={`${level}-${feat.id}`} className="space-y-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-sm font-semibold text-stone-200">{feat.name}</span>
+                          {sourceLabel && (
+                            <span className={`text-[10px] px-1.5 py-0.5 rounded font-medium ${sourceChipClass(sourceLabel)}`}>
+                              {sourceLabel}
+                            </span>
+                          )}
+                          <span className="text-[10px] text-stone-600 ml-auto">L{level}</span>
+                        </div>
+                        {feat.prerequisite && (
+                          <p className="text-[10px] text-amber-600/80">Requires: {feat.prerequisite}</p>
+                        )}
+                        {desc && <p className="text-xs text-stone-400 leading-relaxed">{desc}</p>}
+                      </div>
+                    );
+                  })}
+                </div>
+              </CollapsibleSection>
+            )}
 
-      {/* Background */}
-      {srdBackground ? (
-        <SectionCard title={`Background — ${srdBackground.name}`}>
-          <div
-            className="aurora-content text-sm text-stone-300 overflow-x-auto mb-2"
-            dangerouslySetInnerHTML={{ __html: cleanHtml(srdBackground.description, featureMap) }}
-          />
-          <p className="text-xs text-stone-500">
-            Skill Proficiencies: {srdBackground.skillProficiencies.join(", ")}
-          </p>
-          {srdBackground.toolProficiency && (
-            <p className="text-xs text-stone-500 mt-1">Tools: {srdBackground.toolProficiency}</p>
-          )}
-          {srdBackground.languages && (
-            <p className="text-xs text-stone-500 mt-1">
-              Languages: {srdBackground.languages} additional language{srdBackground.languages > 1 ? "s" : ""}
-            </p>
-          )}
-        </SectionCard>
-      ) : (
-        <SectionCard title="Background">
-          <EmptyState message="No background selected." />
-        </SectionCard>
-      )}
-    </div>
+            {/* Items — stub */}
+            <CollapsibleSection
+              title="Items"
+              expanded={sectionOpen.items}
+              onToggle={() => toggleSection("items")}
+            >
+              <div className="pt-3">
+                <EmptyState message="Item tracking coming soon." />
+              </div>
+            </CollapsibleSection>
+          </>
+        )}
+      </div>
 
-    {srdClass && (
-      <SubclassPicker
-        open={subclassPickerOpen}
-        onClose={() => setSubclassPickerOpen(false)}
-        srdClass={srdClass}
-        allSubclasses={allSubclasses}
-      />
-    )}
-  </>
+      {srdClass && (
+        <SubclassPicker
+          open={subclassPickerOpen}
+          onClose={() => setSubclassPickerOpen(false)}
+          srdClass={srdClass}
+          allSubclasses={allSubclasses}
+        />
+      )}
+    </>
   );
 }
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ─── CollapsibleSection ───────────────────────────────────────────────────────
+
+function CollapsibleSection({
+  title, expanded, onToggle, count, children,
+}: {
+  title: string;
+  expanded: boolean;
+  onToggle: () => void;
+  count?: number;
+  children: ReactNode;
+}) {
+  return (
+    <div className={`rounded-xl border transition-colors ${expanded ? "border-stone-700" : "border-stone-800"} bg-stone-900/50`}>
+      <button
+        className="w-full flex items-center justify-between px-4 py-3 sticky top-44 z-20 bg-stone-900 rounded-xl"
+        onClick={onToggle}
+        aria-expanded={expanded}
+      >
+        <span className="text-xs font-semibold uppercase tracking-widest text-stone-500">
+          {title}
+          {count !== undefined && (
+            <span className="font-normal text-stone-700"> · {count}</span>
+          )}
+        </span>
+        <svg
+          className={`w-4 h-4 text-stone-600 transition-transform duration-150 ${expanded ? "rotate-180" : ""}`}
+          viewBox="0 0 20 20" fill="currentColor" aria-hidden
+        >
+          <path fillRule="evenodd" d="M5.22 8.22a.75.75 0 0 1 1.06 0L10 11.94l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 9.28a.75.75 0 0 1 0-1.06Z" clipRule="evenodd" />
+        </svg>
+      </button>
+      {expanded && (
+        <div className="px-4 pb-4 border-t border-stone-800/50">
+          {children}
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─── FeatureRow ───────────────────────────────────────────────────────────────
 
 interface FeatureRowProps {
   label: string;
@@ -455,7 +663,6 @@ function FeatureRow({ label, description, current, max, recharge, onSet }: Featu
       {isUnlimited ? (
         <p className="text-2xl font-bold text-amber-400">∞</p>
       ) : max <= 6 ? (
-        /* Pip UI */
         <div className="flex gap-0.5 flex-wrap">
           {Array.from({ length: max }).map((_, i) => {
             const filled = i < current;
@@ -476,7 +683,6 @@ function FeatureRow({ label, description, current, max, recharge, onSet }: Featu
           })}
         </div>
       ) : (
-        /* Stepper for >6 charges */
         <div className="flex items-center gap-3">
           <button
             onClick={() => onSet(Math.max(0, current - 1))}

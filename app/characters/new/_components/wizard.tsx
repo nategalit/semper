@@ -206,7 +206,7 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
         {stepIndex > 0 ? (
           <button
             onClick={handlePrev}
-            className="rounded-md border border-stone-700 px-4 py-2 text-sm text-stone-300 hover:border-stone-500 hover:text-stone-100 transition-colors"
+            className="rounded-xl border border-stone-700 px-4 py-2 text-sm text-stone-300 hover:border-stone-500 hover:text-stone-100 transition-colors"
           >
             ← Back
           </button>
@@ -218,14 +218,14 @@ export function CharacterWizard({ races, classes, subclasses, backgrounds, featu
           <button
             onClick={handleNext}
             disabled={!canAdvance(step, { name, raceId, subraceId, classId, backgroundId, classSkills, wizardSubclassId, wizardFightingStyleId, flexibleAbilityPicks, races: filteredRaces, classes: filteredClasses })}
-            className="rounded-md bg-amber-600 px-5 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className="rounded-xl bg-amber-600 px-5 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
           >
             Next →
           </button>
         ) : (
           <button
             onClick={handleFinish}
-            className="rounded-md bg-amber-600 px-5 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 transition-colors"
+            className="rounded-xl bg-amber-600 px-5 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 transition-colors"
           >
             Create character
           </button>

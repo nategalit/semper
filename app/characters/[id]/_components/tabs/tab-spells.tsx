@@ -3,7 +3,8 @@
 import { useState } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import { expendSpellSlot, restoreSpellSlot } from "@/app/actions/characters";
-import type { DerivedStats } from "@/lib/character/calc";
+import type { DerivedStats, StatBreakdown } from "@/lib/character/calc";
+import type { OverridableStatKey } from "@/lib/types/character";
 import { signedMod } from "@/lib/character/calc";
 import type { SrdClass } from "@/lib/content/srd";
 import { getCasterType } from "@/lib/content/srd";
@@ -12,6 +13,9 @@ import type { DisplaySpell } from "@/lib/types/spell";
 import { SectionCard } from "../shared/section-card";
 import { EmptyState } from "../shared/empty-state";
 import { SpellManager } from "../panels/spell-manager";
+import { StatPopover } from "../shared/stat-popover";
+import { ExpandableCard } from "@/app/_components/expandable-card";
+import { cleanHtmlBrowse } from "@/lib/content/aurora/clean-html";
 
 interface Props {
   derived: DerivedStats;
@@ -19,9 +23,20 @@ interface Props {
   allSpells: DisplaySpell[];
 }
 
+interface ActiveBreakdown {
+  label: string;
+  breakdown: StatBreakdown;
+  mode: "modifier" | "absolute";
+  statKey: OverridableStatKey;
+  currentOtherMod: number;
+  currentOverride: number | null;
+}
+
 export function TabSpells({ derived, srdClass, allSpells }: Props) {
   const { character, mutate } = useMutation();
   const [managerOpen, setManagerOpen] = useState(false);
+  const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
+  const [activeBreakdown, setActiveBreakdown] = useState<ActiveBreakdown | null>(null);
 
   if (!srdClass?.spellcasting) {
     return <EmptyState message="This character doesn't cast spells." />;
@@ -36,9 +51,6 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
   const casterType = getCasterType(character.classId);
   const isPrepared = casterType === "prepared";
 
-  // Cantrips are always available — always read from spellsKnown, never from spellsPrepared.
-  // Leveled spells: prepared casters (Wizard, Cleric, etc.) read from spellsPrepared;
-  // known casters (Sorcerer, Bard, etc.) read from spellsKnown.
   const leveledSpellIds = isPrepared ? spellsPrepared : spellsKnown;
   const cantrips = allSpells
     .filter((s) => s.level === 0 && spellsKnown.includes(s.id))
@@ -46,6 +58,14 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
   const leveledSpells = allSpells
     .filter((s) => s.level > 0 && leveledSpellIds.includes(s.id))
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+
+  function toggleSpell(id: string) {
+    setExpandedIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id); else next.add(id);
+      return next;
+    });
+  }
 
   function handlePipClick(level: string, slot: SpellSlotLevel, wasFilled: boolean) {
     if (wasFilled && slot.remaining <= 0) return;
@@ -73,9 +93,29 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
         {derived.spellcastingAbility && (
           <SectionCard title="Spellcasting">
             <div className="grid grid-cols-3 gap-3">
-              <StatCell label="Ability"       value={derived.spellcastingAbility.toUpperCase()} />
-              <StatCell label="Spell Save DC" value={String(derived.spellSaveDC ?? "—")} />
-              <StatCell label="Spell Attack"  value={signedMod(derived.spellAttackBonus ?? 0)} />
+              <StatCell label="Ability" value={derived.spellcastingAbility.toUpperCase()} />
+              <StatCell
+                label="Spell Save DC"
+                value={String(derived.spellSaveDC ?? "—")}
+                breakdown={derived.spellSaveDCBreakdown}
+                hasOverride={!!(character.data.overrides?.spellSaveDC !== undefined || character.data.otherModifiers?.spellSaveDC)}
+                onOpen={(bd) => setActiveBreakdown({
+                  label: "Spell Save DC", breakdown: bd, mode: "absolute", statKey: "spellSaveDC",
+                  currentOtherMod: character.data.otherModifiers?.spellSaveDC ?? 0,
+                  currentOverride: character.data.overrides?.spellSaveDC ?? null,
+                })}
+              />
+              <StatCell
+                label="Spell Attack"
+                value={signedMod(derived.spellAttackBonus ?? 0)}
+                breakdown={derived.spellAttackBonusBreakdown}
+                hasOverride={!!(character.data.overrides?.spellAttackBonus !== undefined || character.data.otherModifiers?.spellAttackBonus)}
+                onOpen={(bd) => setActiveBreakdown({
+                  label: "Spell Attack Bonus", breakdown: bd, mode: "modifier", statKey: "spellAttackBonus",
+                  currentOtherMod: character.data.otherModifiers?.spellAttackBonus ?? 0,
+                  currentOverride: character.data.overrides?.spellAttackBonus ?? null,
+                })}
+              />
             </div>
           </SectionCard>
         )}
@@ -101,10 +141,14 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
         {/* Cantrips */}
         {cantrips.length > 0 && (
           <SectionCard title="Cantrips">
-            <ul className="divide-y divide-stone-800/60">
+            <ul className="space-y-1.5">
               {cantrips.map((spell) => (
-                <li key={spell.id} className="py-2">
-                  <SpellRow name={spell.name} sublabel={`${spell.school} · ${spell.castingTime}`} />
+                <li key={spell.id}>
+                  <SpellExpandCard
+                    spell={spell}
+                    expanded={expandedIds.has(spell.id)}
+                    onToggle={() => toggleSpell(spell.id)}
+                  />
                 </li>
               ))}
             </ul>
@@ -114,16 +158,13 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
         {/* Leveled spells */}
         {leveledSpells.length > 0 ? (
           <SectionCard title={isPrepared ? "Prepared Spells" : "Known Spells"}>
-            <ul className="divide-y divide-stone-800/60">
+            <ul className="space-y-1.5">
               {leveledSpells.map((spell) => (
-                <li key={spell.id} className="py-2">
-                  <SpellRow
-                    name={spell.name}
-                    sublabel={`Level ${spell.level} · ${spell.school}`}
-                    badges={[
-                      spell.concentration ? "Conc." : null,
-                      spell.ritual ? "Ritual" : null,
-                    ].filter(Boolean) as string[]}
+                <li key={spell.id}>
+                  <SpellExpandCard
+                    spell={spell}
+                    expanded={expandedIds.has(spell.id)}
+                    onToggle={() => toggleSpell(spell.id)}
                   />
                 </li>
               ))}
@@ -152,11 +193,65 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
         derived={derived}
         allSpells={allSpells}
       />
+
+      {activeBreakdown && (
+        <StatPopover
+          label={activeBreakdown.label}
+          breakdown={activeBreakdown.breakdown}
+          mode={activeBreakdown.mode}
+          onClose={() => setActiveBreakdown(null)}
+          characterId={character.id}
+          statKey={activeBreakdown.statKey}
+          currentOtherMod={activeBreakdown.currentOtherMod}
+          currentOverride={activeBreakdown.currentOverride}
+        />
+      )}
     </>
   );
 }
 
 // ── Sub-components ────────────────────────────────────────────────────────────
+
+function SpellExpandCard({ spell, expanded, onToggle }: { spell: DisplaySpell; expanded: boolean; onToggle: () => void }) {
+  const htmlDesc = spell.description ? cleanHtmlBrowse(spell.description) : null;
+
+  return (
+    <ExpandableCard
+      expanded={expanded}
+      onToggle={onToggle}
+      header={
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-sm font-medium text-stone-100">{spell.name}</span>
+          {spell.level > 0 && (
+            <span className="text-[10px] uppercase tracking-widest text-stone-500 font-medium">
+              L{spell.level}
+            </span>
+          )}
+          <span className="text-[10px] uppercase tracking-widest text-stone-600">{spell.school}</span>
+          {spell.concentration && (
+            <span className="text-[10px] text-violet-400">Conc.</span>
+          )}
+          {spell.ritual && (
+            <span className="text-[10px] text-emerald-500">Ritual</span>
+          )}
+        </div>
+      }
+    >
+      <p className="text-xs text-stone-500 mb-2">
+        {spell.castingTime} · {spell.range} · {spell.duration}
+        {spell.components && ` · ${spell.components}`}
+      </p>
+      {htmlDesc ? (
+        <div
+          className="aurora-content text-xs text-stone-300 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: htmlDesc }}
+        />
+      ) : (
+        <p className="text-xs text-stone-600 italic">No description available.</p>
+      )}
+    </ExpandableCard>
+  );
+}
 
 function SlotRow({ level, slot, onPipClick }: { level: string; slot: SpellSlotLevel; onPipClick: (wasFilled: boolean) => void }) {
   return (
@@ -191,27 +286,30 @@ function SlotPip({ filled, onClick }: { filled: boolean; onClick: () => void }) 
   );
 }
 
-function SpellRow({ name, sublabel, badges = [] }: { name: string; sublabel: string; badges?: string[] }) {
-  return (
-    <div className="flex items-start justify-between gap-2">
-      <div>
-        <p className="text-sm font-medium text-stone-100">{name}</p>
-        <p className="text-xs text-stone-500 mt-0.5">{sublabel}</p>
-      </div>
-      {badges.length > 0 && (
-        <div className="flex gap-1 shrink-0 mt-0.5">
-          {badges.map((b) => (
-            <span key={b} className="text-[10px] font-medium px-1.5 py-0.5 rounded bg-stone-800 text-stone-400">
-              {b}
-            </span>
-          ))}
-        </div>
-      )}
-    </div>
-  );
+interface StatCellProps {
+  label: string;
+  value: string;
+  breakdown?: StatBreakdown;
+  hasOverride?: boolean;
+  onOpen?: (bd: StatBreakdown) => void;
 }
 
-function StatCell({ label, value }: { label: string; value: string }) {
+function StatCell({ label, value, breakdown, hasOverride, onOpen }: StatCellProps) {
+  if (breakdown && onOpen) {
+    return (
+      <button
+        onClick={() => onOpen(breakdown)}
+        className="relative flex flex-col items-center gap-0.5 rounded-lg p-1 -m-1 hover:bg-stone-800 transition-colors"
+        aria-label={`${label}: ${value}. Tap for breakdown.`}
+      >
+        {hasOverride && (
+          <span className="absolute top-0 right-0 w-1.5 h-1.5 rounded-full bg-amber-400" aria-hidden />
+        )}
+        <span className="text-xs text-stone-500">{label}</span>
+        <span className="text-lg font-semibold text-stone-100">{value}</span>
+      </button>
+    );
+  }
   return (
     <div className="flex flex-col items-center gap-0.5">
       <span className="text-xs text-stone-500">{label}</span>

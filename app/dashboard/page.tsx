@@ -17,7 +17,7 @@ export default async function DashboardPage() {
           <h1 className="text-2xl font-bold">My Characters</h1>
           <Link
             href="/characters/new"
-            className="rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-stone-950 hover:bg-amber-500 transition-colors"
+            className="rounded-xl bg-amber-600 px-5 py-2.5 text-sm font-bold text-stone-950 hover:bg-amber-500 transition-colors"
           >
             + New character
           </Link>

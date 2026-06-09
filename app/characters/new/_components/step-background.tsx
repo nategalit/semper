@@ -5,20 +5,7 @@ import { useWizardStore } from "@/lib/stores/wizard-store";
 import type { SrdBackground } from "@/lib/content/srd";
 import type { FeatureEntry } from "@/app/actions/content";
 import { sourceChipClass } from "@/lib/ui-tokens";
-
-function cleanHtml(html: string, featureMap?: Map<string, FeatureEntry>, depth = 3): string {
-  if (!html) return "";
-  let result = html.replace(/<div\s+element="([^"]+)"[^>]*\/?>/gi, (_, id) => {
-    if (depth > 0 && featureMap && featureMap.size > 0) {
-      const f = featureMap.get(id);
-      if (f) return `<h5>${f.name}</h5>${cleanHtml(f.description, featureMap, depth - 1)}`;
-    }
-    return "";
-  });
-  result = result.replace(/<div[^>]*class="reference"[^>]*>[\s\S]*?<\/div>/gi, "");
-  result = result.replace(/<\/?div[^>]*>/gi, "");
-  return result.trim();
-}
+import { cleanHtml } from "@/lib/content/aurora/clean-html";
 
 function bgKey(bg: SrdBackground) {
   return `${bg.id}:${bg.sourceLabel ?? ""}`;

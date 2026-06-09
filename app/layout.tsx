@@ -15,6 +15,11 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Semper",
   description: "D&D 5e character sheets, forged for play.",
+  appleWebApp: {
+    capable: true,
+    title: "Semper",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export default function RootLayout({

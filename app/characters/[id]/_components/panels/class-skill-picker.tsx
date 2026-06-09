@@ -5,6 +5,7 @@ import { useMutation } from "@/lib/character/mutation-context";
 import { setSkillProficiencies } from "@/app/actions/characters";
 import type { SrdClass, SrdBackground } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
+import { btn } from "@/lib/ui-tokens";
 
 interface Props {
   open: boolean;
@@ -117,8 +118,7 @@ export function ClassSkillPicker({ open, onClose, srdClass, srdBackground }: Pro
           <button
             onClick={handleSave}
             disabled={picks.length !== count}
-            className="w-full min-h-[48px] rounded-xl bg-amber-600 text-stone-950 font-bold
-              hover:bg-amber-500 active:bg-amber-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            className={`w-full ${btn.primary} disabled:opacity-40 disabled:cursor-not-allowed`}
           >
             Save class skills
           </button>
