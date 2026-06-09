@@ -1,16 +1,50 @@
 # Semper — Project Status
-Last updated: 2026-06-08
+Last updated: 2026-06-09
 
 ---
 
 ## Current State
 
-**Phase:** UI Overhaul complete — Phase 8.6 (subclass completeness) is next
+**Phase:** Phase 8.6 complete — Heavy testing pass is next
 
-**Latest commits:**
-- `d2e3001` — Phase 9: UI polish, editing flows, and functional improvements
-- `1fe46a0` — Phase 8 fix: feature rendering pipeline (bugs 1 & 2)
-- `624d817` — Phase 8: Level Up flow complete
+**Latest commits (pending):**
+- Phase 8.6-A+E: SRD subclass descriptions (39) + Domain/Oath always-prepared spells
+- Phase 8.6-B+D: Subclass-granted spellcasting (EK, AT) + Remarkable Athlete half-PB
+- Phase 8.6-C: Champion L10 Additional Fighting Style choice
+
+**Phase 8.6 complete:**
+
+*8.6-A: SRD subclass descriptions (39 subclasses):*
+- Added `featuresByLevel` + `featureDescriptions` to all 39 remaining SRD subclasses (Champion was the only one with data before)
+- All SRD subclass features now render with text in the Features tab instead of unlabeled chips
+- Descriptions for choice-based features (Hunter's Prey, Totem Spirit, etc.) summarize all options inline
+
+*8.6-B: Subclass-granted spellcasting (Eldritch Knight, Arcane Trickster):*
+- `SUBCLASS_SPELLCASTING` map in `spell-types.ts` + one-third caster slot table in `progression.ts`
+- `deriveStats` falls back to subclass spellcasting when base class has none
+- Spells tab, spell manager, and spell limits all use `subclassId` as caster key for EK/AT
+- `levelUpCharacter` picks up subclass-granted slots on level-up
+- One-time `useEffect` in `tab-spells.tsx` initializes slots for existing EK/AT characters
+
+*8.6-C: Champion L10 Additional Fighting Style:*
+- `SUBCLASS_FIGHTING_STYLE_GRANT` map in `fighting-styles.ts`
+- Level-up panel refactored from single `pickedFightingStyleId` to `fightingStyleByNewLevel` map — handles both class-level and subclass-level grants independently
+
+*8.6-D: Remarkable Athlete half-PB (Champion L7+):*
+- `deriveStats` applies `Math.ceil(pb/2)` to non-proficient STR/DEX/CON skill checks
+- Shown as "Remarkable Athlete" component in skill stat breakdown popovers
+
+*8.6-E: Domain/Oath always-prepared spells:*
+- `grantedSpells` field added to `SrdSubclass` type
+- Populated for all 7 SRD Cleric domains and 3 Paladin oaths (SRD spells only — some PHB spells not in SRD data are silently absent)
+- Spells tab renders "Domain Spells" / "Oath Spells" section, level-gated by character level
+
+*Deferred (see Known Issues):*
+- Battle Master superiority dice, Hunter/Totem option pickers, subclass proficiency grants (Tier 3 — new infrastructure)
+- Monster Hunter spellcasting (blocked by empty Aurora IDs)
+- Draconic Resilience AC, domain spell Aurora fallback, EK/AT slot init server-side (deferred)
+
+---
 
 **UI Overhaul complete (`d2e3001`):**
 
@@ -81,20 +115,14 @@ Last updated: 2026-06-08
 
 ## What's Next
 
-### Phase 8.6 — Subclass completeness (next up)
+### Heavy testing pass (next up)
 
-Mirrors Phase 8.5 but for subclasses. Key gaps found in testing:
-- Battle Master: features show as chips without descriptions
-- Monster Hunter: proficiency choice, superiority dice, ritual spellcasting not implemented
-- Eldritch Knight / Arcane Trickster / Monster Hunter: subclass-granted spellcasting not detected by Spells tab
-- Champion L10: Additional Fighting Style choice not surfaced
-- Remarkable Athlete: half-proficiency to STR/DEX/CON checks not applied
-
-Will require a dedicated audit before building. Plan when UI overhaul is done.
-
-### Heavy feat + subclass testing pass (queued)
-
-After 8.6. Structured test pass with diverse character archetypes.
+Structured test pass with diverse character archetypes. Priority archetypes:
+- Champion Fighter (L7, L10): Remarkable Athlete half-PB, Additional Fighting Style prompt
+- Eldritch Knight / Arcane Trickster (L3+): Spells tab, slot counts, cantrips, spell manager
+- Life Domain Cleric / Oath of Devotion Paladin: Domain/Oath spells section
+- Arbitrary subclasses across all 12 classes: descriptions render, not chips
+- SRD vs Aurora subclass dedup paths: same-named subclasses (Battle Master, etc.) show SRD data
 
 ### Phase 9 — Action bar (queued, deferred behind 8.6)
 
@@ -121,8 +149,8 @@ Performance, CSS edge cases, `unstable_cache` for content getters, optimistic up
 | 8 — Level Up flow | ✅ Done | Guided level-up/down panel; subclass picker; Fighting Style picker (SRD + Aurora) |
 | 8.5 — Feat picker + class completeness | ✅ Done | Feat picker; half-feat ASI; Tough HP; Lucky/Inspiring Leader; feat stat mods; class featureDescriptions (all 12); Feats browse page; level-up filters; modal viewport |
 | UI Overhaul | ✅ Done | Tap-to-expand cards, formatted descriptions, stat breakdown popovers, manual overrides, Features tab restructure, design tokens, editing flows (description/extras/name), dashboard polish, PWA manifest, error/loading pages, multi-die dice roller, proficiencies section |
-| 8.6 — Subclass completeness | 🔜 Next | Battle Master descriptions, Monster Hunter mechanics, subclass-granted spellcasting, Champion L10 choice, Remarkable Athlete. Mirrors Phase 8.5 scope for subclasses. |
-| Heavy testing pass | ⏳ Queued | Diverse character archetypes, integration bugs at scale |
+| 8.6 — Subclass completeness | ✅ Done | SRD subclass descriptions (all 39); EK+AT spellcasting; Champion L10 FS; Remarkable Athlete; domain/oath always-prepared spells. Tier 3 deferred. |
+| Heavy testing pass | 🔜 Next | Diverse character archetypes, integration bugs at scale |
 | 9 — Action bar | ⏳ Queued | BG3-style unified action/resource bar. Design doc: `docs/phase-8-action-bar.md`. Deferred until 8.6 lands. |
 | 10 — Polish pass | ⏳ Queued | Performance (AC recalc lag, content re-fetch), CSS bugs (class description heading overlap), optimistic updates |
 | — | ✅ Done | **Feature taxonomy audit** — `docs/feature-taxonomy-audit.md` |
@@ -133,38 +161,52 @@ Performance, CSS edge cases, `unstable_cache` for content getters, optimistic up
 
 ## Known Issues
 
-### Battle Master: subclass features show as chips without descriptions
-**Status:** Phase 8.6
-**Symptom:** Battle Master features appear as unlabeled chips in Class Progression with no description text. Champion and other subclasses show descriptions correctly.
-**Cause:** Battle Master features in Aurora use a naming/ID pattern the current `descByNameLower` map doesn't match.
+### Domain/Oath spells: missing spells not in SRD data
+**Status:** Phase 8.6 follow-up
+**Symptom:** Several canonical domain/oath spells (Revivify, Flame Strike, Flaming Sphere, Gust of Wind, Sleet Storm, Sanctuary, Bane, Ensnaring Strike, Augury, etc.) are absent from the always-prepared section because they're PHB spells not included in `SRD_SPELLS`.
+**Fix:** When an Aurora import is active (PHB), fall back to Aurora spell data for `grantedSpells` IDs that don't resolve in SRD. Requires cross-referencing `grantedSpells` IDs against the Aurora spell list.
 
 ---
 
-### Monster Hunter: mechanics not implemented
-**Status:** Phase 8.6
-**Symptom:** Monster Hunter (Aurora subclass) doesn't surface its L3 proficiency choice, doesn't grant superiority dice as a resource pool, doesn't enable its ritual spellcasting.
-**Cause:** These are subclass-mechanic patterns (custom resource pools, subclass-granted spellcasting, level-gated choices) that Phase 8.5 covered for classes but not subclasses.
+### EK/AT spell slot initialization: client-side useEffect
+**Status:** Phase 10 polish
+**Symptom:** Existing Eldritch Knight / Arcane Trickster characters (created before 8.6-B) get their slots initialized via a `useEffect` in `tab-spells.tsx` that fires when they open the Spells tab. If they navigate away before the tab renders, slots stay uninitialized until the next visit.
+**Fix:** Move slot initialization to the server side at character load (e.g., a migration in `getCharacter` or a one-time server action triggered at page load).
 
 ---
 
-### Subclass-granted spellcasting not detected
-**Status:** Phase 8.6
-**Symptom:** Eldritch Knight, Arcane Trickster, Monster Hunter — Spells tab says "this character can't cast spells" even though the subclass grants spellcasting. Base class (Fighter, Rogue) has no spellcasting; the subclass adds it.
-**Fix:** Spells tab and `deriveStats` need to check subclass for spellcasting grants, not only the base class.
+### Battle Master: superiority dice resource pool not implemented
+**Status:** Phase 8.6 follow-up (Tier 3) — or Phase 9 if action bar absorbs it
+**Symptom:** Battle Master Combat Superiority defines a shared pool of superiority dice spent on maneuvers. The current pip system tracks per-feature charges, not a shared pool. Maneuver selection (pick 3 from 16) at level-up is also not surfaced.
+**Scope:** Needs new resource pool data architecture in `CharacterData`, maneuver selection UI in level-up panel, and dice-size scaling (d8→d10→d12). The Phase 9 action bar may absorb this naturally if it introduces a generic shared-pool resource type.
 
 ---
 
-### Champion L10: Additional Fighting Style choice not surfaced
-**Status:** Phase 8.6
-**Symptom:** Champion subclass grants a second Fighting Style at L10. No prompt appears in the level-up panel; the choice is silently skipped.
-**Fix:** Subclass-level fighting style grants need the same treatment as class-level grants in the level-up panel.
+### Hunter / Totem Warrior / Way of Four Elements: option pickers not implemented
+**Status:** Phase 8.6 follow-up (Tier 3)
+**Symptom:** Hunter (L3/7/11/15), Path of the Totem Warrior (L3/6/14), and Way of the Four Elements (L3+) require the player to pick from a list of options at each unlock level. These choices are silently skipped in the level-up panel.
+**Fix:** Generic subclass option-choice UI in level-up panel. Overlaps with Battle Master maneuver picker — build together.
 
 ---
 
-### Remarkable Athlete: half-proficiency not applied
-**Status:** Phase 8.6
-**Symptom:** Champion's Remarkable Athlete feature grants half-proficiency (rounded up) to STR, DEX, CON ability checks not already covered by proficiency. Not applied to derived stats.
-**Fix:** Detect Remarkable Athlete via subclass ID, apply conditional half-PB to relevant skills in `deriveStats`.
+### Subclass proficiency grants not reflected in Proficiencies section
+**Status:** Phase 8.6 follow-up (Tier 3)
+**Symptom:** Subclasses that grant weapon/armor/tool proficiencies (Battle Master tool, Tempest/War heavy armor, College of Swords medium armor) are not reflected in the Stats tab Proficiencies section.
+**Fix:** Subclass data schema extension to hold proficiency grants; subclass-level proficiency resolution in derived stats. Display gap only — proficiency functions if the player knows they have it.
+
+---
+
+### Monster Hunter: spellcasting blocked by empty Aurora IDs
+**Status:** Phase 8.6 follow-up — blocked
+**Symptom:** Monster Hunter (UA: Gothic Heroes Aurora subclass) should grant ritual spellcasting. Its Aurora grants array has `"id": ""` (empty strings), so `featureMap` lookups always fail. Spellcasting never activates.
+**Fix:** Requires the Aurora import data to be corrected upstream, or a manual override in the SRD data layer (treat Monster Hunter as an SRD-ish subclass and hardcode its spellcasting config).
+
+---
+
+### Draconic Resilience: AC formula not applied
+**Status:** Phase 8.6 follow-up
+**Symptom:** Draconic Bloodline Sorcerer's Draconic Resilience grants AC = 13 + DEX when unarmored. The current unarmored AC fallback uses `10 + DEX`. The subclass check is missing.
+**Fix:** `deriveStats` needs a branch similar to Monk Unarmored Defense — detect `ID_SUBCLASS_SORCERER_DRACONIC`, apply `13 + DEX` base when unarmored.
 
 ---
 
@@ -200,4 +242,5 @@ Performance, CSS edge cases, `unstable_cache` for content getters, optimistic up
 | `docs/combat-mode-design.md` | Not created | Phase 9 follow-up; create when Phase 9 ships |
 | `docs/feature-taxonomy-audit.md` | Complete | 17 mechanical patterns across all sources |
 | `docs/class-completeness-audit.md` | Complete | Per-level coverage; Phase 8.5 scope |
+| `docs/subclass-completeness-audit.md` | Complete | Phase 8.6 scope audit: description coverage, 6 mechanic patterns, Tier 1/2/3 classification |
 | `docs/project-status.md` | This file | Living tracker |
