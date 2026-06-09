@@ -7,6 +7,7 @@ import {
 } from "@/app/actions/characters";
 import {
   getCasterType, preparedSpellLimit, knownSpellLimit, maxCastableSpellLevel, cantripLimit,
+  SUBCLASS_SPELLCASTING, SUBCLASS_SPELL_CLASS,
   type SpellSchool,
 } from "@/lib/content/srd";
 import type { SrdClass } from "@/lib/content/srd";
@@ -116,7 +117,11 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
   // User-selected version per canonical name (overrides the auto-resolved version)
   const [selectedVersions, setSelectedVersions] = useState(() => new Map<string, string>());
 
-  const casterType = getCasterType(character.classId);
+  const subclassSC = SUBCLASS_SPELLCASTING[character.data.subclassId ?? ""];
+  const casterId = subclassSC ? (character.data.subclassId ?? "") : (character.classId ?? "");
+  const spellClassId = SUBCLASS_SPELL_CLASS[character.data.subclassId ?? ""] ?? character.classId;
+
+  const casterType = getCasterType(casterId || null);
   const isPrepared = casterType === "prepared";
 
   const spellsKnown = character.data.spellsKnown ?? [];
@@ -127,12 +132,12 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
     ? derived.abilityMods[derived.spellcastingAbility]
     : 0;
 
-  const preparedLimit = isPrepared && character.classId
-    ? preparedSpellLimit(character.classId, character.level, spellcastingAbilityMod)
+  const preparedLimit = isPrepared && casterId
+    ? preparedSpellLimit(casterId, character.level, spellcastingAbilityMod)
     : null;
 
-  const knownLimit = !isPrepared && character.classId
-    ? knownSpellLimit(character.classId, character.level)
+  const knownLimit = !isPrepared && casterId
+    ? knownSpellLimit(casterId, character.level)
     : null;
 
   const activeKnownCount = spellsKnown.filter((id) => {
@@ -147,7 +152,7 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
     return sp && sp.level === 0;
   }).length;
 
-  const cantripMax = character.classId ? cantripLimit(character.classId, character.level) : 0;
+  const cantripMax = casterId ? cantripLimit(casterId, character.level) : 0;
   const cantripAtLimit = cantripMax > 0 && cantripKnownCount >= cantripMax;
   const knownAtLimit = !isPrepared && knownLimit !== null && activeKnownCount >= knownLimit;
   const preparedAtLimit = isPrepared && preparedLimit !== null && activePreparedCount >= preparedLimit;
@@ -189,10 +194,10 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
   const dedupedBrowseSpells = useMemo((): DedupedSpell[] => {
     const filtered = allSpells.filter((spell) => {
       // Level cap always applied — characters can't learn spells above their current slot tier.
-      if (character.classId && spell.level > 0) {
-        if (spell.level > maxCastableSpellLevel(character.classId, character.level)) return false;
+      if (casterId && spell.level > 0) {
+        if (spell.level > maxCastableSpellLevel(casterId, character.level)) return false;
       }
-      if (classOnly && character.classId && !spell.classes.includes(character.classId)) return false;
+      if (classOnly && spellClassId && !spell.classes.includes(spellClassId)) return false;
       if (levelFilter !== null && spell.level !== levelFilter) return false;
       if (schoolFilter && spell.school !== schoolFilter) return false;
       if (sourceFilters.size > 0 && !sourceFilters.has(spell.sourceLabel)) return false;
@@ -214,7 +219,7 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
       result.push({ key, spell: resolved, group });
     }
     return result;
-  }, [allSpells, classOnly, character.classId, levelFilter, schoolFilter, sourceFilters, search, spellGroups, selectedVersions, spellsKnown]);
+  }, [allSpells, classOnly, casterId, spellClassId, levelFilter, schoolFilter, sourceFilters, search, spellGroups, selectedVersions, spellsKnown]);
 
   // ── "My Spells" deduped list ─────────────────────────────────────────────────
   // One entry per known spell ID. Augments description from the same-name group
@@ -281,8 +286,8 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
   const browseItems = buildDisplayList(dedupedBrowseSpells, sortBy);
   const myItems = buildDisplayList(dedupedMySpells, "level");
 
-  const maxCastableLevel = character.classId
-    ? maxCastableSpellLevel(character.classId, character.level)
+  const maxCastableLevel = casterId
+    ? maxCastableSpellLevel(casterId, character.level)
     : 9;
 
   const spellsUrl = (() => {
@@ -294,7 +299,7 @@ export function SpellManager({ open, onClose, srdClass, derived, allSpells }: Pr
     return qs ? `/spells?${qs}` : "/spells";
   })();
 
-  const levelTooHigh = levelFilter !== null && levelFilter > 0 && !!character.classId && levelFilter > maxCastableLevel;
+  const levelTooHigh = levelFilter !== null && levelFilter > 0 && !!casterId && levelFilter > maxCastableLevel;
   const spellsLink = (
     <a href={spellsUrl} className="text-amber-400 hover:text-amber-300 underline underline-offset-2">
       View full spell reference

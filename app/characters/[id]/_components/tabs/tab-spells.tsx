@@ -1,13 +1,14 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
-import { expendSpellSlot, restoreSpellSlot } from "@/app/actions/characters";
+import { expendSpellSlot, restoreSpellSlot, initializeSpellSlots } from "@/app/actions/characters";
+import { getSpellSlotsForClass } from "@/lib/content/srd/progression";
 import type { DerivedStats, StatBreakdown } from "@/lib/character/calc";
 import type { OverridableStatKey } from "@/lib/types/character";
 import { signedMod } from "@/lib/character/calc";
 import type { SrdClass } from "@/lib/content/srd";
-import { getCasterType } from "@/lib/content/srd";
+import { getCasterType, SUBCLASS_SPELLCASTING, SUBCLASS_SPELL_CLASS, SRD_SUBCLASSES } from "@/lib/content/srd";
 import type { CharacterData, SpellSlotLevel } from "@/lib/types/character";
 import type { DisplaySpell } from "@/lib/types/spell";
 import { SectionCard } from "../shared/section-card";
@@ -38,20 +39,49 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
   const [activeBreakdown, setActiveBreakdown] = useState<ActiveBreakdown | null>(null);
 
-  if (!srdClass?.spellcasting) {
+  const subclassSC = SUBCLASS_SPELLCASTING[character.data.subclassId ?? ""];
+  const effectiveSC = srdClass?.spellcasting ?? subclassSC ?? null;
+  const spellSlots = character.data.spellSlots ?? {};
+
+  // One-time initialization: subclass-granted casters (EK/AT) get no slots from
+  // level-up until the 8.6-B fix; auto-populate if slots are missing.
+  useEffect(() => {
+    if (!subclassSC) return;
+    if (Object.keys(spellSlots).length > 0) return;
+    const computed = getSpellSlotsForClass(
+      character.classId ?? "",
+      subclassSC,
+      character.level,
+      undefined
+    );
+    if (!computed || Object.keys(computed).length === 0) return;
+    mutate({ spellSlots: computed }, () => initializeSpellSlots(character.id, computed));
+  }, [character.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  if (!effectiveSC) {
     return <EmptyState message="This character doesn't cast spells." />;
   }
-  if (srdClass.spellcasting.startsAtLevel > character.level) {
+  if (effectiveSC.startsAtLevel > character.level) {
     return <EmptyState message="Spellcasting becomes available at a higher level." />;
   }
-
-  const spellSlots = character.data.spellSlots ?? {};
   const spellsKnown = character.data.spellsKnown ?? [];
   const spellsPrepared = character.data.spellsPrepared ?? [];
-  const casterType = getCasterType(character.classId);
+  // For subclass-granted casters, use subclassId as the caster key for limit lookups.
+  const casterId = subclassSC ? (character.data.subclassId ?? "") : (character.classId ?? "");
+  const casterType = getCasterType(casterId);
   const isPrepared = casterType === "prepared";
 
   const leveledSpellIds = isPrepared ? spellsPrepared : spellsKnown;
+
+  // Domain / oath spells — always prepared, sourced from the SRD subclass grantedSpells.
+  const srdSubclass = SRD_SUBCLASSES.find((s) => s.id === character.data.subclassId);
+  const domainSpells = (srdSubclass?.grantedSpells ?? [])
+    .filter((g) => g.level <= character.level)
+    .map((g) => allSpells.find((s) => s.id === g.id))
+    .filter((s): s is NonNullable<typeof s> => s !== undefined)
+    .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
+  const domainSectionTitle = character.classId === "ID_CLASS_PALADIN" ? "Oath Spells" : "Domain Spells";
+
   const cantrips = allSpells
     .filter((s) => s.level === 0 && spellsKnown.includes(s.id))
     .sort((a, b) => a.name.localeCompare(b.name));
@@ -173,6 +203,24 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
         ) : (
           <SectionCard title={isPrepared ? "Prepared Spells" : "Known Spells"}>
             <EmptyState message={isPrepared ? "No spells prepared." : "No spells known."} />
+          </SectionCard>
+        )}
+
+        {/* Domain / oath spells */}
+        {domainSpells.length > 0 && (
+          <SectionCard title={domainSectionTitle}>
+            <p className="text-xs text-stone-500 mb-2">Always prepared — don't count against your limit.</p>
+            <ul className="space-y-1.5">
+              {domainSpells.map((spell) => (
+                <li key={spell.id}>
+                  <SpellExpandCard
+                    spell={spell}
+                    expanded={expandedIds.has(spell.id)}
+                    onToggle={() => toggleSpell(spell.id)}
+                  />
+                </li>
+              ))}
+            </ul>
           </SectionCard>
         )}
 

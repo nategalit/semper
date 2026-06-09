@@ -1,3 +1,5 @@
+import type { AbilityKey } from "./types";
+
 export type SpellSchool =
   | "abjuration"
   | "conjuration"
@@ -36,7 +38,22 @@ export const PREPARED_CASTER_IDS = new Set([
   "ID_CLASS_ARTIFICER",
 ]);
 
-/** Returns "prepared" or "known" for a given class ID. Returns undefined for non-casters. */
+/**
+ * Subclasses that grant spellcasting to an otherwise non-casting class.
+ * `startsAtLevel: 3` is the sentinel for one-third casters.
+ */
+export const SUBCLASS_SPELLCASTING: Record<string, { ability: AbilityKey; startsAtLevel: number }> = {
+  ID_SUBCLASS_FIGHTER_ELDRITCH: { ability: "int", startsAtLevel: 3 },
+  ID_SUBCLASS_ROGUE_ARCANE:     { ability: "int", startsAtLevel: 3 },
+};
+
+/** The class whose spell list these subclasses draw from (for the "class only" spell filter). */
+export const SUBCLASS_SPELL_CLASS: Record<string, string> = {
+  ID_SUBCLASS_FIGHTER_ELDRITCH: "ID_CLASS_WIZARD",
+  ID_SUBCLASS_ROGUE_ARCANE:     "ID_CLASS_WIZARD",
+};
+
+/** Returns "prepared" or "known" for a given class ID or subclass ID. Returns undefined for non-casters. */
 export function getCasterType(classId: string | null | undefined): CasterType | undefined {
   if (!classId) return undefined;
   if (PREPARED_CASTER_IDS.has(classId)) return "prepared";
@@ -45,6 +62,9 @@ export function getCasterType(classId: string | null | undefined): CasterType | 
     "ID_CLASS_RANGER",
     "ID_CLASS_SORCERER",
     "ID_CLASS_WARLOCK",
+    // Subclass-granted spellcasting (one-third casters, always "known"):
+    "ID_SUBCLASS_FIGHTER_ELDRITCH",
+    "ID_SUBCLASS_ROGUE_ARCANE",
   ]);
   if (KNOWN_CASTER_IDS.has(classId)) return "known";
   return undefined;
@@ -84,6 +104,9 @@ const CANTRIP_LIMIT: Record<string, number[]> = {
   ID_CLASS_WIZARD:   [3,3,3,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5],
   // Paladin and Ranger have no base cantrips.
   ID_CLASS_ARTIFICER: [2,2,2,2,2,2,2,2,2,3,3,3,3,4,4,4,4,4,4,4],
+  // Subclass-granted (one-third casters): 2 cantrips at L3, 3 at L10
+  ID_SUBCLASS_FIGHTER_ELDRITCH: [0,0,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3],
+  ID_SUBCLASS_ROGUE_ARCANE:     [0,0,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3],
 };
 
 /** Max cantrips known at a given character level. Returns 0 if the class gets no cantrips. */
@@ -104,6 +127,9 @@ const MAX_SPELL_LEVEL: Record<string, number[]> = {
   ID_CLASS_RANGER:   [0,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5],
   ID_CLASS_WARLOCK:  [1,1,2,2,3,3,4,4,5,5,5,5,5,5,5,5,5,5,5,5],
   ID_CLASS_ARTIFICER:[1,1,1,1,2,2,2,2,3,3,3,3,4,4,4,4,5,5,5,5],
+  // Subclass-granted one-third casters (slots start at L3)
+  ID_SUBCLASS_FIGHTER_ELDRITCH: [0,0,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4,4],
+  ID_SUBCLASS_ROGUE_ARCANE:     [0,0,1,1,1,1,2,2,2,2,2,2,3,3,3,3,3,3,4,4],
 };
 
 /** Highest spell level a caster can cast at a given character level. Returns 0 for non-casters. */
@@ -124,6 +150,9 @@ export function knownSpellLimit(classId: string, level: number): number {
     ID_CLASS_RANGER:   [0,2,3,3,4,4,5,5,6,6,7,7,8,8,9,9,10,10,11,11],
     ID_CLASS_SORCERER: [2,3,4,5,6,7,8,9,10,11,12,12,13,13,14,14,15,15,15,15],
     ID_CLASS_WARLOCK:  [2,3,4,5,6,7,8,9,10,10,11,11,12,12,13,13,14,14,14,15],
+    // Subclass-granted one-third casters (Eldritch Knight / Arcane Trickster)
+    ID_SUBCLASS_FIGHTER_ELDRITCH: [0,0,3,4,4,4,5,6,6,7,8,8,9,10,10,11,11,11,12,13],
+    ID_SUBCLASS_ROGUE_ARCANE:     [0,0,3,4,4,4,5,6,6,7,8,8,9,10,10,11,11,11,12,13],
   };
   const table = tables[classId];
   if (!table) return 0;

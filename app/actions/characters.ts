@@ -12,8 +12,10 @@ import {
   type NewCharacterInput,
   type UpdateCharacterInput,
   type OverridableStatKey,
+  type SpellSlotLevel,
 } from "@/lib/types/character";
 import type { AbilityKey } from "@/lib/content/srd";
+import { SUBCLASS_SPELLCASTING } from "@/lib/content/srd";
 import {
   getClassFeatures,
   getFeatFeatures,
@@ -297,6 +299,16 @@ export async function restoreSpellSlot(id: string, level: string): Promise<void>
         [level]: { ...slot, remaining: slot.remaining + 1 },
       },
     };
+  });
+}
+
+export async function initializeSpellSlots(
+  id: string,
+  slots: Record<string, SpellSlotLevel>
+): Promise<void> {
+  await patchCharacterData(id, (current) => {
+    if (current.spellSlots && Object.keys(current.spellSlots).length > 0) return {};
+    return { spellSlots: slots };
   });
 }
 
@@ -593,10 +605,12 @@ export async function levelUpCharacter(
   }
 
   // ── Spell slots ────────────────────────────────────────────────────────────
-  // Prefer resolvedClass spellcasting; fall back to SRD table.
+  // Prefer resolvedClass spellcasting; fall back to SRD table; then subclass-granted (EK/AT).
+  const subclassGrantedSC = SUBCLASS_SPELLCASTING[newSubclassIdFinal ?? ""] ?? null;
   const spellcasting =
     current.resolvedClass?.spellcasting ??
-    (classId ? (SRD_CLASSES.find((c) => c.id === classId)?.spellcasting ?? null) : null);
+    (classId ? (SRD_CLASSES.find((c) => c.id === classId)?.spellcasting ?? null) : null) ??
+    subclassGrantedSC;
 
   const newSpellSlots = classId
     ? getSpellSlotsForClass(classId, spellcasting, targetLevel, current.spellSlots)

@@ -28,6 +28,31 @@ const FULL_CASTER_SLOTS: Record<number, number[]> = {
   20: [4, 3, 3, 3, 3, 2, 2, 1, 1],
 };
 
+/** One-third caster spell slots (Eldritch Knight, Arcane Trickster) — slots start at level 3 */
+const ONE_THIRD_CASTER_SLOTS: Record<number, number[]> = {
+  //          1  2  3  4
+  1:  [0, 0, 0, 0],
+  2:  [0, 0, 0, 0],
+  3:  [2, 0, 0, 0],
+  4:  [3, 0, 0, 0],
+  5:  [3, 0, 0, 0],
+  6:  [3, 0, 0, 0],
+  7:  [4, 2, 0, 0],
+  8:  [4, 2, 0, 0],
+  9:  [4, 2, 0, 0],
+  10: [4, 3, 0, 0],
+  11: [4, 3, 0, 0],
+  12: [4, 3, 0, 0],
+  13: [4, 3, 2, 0],
+  14: [4, 3, 2, 0],
+  15: [4, 3, 2, 0],
+  16: [4, 3, 3, 0],
+  17: [4, 3, 3, 0],
+  18: [4, 3, 3, 0],
+  19: [4, 3, 3, 1],
+  20: [4, 3, 3, 1],
+};
+
 /** Half-caster spell slots (Paladin, Ranger) — slots start at level 2 */
 const HALF_CASTER_SLOTS: Record<number, number[]> = {
   //          1  2  3  4  5  6  7  8  9
@@ -118,7 +143,9 @@ export function getSpellSlotsForClass(
   }
 
   const table =
-    spellcasting.startsAtLevel === 1 ? FULL_CASTER_SLOTS : HALF_CASTER_SLOTS;
+    spellcasting.startsAtLevel === 1 ? FULL_CASTER_SLOTS
+    : spellcasting.startsAtLevel === 3 ? ONE_THIRD_CASTER_SLOTS
+    : HALF_CASTER_SLOTS;
   const row = table[targetLevel];
   if (!row) return undefined;
 

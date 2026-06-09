@@ -1,5 +1,6 @@
 import type { Character, EquipmentItem, WeaponStats, OverridableStatKey } from "@/lib/types/character";
 import type { AbilityKey, SrdBackground, SrdClass, SrdRace } from "@/lib/content/srd";
+import { SUBCLASS_SPELLCASTING } from "@/lib/content/srd";
 import type { FeatElement, StatModifier } from "@/lib/content/schema";
 
 // ─── Skill → ability mapping ──────────────────────────────────────────────────
@@ -158,6 +159,13 @@ export function deriveStats(
 ): DerivedStats {
   const pb = proficiencyBonus(character.level);
 
+  // Champion L7: Remarkable Athlete — half PB (rounded up) to non-proficient STR/DEX/CON checks.
+  const hasRemarkableAthlete =
+    character.data.subclassId === "ID_SUBCLASS_FIGHTER_CHAMPION" &&
+    character.level >= 7;
+  const halfPb = Math.ceil(pb / 2);
+  const RA_ABILITIES = new Set<AbilityKey>(["str", "dex", "con"]);
+
   // Apply feat ability score bonuses before computing mods.
   const abilityScores = { ...character.data.abilityScores };
   for (const mod of featStatMods) {
@@ -198,10 +206,11 @@ export function deriveStats(
     ALL_SKILLS.map((skill) => {
       const ability = SKILL_ABILITIES[skill];
       const proficient = proficientSkills.has(skill);
+      const raBonus = hasRemarkableAthlete && !proficient && RA_ABILITIES.has(ability) ? halfPb : 0;
       return [
         skill,
         {
-          modifier: abilityMods[ability] + (proficient ? pb : 0),
+          modifier: abilityMods[ability] + (proficient ? pb : 0) + raBonus,
           proficient,
           ability,
         },
@@ -312,8 +321,10 @@ export function deriveStats(
   const passivePerception = 10 + (skills["Perception"]?.modifier ?? abilityMods.wis);
   const speed = srdRace?.speed ?? 30;
 
-  // Spellcasting stats.
-  const sc = srdClass?.spellcasting ?? null;
+  // Spellcasting stats — fall back to subclass-granted spellcasting when base class has none.
+  const sc = srdClass?.spellcasting
+    ?? SUBCLASS_SPELLCASTING[character.data.subclassId ?? ""]
+    ?? null;
   const spellcastingAbility = sc?.ability;
   const spellcastingModifier =
     spellcastingAbility !== undefined ? abilityMods[spellcastingAbility] : undefined;
@@ -387,6 +398,9 @@ export function deriveStats(
         { label: ABILITY_LABEL[ability], value: abilityMods[ability] },
       ];
       if (proficient) components.push({ label: "Proficiency", value: pb });
+      if (hasRemarkableAthlete && !proficient && RA_ABILITIES.has(ability)) {
+        components.push({ label: "Remarkable Athlete", value: halfPb });
+      }
       return [skill, { components, total: skills[skill].modifier }];
     })
   ) as Record<string, StatBreakdown>;

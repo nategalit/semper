@@ -1,6 +1,6 @@
 export type { SrdRace, SrdSubrace, SrdClass, SrdSubclass, SrdBackground, AbilityKey, ContentSource } from "./types";
 export type { SrdSpell, SpellSchool, CasterType } from "./spell-types";
-export { getCasterType, preparedSpellLimit, knownSpellLimit, maxCastableSpellLevel, cantripLimit, PREPARED_CASTER_IDS } from "./spell-types";
+export { getCasterType, preparedSpellLimit, knownSpellLimit, maxCastableSpellLevel, cantripLimit, PREPARED_CASTER_IDS, SUBCLASS_SPELLCASTING, SUBCLASS_SPELL_CLASS } from "./spell-types";
 export { SRD_RACES } from "./races";
 export { SRD_CLASSES } from "./classes";
 export { SRD_SUBCLASSES } from "./subclasses";
@@ -8,5 +8,5 @@ export { SRD_BACKGROUNDS } from "./backgrounds";
 export { SRD_SPELLS } from "./spells";
 export { SRD_ITEMS } from "./items";
 export type { SrdItem } from "./items";
-export { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "./fighting-styles";
+export { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS, SUBCLASS_FIGHTING_STYLE_GRANT } from "./fighting-styles";
 export type { FightingStyle } from "./fighting-styles";
