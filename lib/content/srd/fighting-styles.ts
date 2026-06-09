@@ -44,3 +44,8 @@ export const FIGHTING_STYLE_BY_CLASS: Record<string, number> = {
   ID_CLASS_PALADIN: 2,
   ID_CLASS_RANGER:  2,
 };
+
+/** Subclasses that grant an additional Fighting Style and the level they grant it. */
+export const SUBCLASS_FIGHTING_STYLE_GRANT: Record<string, number> = {
+  ID_SUBCLASS_FIGHTER_CHAMPION: 10,
+};

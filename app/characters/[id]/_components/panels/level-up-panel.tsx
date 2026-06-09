@@ -5,7 +5,7 @@ import { useMutation } from "@/lib/character/mutation-context";
 import { levelUpCharacter } from "@/app/actions/characters";
 import { abilityMod } from "@/lib/character/calc";
 import { averageHpPerLevel, getAsiLevels } from "@/lib/content/srd/progression";
-import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
+import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS, SUBCLASS_FIGHTING_STYLE_GRANT } from "@/lib/content/srd";
 import type { SrdClass, SrdSubclass, AbilityKey } from "@/lib/content/srd";
 import type { AbilityScores } from "@/lib/types/character";
 import type { FightingStyleEntry } from "@/app/actions/content";
@@ -110,7 +110,7 @@ export function LevelUpPanel({
   const [hpByNewLevel, setHpByNewLevel] = useState<Record<number, number>>({});
   const [asiByNewLevel, setAsiByNewLevel] = useState<Record<number, Partial<Record<AbilityKey, number>>>>({});
   const [pickedSubclassId, setPickedSubclassId] = useState(character.data.subclassId ?? "");
-  const [pickedFightingStyleId, setPickedFightingStyleId] = useState("");
+  const [fightingStyleByNewLevel, setFightingStyleByNewLevel] = useState<Record<number, string>>({});
   const [featByNewLevel, setFeatByNewLevel] = useState<Record<number, string>>({});
   const [modeByLevel, setModeByLevel] = useState<Record<number, "asi" | "feat">>({});
   const [featAsiByLevel, setFeatAsiByLevel] = useState<Record<number, AbilityKey>>({});
@@ -144,6 +144,19 @@ export function LevelUpPanel({
     isUp &&
     fightingStyleGrantLevel > 0 &&
     newLevels.includes(fightingStyleGrantLevel);
+
+  const extraStyleGrantLevel = SUBCLASS_FIGHTING_STYLE_GRANT[pickedSubclassId] ?? 0;
+  const needsExtraFightingStylePick =
+    isUp &&
+    extraStyleGrantLevel > 0 &&
+    newLevels.includes(extraStyleGrantLevel);
+
+  function getFightingStyleForLevel(lvl: number): string {
+    return fightingStyleByNewLevel[lvl] ?? "";
+  }
+  function setFightingStyleForLevel(lvl: number, id: string) {
+    setFightingStyleByNewLevel((prev) => ({ ...prev, [lvl]: id }));
+  }
 
   // ── HP helpers ──────────────────────────────────────────────────────────────
 
@@ -259,7 +272,8 @@ export function LevelUpPanel({
     (isDown
       ? true
       : (!needsSubclassPick || !!pickedSubclassId) &&
-        (!needsFightingStylePick || !!pickedFightingStyleId) &&
+        (!needsFightingStylePick || !!getFightingStyleForLevel(fightingStyleGrantLevel)) &&
+        (!needsExtraFightingStylePick || !!getFightingStyleForLevel(extraStyleGrantLevel)) &&
         allAsiLevelsComplete);
 
   // ── Confirm ─────────────────────────────────────────────────────────────────
@@ -273,8 +287,13 @@ export function LevelUpPanel({
     }
 
     const fightingStyleByLevel: Record<number, string> = {};
-    if (needsFightingStylePick && pickedFightingStyleId && fightingStyleGrantLevel > 0) {
-      fightingStyleByLevel[fightingStyleGrantLevel] = pickedFightingStyleId;
+    if (needsFightingStylePick && fightingStyleGrantLevel > 0) {
+      const s = getFightingStyleForLevel(fightingStyleGrantLevel);
+      if (s) fightingStyleByLevel[fightingStyleGrantLevel] = s;
+    }
+    if (needsExtraFightingStylePick && extraStyleGrantLevel > 0) {
+      const s = getFightingStyleForLevel(extraStyleGrantLevel);
+      if (s) fightingStyleByLevel[extraStyleGrantLevel] = s;
     }
 
     startTransition(async () => {
@@ -422,10 +441,13 @@ export function LevelUpPanel({
                   availableSubclasses={availableSubclasses}
                   pickedSubclassId={pickedSubclassId}
                   onSubclassPick={setPickedSubclassId}
-                  isFightingStyleLevel={lvl === fightingStyleGrantLevel && needsFightingStylePick}
+                  isFightingStyleLevel={
+                    (lvl === fightingStyleGrantLevel && needsFightingStylePick) ||
+                    (lvl === extraStyleGrantLevel && needsExtraFightingStylePick)
+                  }
                   allFightingStyles={allFightingStyles}
-                  pickedFightingStyleId={pickedFightingStyleId}
-                  onFightingStylePick={setPickedFightingStyleId}
+                  pickedFightingStyleId={getFightingStyleForLevel(lvl)}
+                  onFightingStylePick={(id) => setFightingStyleForLevel(lvl, id)}
                 />
               );
             })}
@@ -443,9 +465,14 @@ export function LevelUpPanel({
               Choose a subclass for level {subclassUnlockLevel}.
             </p>
           )}
-          {needsFightingStylePick && !pickedFightingStyleId && (
+          {needsFightingStylePick && !getFightingStyleForLevel(fightingStyleGrantLevel) && (
             <p className="text-xs text-center text-amber-500">
               Choose a Fighting Style for level {fightingStyleGrantLevel}.
+            </p>
+          )}
+          {needsExtraFightingStylePick && !getFightingStyleForLevel(extraStyleGrantLevel) && (
+            <p className="text-xs text-center text-amber-500">
+              Choose an Additional Fighting Style for level {extraStyleGrantLevel}.
             </p>
           )}
           <button
