@@ -87,6 +87,24 @@ describe("resolveDerivedCount — level", () => {
   });
 });
 
+describe("resolveDerivedCount — level (Ki Points shape)", () => {
+  // Ki Points: max = monk level. L1 is never reached via a live feature because
+  // origin.level: 2 gates collectActiveFeatures before resolveDerivedCount is called.
+  const count: DerivedCount = { from: "level", classId: "ID_CLASS_MONK" };
+
+  it("L2 → 2", () => {
+    expect(resolveDerivedCount(count, makeCharacter(2))).toBe(2);
+  });
+
+  it("L10 → 10", () => {
+    expect(resolveDerivedCount(count, makeCharacter(10))).toBe(10);
+  });
+
+  it("L20 → 20", () => {
+    expect(resolveDerivedCount(count, makeCharacter(20))).toBe(20);
+  });
+});
+
 describe("resolveDerivedCount — class-table (Rage)", () => {
   const count: DerivedCount = { from: "class-table", classId: "barbarian", column: "rages" };
 
@@ -122,6 +140,46 @@ describe("resolveDerivedCount — class-table (Rage)", () => {
   it("returns 0 for unknown column", () => {
     const bad: DerivedCount = { from: "class-table", classId: "barbarian", column: "nonexistent" };
     expect(resolveDerivedCount(bad, makeCharacter(5))).toBe(0);
+  });
+});
+
+describe("resolveDerivedCount — class-table (Action Surge, SRD/PHB 2014)", () => {
+  const count: DerivedCount = { from: "class-table", classId: "fighter", column: "actionSurgeUses" };
+
+  it("L2 → 1", () => {
+    expect(resolveDerivedCount(count, makeCharacter(2))).toBe(1);
+  });
+
+  it("L16 → 1 (breakpoint is L17)", () => {
+    expect(resolveDerivedCount(count, makeCharacter(16))).toBe(1);
+  });
+
+  it("L17 → 2", () => {
+    expect(resolveDerivedCount(count, makeCharacter(17))).toBe(2);
+  });
+});
+
+describe("resolveDerivedCount — class-table (Channel Divinity, SRD/PHB 2014)", () => {
+  const count: DerivedCount = { from: "class-table", classId: "cleric", column: "channelDivinityUses" };
+
+  it("L1 → 0 (feature not yet available)", () => {
+    expect(resolveDerivedCount(count, makeCharacter(1))).toBe(0);
+  });
+
+  it("L2 → 1", () => {
+    expect(resolveDerivedCount(count, makeCharacter(2))).toBe(1);
+  });
+
+  it("L5 → 1 (breakpoint is L6)", () => {
+    expect(resolveDerivedCount(count, makeCharacter(5))).toBe(1);
+  });
+
+  it("L11 → 2", () => {
+    expect(resolveDerivedCount(count, makeCharacter(11))).toBe(2);
+  });
+
+  it("L18 → 3", () => {
+    expect(resolveDerivedCount(count, makeCharacter(18))).toBe(3);
   });
 });
 

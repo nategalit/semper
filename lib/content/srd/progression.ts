@@ -116,6 +116,16 @@ export const CLASS_TABLE_COLUMNS: Record<string, Record<string, number[]>> = {
     // Level:   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
     rages:    [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6,  6],
   },
+  cleric: {
+    // SRD / PHB 2014: 1 use at L2, 2 at L6, 3 at L18
+    // Level:                1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+    channelDivinityUses:    [0, 1, 1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3],
+  },
+  fighter: {
+    // SRD / PHB 2014 — matches existing CLASS_FEATURES logic
+    // Level:        1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+    actionSurgeUses:[0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 2, 2, 2],
+  },
 };
 
 // ─── ASI level tables ─────────────────────────────────────────────────────────

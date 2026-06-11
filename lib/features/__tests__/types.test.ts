@@ -19,8 +19,8 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains exactly four entries (chunk-2a + Rage)", () => {
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(4);
+  it("contains exactly eight entries (chunk-2a + Rage + Cleric CD + Ki + Second Wind + Action Surge)", () => {
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(8);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -49,8 +49,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all four entries", () => {
-    expect(allFeatureDefs()).toHaveLength(4);
+  it("allFeatureDefs returns all eight entries", () => {
+    expect(allFeatureDefs()).toHaveLength(8);
   });
 });
 
