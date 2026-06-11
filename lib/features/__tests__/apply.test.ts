@@ -124,6 +124,16 @@ describe("collectActiveFeatures", () => {
     expect(active.map((d) => d.id)).toContain("barbarian-rage");
     expect(active).toHaveLength(1);
   });
+
+  it("returns feat-lucky for a character with PHB14 Lucky (array featId)", () => {
+    const character = makeCharacter({
+      dataOverrides: {
+        levelChoices: { 4: { hpGained: 8, featId: "ID_PHB_FEAT_LUCKY" } },
+      },
+    });
+    const active = collectActiveFeatures(character);
+    expect(active.map((d) => d.id)).toContain("feat-lucky");
+  });
 });
 
 // ── applyHpPerLevel ───────────────────────────────────────────────────────────

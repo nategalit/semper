@@ -32,9 +32,11 @@ export function collectActiveFeatures(character: Character): FeatureDef[] {
   for (const def of allFeatureDefs()) {
     const o = def.origin;
     switch (o.kind) {
-      case "feat":
-        if (pickedFeatIds.has(o.featId)) result.push(def);
+      case "feat": {
+        const ids = Array.isArray(o.featId) ? o.featId : [o.featId];
+        if (ids.some((id) => pickedFeatIds.has(id))) result.push(def);
         break;
+      }
       case "subclass":
         if (
           character.data.subclassId === o.subclassId &&

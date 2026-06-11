@@ -19,8 +19,8 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains exactly eight entries (chunk-2a + Rage + Cleric CD + Ki + Second Wind + Action Surge)", () => {
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(8);
+  it("contains exactly sixteen entries (all class resources + feat resources + subclass)", () => {
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(16);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -49,8 +49,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all eight entries", () => {
-    expect(allFeatureDefs()).toHaveLength(8);
+  it("allFeatureDefs returns all sixteen entries", () => {
+    expect(allFeatureDefs()).toHaveLength(16);
   });
 });
 
@@ -152,7 +152,13 @@ describe("ResourceShape + Recharge variants", () => {
       recharge: { on: "initiative-roll", once: "per-long-rest" },
       display: "binary-token",
     };
-    expect([rage, sorceryPoints, persistentRage]).toHaveLength(3);
+    const bardicInspiration: FeatureResource = {
+      id: "bardic_inspiration",
+      shape: { kind: "charges", max: { from: "ability-mod", ability: "cha", min: 1 } },
+      recharge: { on: "long-rest", switchesTo: "short-rest", atLevel: 5 },
+      display: "pip",
+    };
+    expect([rage, sorceryPoints, persistentRage, bardicInspiration]).toHaveLength(4);
   });
 });
 

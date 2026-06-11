@@ -3,10 +3,6 @@
 import { useState, useMemo } from "react";
 import type { ReactNode } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
-import {
-  getClassFeatures, getFeatFeatures, currentChargesFor, maxChargesFor,
-  resolveRechargesOn, UNLIMITED,
-} from "@/lib/character/features";
 import { setFeatureCharge } from "@/app/actions/characters";
 import { FIGHTING_STYLES, FIGHTING_STYLE_BY_CLASS } from "@/lib/content/srd";
 import type { SrdClass, SrdRace, SrdBackground, SrdSubclass } from "@/lib/content/srd";
@@ -18,7 +14,9 @@ import { sourceChipClass } from "@/lib/ui-tokens";
 import { cleanHtml } from "@/lib/content/aurora/clean-html";
 import { EmptyState } from "../shared/empty-state";
 import { SubclassPicker } from "../panels/subclass-picker";
-import { allFeatureDefs } from "@/lib/features";
+import { collectActiveFeatures } from "@/lib/features";
+import type { FeatureDef, FeatureResource } from "@/lib/features";
+import { resolveProse } from "@/lib/features/resolve-prose";
 import { ResourceDisplay } from "@/components/features/resource-display";
 
 // ─── Section collapse state ───────────────────────────────────────────────────
@@ -101,11 +99,10 @@ export function TabFeatures({
     character.level >= srdClass.subclassUnlockLevel &&
     !character.data.subclassId;
 
-  const classFeatures = character.classId
-    ? getClassFeatures(character.classId, character.level, {})
-    : [];
-  const featFeatures = getFeatFeatures(character.data.levelChoices, character.level, {});
-  const features = [...classFeatures, ...featFeatures];
+  type ActiveResourceDef = FeatureDef & { resource: FeatureResource };
+  const activeResourceDefs = collectActiveFeatures(character).filter(
+    (d): d is ActiveResourceDef => d.resource != null
+  );
 
   const pickedFeats: { feat: FeatElement; level: number }[] = [];
   if (character.data.levelChoices) {
@@ -118,7 +115,7 @@ export function TabFeatures({
     }
   }
 
-  const chargeLabels = new Set(features.map((d) => d.label));
+  const chargeLabels = new Set(activeResourceDefs.map((d) => d.name));
   const activeClass = srdClass ?? character.data.resolvedClass;
 
   const descByNameLower = new Map<string, string>();
@@ -155,8 +152,8 @@ export function TabFeatures({
   const searchItems = useMemo((): SearchItem[] => {
     const items: SearchItem[] = [];
 
-    for (const f of features) {
-      items.push({ name: f.label, category: "Class Feature", description: f.description });
+    for (const d of activeResourceDefs) {
+      items.push({ name: d.name, category: "Class Feature", description: resolveProse(d.prose, character) });
     }
     for (const { feat, level } of pickedFeats) {
       const desc = (feat.description || feat.sheetText || "")
@@ -196,7 +193,7 @@ export function TabFeatures({
 
     return items;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [features, pickedFeats, nonChargeFeatures, chosenFightingStyle, currentSubclass, srdRace, subrace, srdBackground, character.level]);
+  }, [activeResourceDefs, pickedFeats, nonChargeFeatures, chosenFightingStyle, currentSubclass, srdRace, subrace, srdBackground, character.level]);
 
   const q = search.toLowerCase();
   const filteredItems = q
@@ -287,54 +284,40 @@ export function TabFeatures({
           /* Normal sections */
           <>
             {/* Class — charge-tracked features + class progression + fighting style */}
-            {(features.length > 0 || nonChargeFeatures.length > 0 || chosenFightingStyle) && (
+            {(activeResourceDefs.length > 0 || nonChargeFeatures.length > 0 || chosenFightingStyle) && (
               <CollapsibleSection
                 title={srdClass?.name ?? "Class"}
-                count={features.length + nonChargeFeatures.length + (chosenFightingStyle ? 1 : 0)}
+                count={activeResourceDefs.length + nonChargeFeatures.length + (chosenFightingStyle ? 1 : 0)}
                 expanded={sectionOpen.class}
                 onToggle={() => toggleSection("class")}
               >
                 <div className="pt-3 space-y-6">
-                  {features.length > 0 && (
+                  {activeResourceDefs.length > 0 && (
                     <div className="space-y-4">
-                      {features.map((def) => {
-                        const max = maxChargesFor(def, character.level, {});
-                        const current = currentChargesFor(def, character.level, {}, character.data.featureCharges ?? {});
-                        const recharge = resolveRechargesOn(def, character.level);
-                        const newDef = allFeatureDefs().find(
-                          (fd) => fd.resource?.id === def.key
-                        );
-                        return (
-                          <div key={def.key}>
-                            <FeatureRow
-                              label={def.label}
-                              description={def.description}
-                              current={current}
-                              max={max}
-                              recharge={recharge}
-                              onSet={(next) => handleChargeChange(def.key, next)}
-                            />
-                            {newDef?.resource && (
-                              <div className="mt-3 pt-3 border-t border-stone-800/40">
-                                <p className="text-[10px] uppercase tracking-wider text-amber-600/60 mb-1.5">
-                                  {newDef.name} (data)
-                                </p>
-                                <ResourceDisplay
-                                  resource={newDef.resource}
-                                  character={character}
-                                  onChange={(next) => handleChargeChange(def.key, next)}
-                                />
-                              </div>
-                            )}
+                      {activeResourceDefs.map((def) => (
+                        <div key={def.id} className="space-y-1.5">
+                          <div className="flex items-start justify-between gap-2">
+                            <span className="text-sm font-medium text-stone-200">{def.name}</span>
+                            <span className="text-[10px] uppercase tracking-wider text-stone-600 shrink-0 pt-0.5">
+                              {rechargeLabel(def.resource, character.level)}
+                            </span>
                           </div>
-                        );
-                      })}
+                          <p className="text-xs text-stone-500 leading-relaxed">
+                            {resolveProse(def.prose, character)}
+                          </p>
+                          <ResourceDisplay
+                            resource={def.resource}
+                            character={character}
+                            onChange={(next) => handleChargeChange(def.resource.id, next)}
+                          />
+                        </div>
+                      ))}
                     </div>
                   )}
 
                   {nonChargeFeatures.length > 0 && (
                     <div>
-                      {features.length > 0 && (
+                      {activeResourceDefs.length > 0 && (
                         <p className="text-[10px] uppercase tracking-widest text-stone-600 mb-2">Progression</p>
                       )}
                       <div className="space-y-2">
@@ -650,82 +633,13 @@ function CollapsibleSection({
   );
 }
 
-// ─── FeatureRow ───────────────────────────────────────────────────────────────
+// ─── Recharge label helper ────────────────────────────────────────────────────
 
-interface FeatureRowProps {
-  label: string;
-  description?: string;
-  current: number;
-  max: number;
-  recharge: "short" | "long";
-  onSet: (next: number) => void;
-}
-
-function FeatureRow({ label, description, current, max, recharge, onSet }: FeatureRowProps) {
-  const isUnlimited = max >= UNLIMITED;
-
-  return (
-    <div className="space-y-1.5">
-      <div className="flex items-start justify-between gap-2">
-        <div>
-          <span className="text-sm font-medium text-stone-200">{label}</span>
-          {description && (
-            <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{description}</p>
-          )}
-        </div>
-        <span className="text-[10px] uppercase tracking-wider text-stone-600 shrink-0 pt-0.5">
-          {recharge === "short" ? "short rest" : "long rest"}
-        </span>
-      </div>
-
-      {isUnlimited ? (
-        <p className="text-2xl font-bold text-amber-400">∞</p>
-      ) : max <= 6 ? (
-        <div className="flex gap-0.5 flex-wrap">
-          {Array.from({ length: max }).map((_, i) => {
-            const filled = i < current;
-            return (
-              <button
-                key={i}
-                onClick={() => onSet(filled ? current - 1 : current + 1)}
-                aria-label={filled ? `Use ${label}` : `Restore ${label}`}
-                className="w-11 h-11 flex items-center justify-center active:scale-90 transition-transform"
-              >
-                <span className={`w-5 h-5 rounded-full border-2 transition-all duration-200 ${
-                  filled
-                    ? "bg-amber-400 border-amber-400 shadow-[0_0_8px_rgba(251,191,36,0.4)]"
-                    : "bg-stone-800 border-stone-600"
-                }`} />
-              </button>
-            );
-          })}
-        </div>
-      ) : (
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => onSet(Math.max(0, current - 1))}
-            disabled={current <= 0}
-            aria-label={`Use ${label}`}
-            className="w-11 h-11 rounded-xl bg-stone-800 border border-stone-700 text-stone-200 text-xl
-              flex items-center justify-center hover:border-stone-500 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            −
-          </button>
-          <span className="text-xl font-bold text-stone-100 tabular-nums min-w-[3ch] text-center">
-            {current}
-          </span>
-          <button
-            onClick={() => onSet(Math.min(max, current + 1))}
-            disabled={current >= max}
-            aria-label={`Restore ${label}`}
-            className="w-11 h-11 rounded-xl bg-stone-800 border border-stone-700 text-stone-200 text-xl
-              flex items-center justify-center hover:border-stone-500 disabled:opacity-30 disabled:cursor-not-allowed"
-          >
-            +
-          </button>
-          <span className="text-xs text-stone-600">/ {max}</span>
-        </div>
-      )}
-    </div>
-  );
+function rechargeLabel(resource: FeatureResource, characterLevel: number): string {
+  const r = resource.recharge;
+  if (r.on === "short-rest") return "short rest";
+  if (r.on === "initiative-roll") return "initiative";
+  if ("switchesTo" in r) return characterLevel >= r.atLevel ? "short rest" : "long rest";
+  if ("partialOn" in r && r.partialOn === "short-rest") return "short / long rest";
+  return "long rest";
 }

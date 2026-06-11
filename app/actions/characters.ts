@@ -16,12 +16,8 @@ import {
 } from "@/lib/types/character";
 import type { AbilityKey } from "@/lib/content/srd";
 import { SUBCLASS_SPELLCASTING } from "@/lib/content/srd";
-import {
-  getClassFeatures,
-  getFeatFeatures,
-  resolveRechargesOn,
-  maxChargesFor,
-} from "@/lib/character/features";
+import { collectActiveFeatures } from "@/lib/features";
+import { getResourceMax } from "@/lib/features/resources/derive";
 import { getSpellSlotsForClass } from "@/lib/content/srd/progression";
 import { SRD_CLASSES } from "@/lib/content/srd/classes";
 
@@ -406,14 +402,27 @@ export async function shortRest(
     currentHp: Math.min(current.maxHp + toughBonusFromData(current, level), current.currentHp + Math.max(0, hpGained)),
     hitDiceRemaining: Math.max(0, current.hitDiceRemaining - diceSpent),
     featureCharges: (() => {
-      const allFeatures = [
-        ...(classId ? getClassFeatures(classId, level, {}) : []),
-        ...getFeatFeatures(current.levelChoices, level, {}),
-      ];
+      const character: Character = {
+        id, userId, name: "", level,
+        classId: classId ?? "", raceId: "",
+        createdAt: "", updatedAt: "", data: current,
+      };
       const updated = { ...current.featureCharges };
-      for (const def of allFeatures) {
-        if (resolveRechargesOn(def, level) === "short") {
-          updated[def.key] = maxChargesFor(def, level, {});
+      for (const def of collectActiveFeatures(character)) {
+        if (!def.resource) continue;
+        const { resource } = def;
+        const max = getResourceMax(resource, character);
+        const r = resource.recharge;
+        if (r.on === "short-rest") {
+          updated[resource.id] = max;
+        } else if ("switchesTo" in r) {
+          const classLevel =
+            def.origin.kind === "class" && classId === def.origin.classId ? level : 0;
+          if (classLevel >= r.atLevel) updated[resource.id] = max;
+        } else if ("partialOn" in r && r.partialOn === "short-rest") {
+          const cur = updated[resource.id] ?? max;
+          const amt = typeof r.amount === "number" ? r.amount : Math.ceil(max / 2);
+          updated[resource.id] = Math.min(cur + amt, max);
         }
       }
       return updated;
@@ -474,13 +483,15 @@ export async function longRest(id: string): Promise<void> {
       (c) => !LONG_REST_CLEARS.has(c)
     ),
     featureCharges: (() => {
-      const allFeatures = [
-        ...(classId ? getClassFeatures(classId, level, {}) : []),
-        ...getFeatFeatures(current.levelChoices, level, {}),
-      ];
+      const character: Character = {
+        id, userId, name: "", level,
+        classId: classId ?? "", raceId: "",
+        createdAt: "", updatedAt: "", data: current,
+      };
       const updated = { ...current.featureCharges };
-      for (const def of allFeatures) {
-        updated[def.key] = maxChargesFor(def, level, {});
+      for (const def of collectActiveFeatures(character)) {
+        if (!def.resource) continue;
+        updated[def.resource.id] = getResourceMax(def.resource, character);
       }
       return updated;
     })(),

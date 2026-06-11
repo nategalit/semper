@@ -33,7 +33,7 @@ export type FeatureOrigin =
   | { kind: "race"; raceId: string }
   | { kind: "subrace"; subraceId: string }
   | { kind: "background"; backgroundId: string }
-  | { kind: "feat"; featId: string };
+  | { kind: "feat"; featId: string | string[] };
 
 // ─── Display: actionType ──────────────────────────────────────────────────────
 
@@ -201,6 +201,7 @@ export type ResourceShape =
 export type Recharge =
   | { on: "short-rest" | "long-rest" }
   | { on: "long-rest"; partialOn?: "short-rest"; amount?: number | "half-max-round-up" }
+  | { on: "long-rest"; switchesTo: "short-rest"; atLevel: number }
   | { on: "initiative-roll"; once: "per-long-rest" };
 
 export type ResourceDisplay =

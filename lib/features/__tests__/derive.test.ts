@@ -87,6 +87,22 @@ describe("resolveDerivedCount — level", () => {
   });
 });
 
+describe("resolveDerivedCount — level × multiplier (Lay on Hands pool)", () => {
+  const count: DerivedCount = { from: "level", classId: "ID_CLASS_PALADIN", multiplier: 5 };
+
+  it("L1 → 5", () => {
+    expect(resolveDerivedCount(count, makeCharacter(1))).toBe(5);
+  });
+
+  it("L5 → 25", () => {
+    expect(resolveDerivedCount(count, makeCharacter(5))).toBe(25);
+  });
+
+  it("L20 → 100", () => {
+    expect(resolveDerivedCount(count, makeCharacter(20))).toBe(100);
+  });
+});
+
 describe("resolveDerivedCount — level (Ki Points shape)", () => {
   // Ki Points: max = monk level. L1 is never reached via a live feature because
   // origin.level: 2 gates collectActiveFeatures before resolveDerivedCount is called.
