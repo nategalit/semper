@@ -2,6 +2,8 @@ import type { Character, EquipmentItem, WeaponStats, OverridableStatKey } from "
 import type { AbilityKey, SrdBackground, SrdClass, SrdRace } from "@/lib/content/srd";
 import { SUBCLASS_SPELLCASTING } from "@/lib/content/srd";
 import type { FeatElement, StatModifier } from "@/lib/content/schema";
+import { collectActiveFeatures, applyFeatureEffect } from "@/lib/features/apply";
+import type { DeriveContext } from "@/lib/character/feature-effects";
 
 // ─── Skill → ability mapping ──────────────────────────────────────────────────
 
@@ -125,6 +127,9 @@ export interface StatBreakdown {
 export interface DerivedStats {
   proficiencyBonus: number;
   abilityMods: Record<AbilityKey, number>;
+  /** Base max HP (rolled per level) + Tough feat bonus. Computed in deriveStats. */
+  maxHp: number;
+  maxHpBreakdown: StatBreakdown;
   /** Ability scores after applying feat static bonuses (e.g. Actor +1 CHA). Use for display; raw scores are in character.data.abilityScores. */
   effectiveAbilityScores: Record<AbilityKey, number>;
   savingThrows: Record<AbilityKey, SavingThrowResult>;
@@ -405,6 +410,41 @@ export function deriveStats(
     })
   ) as Record<string, StatBreakdown>;
 
+  // ── chunk-2b: data-driven effect walker ───────────────────────────────────
+  // Runs AFTER all hardcoded paths. Pushes "(data)"-labeled components onto
+  // existing breakdowns as a parity check. Deletions of the hardcoded paths
+  // happen in chunk 2c.
+  const maxHpComponents: { label: string; value: number }[] = [
+    { label: "Rolled HP", value: character.data.maxHp },
+  ];
+  const toughBonus = toughHpBonus(character);
+  if (toughBonus > 0) {
+    maxHpComponents.push({ label: "Tough", value: toughBonus });
+  }
+
+  const activeFeatures = collectActiveFeatures(character);
+  for (const featDef of activeFeatures) {
+    if (!featDef.effects) continue;
+    for (const effect of featDef.effects) {
+      const ctx: DeriveContext = {
+        level: character.level,
+        pb,
+        featureName: featDef.name,
+        abilityMods,
+        proficientSkills,
+        skillAbilities: SKILL_ABILITIES,
+        maxHpComponents,
+        initiativeBreakdown,
+        skillBreakdowns,
+      };
+      applyFeatureEffect(effect, ctx);
+    }
+  }
+
+  const maxHp = maxHpComponents.reduce((sum, c) => sum + c.value, 0);
+  const maxHpBreakdown: StatBreakdown = { components: maxHpComponents, total: maxHp };
+  // ── end chunk-2b ───────────────────────────────────────────────────────────
+
   const speedComponents: { label: string; value: number }[] = [
     { label: "Base", value: srdRace?.speed ?? 30 },
   ];
@@ -488,6 +528,8 @@ export function deriveStats(
   return {
     proficiencyBonus: pb,
     abilityMods,
+    maxHp,
+    maxHpBreakdown,
     effectiveAbilityScores: abilityScores,
     savingThrows: adjSavingThrows,
     skills: adjSkills,
