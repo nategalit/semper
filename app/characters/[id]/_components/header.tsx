@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef, useTransition } from "react";
 import Link from "next/link";
 import { toggleInspiration, renameCharacter } from "@/app/actions/characters";
-import { signedMod, toughHpBonus } from "@/lib/character/calc";
+import { signedMod } from "@/lib/character/calc";
 import type { Character } from "@/lib/types/character";
 import type { DerivedStats, StatBreakdown } from "@/lib/character/calc";
 import type { OverridableStatKey } from "@/lib/types/character";
@@ -57,7 +57,7 @@ export function Header({ character, derived, onLevelTap }: Props) {
     });
   }
   const conditions = data.conditions ?? [];
-  const effectiveMaxHp = data.maxHp + toughHpBonus(character);
+  const effectiveMaxHp = derived.maxHp;
 
   function handleInspiration() {
     startInspireTransition(async () => {
@@ -229,7 +229,7 @@ export function Header({ character, derived, onLevelTap }: Props) {
         </div>
       </header>
 
-      <HpDialog open={hpOpen} onClose={() => setHpOpen(false)} />
+      <HpDialog open={hpOpen} onClose={() => setHpOpen(false)} effectiveMaxHp={effectiveMaxHp} />
       <ConditionPicker open={conditionsOpen} onClose={() => setConditionsOpen(false)} />
 
       {activeBreakdown && (

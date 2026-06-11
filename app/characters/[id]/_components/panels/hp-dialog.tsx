@@ -3,17 +3,17 @@
 import { useState, useEffect, useRef } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import { applyHpChange, setTempHp, setMaxHp } from "@/app/actions/characters";
-import { toughHpBonus } from "@/lib/character/calc";
 import type { CharacterData } from "@/lib/types/character";
 
 interface Props {
   open: boolean;
   onClose: () => void;
+  effectiveMaxHp: number;
 }
 
 type Mode = "damage" | "heal";
 
-export function HpDialog({ open, onClose }: Props) {
+export function HpDialog({ open, onClose, effectiveMaxHp }: Props) {
   const { character, mutate } = useMutation();
   const [mode, setMode] = useState<Mode>("damage");
   const [amount, setAmount] = useState("");
@@ -22,7 +22,6 @@ export function HpDialog({ open, onClose }: Props) {
   const amountRef = useRef<HTMLInputElement>(null);
 
   const { currentHp, maxHp, tempHp } = character.data;
-  const effectiveMaxHp = maxHp + toughHpBonus(character);
 
   // Reset form and focus amount input each time dialog opens.
   useEffect(() => {

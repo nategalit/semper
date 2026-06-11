@@ -18,7 +18,7 @@ type MutableBreakdown = { components: Component[]; total: number };
 export interface DeriveContext {
   level: number;
   pb: number;
-  /** FeatureDef.name — used to build the "(data)" label for breakdown components. */
+  /** FeatureDef.name — used to build the label for breakdown components. */
   featureName: string;
   abilityMods: Record<AbilityKey, number>;
   /** Skills the character is proficient in. Used to skip already-covered checks. */
@@ -37,14 +37,14 @@ export interface DeriveContext {
 
 export function applyHpPerLevel(value: number, ctx: DeriveContext): void {
   const bonus = value * ctx.level;
-  ctx.maxHpComponents.push({ label: `${ctx.featureName} (data)`, value: bonus });
+  ctx.maxHpComponents.push({ label: ctx.featureName, value: bonus });
 }
 
 // ── Handler: initiative-add (Alert) ───────────────────────────────────────────
 
 export function applyInitiativeAdd(value: "prof-bonus" | number, ctx: DeriveContext): void {
   const bonus = value === "prof-bonus" ? ctx.pb : value;
-  ctx.initiativeBreakdown.components.push({ label: `${ctx.featureName} (data)`, value: bonus });
+  ctx.initiativeBreakdown.components.push({ label: ctx.featureName, value: bonus });
   ctx.initiativeBreakdown.total += bonus;
 }
 
@@ -56,7 +56,7 @@ export function applyHalfProfOnChecks(abilities: AbilityKey[], ctx: DeriveContex
     const ability = ctx.skillAbilities[skill];
     if (!ability || !abilities.includes(ability)) continue;
     if (ctx.proficientSkills.has(skill)) continue;
-    bd.components.push({ label: `${ctx.featureName} (data)`, value: halfPb });
+    bd.components.push({ label: ctx.featureName, value: halfPb });
     bd.total += halfPb;
   }
 }

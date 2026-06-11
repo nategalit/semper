@@ -30,24 +30,6 @@ export const SKILL_ABILITIES: Record<string, AbilityKey> = {
 
 export const ALL_SKILLS = Object.keys(SKILL_ABILITIES).sort();
 
-// Feats whose initiative bonus equals the character's proficiency bonus (not a flat value).
-// Aurora stores these with an empty statModifiers array; we handle them here.
-const PROF_BONUS_INITIATIVE_FEAT_IDS = new Set([
-  "ID_WOTC_PHB24_FEAT_ALERT",
-]);
-
-// ─── Tough feat HP bonus ──────────────────────────────────────────────────────
-
-const TOUGH_FEAT_IDS = new Set(["ID_PHB_FEAT_TOUGH", "ID_WOTC_PHB24_FEAT_TOUGH"]);
-
-/** Returns the bonus max HP from the Tough feat: 2 × level, or 0 if not taken. */
-export function toughHpBonus(character: Character): number {
-  const hasTough = Object.values(character.data.levelChoices ?? {}).some(
-    (c) => c.featId && TOUGH_FEAT_IDS.has(c.featId)
-  );
-  return hasTough ? 2 * character.level : 0;
-}
-
 // ─── Feat stat modifiers ──────────────────────────────────────────────────────
 
 const FEAT_ABILITY_STAT: Record<string, AbilityKey> = {
@@ -164,13 +146,6 @@ export function deriveStats(
 ): DerivedStats {
   const pb = proficiencyBonus(character.level);
 
-  // Champion L7: Remarkable Athlete — half PB (rounded up) to non-proficient STR/DEX/CON checks.
-  const hasRemarkableAthlete =
-    character.data.subclassId === "ID_SUBCLASS_FIGHTER_CHAMPION" &&
-    character.level >= 7;
-  const halfPb = Math.ceil(pb / 2);
-  const RA_ABILITIES = new Set<AbilityKey>(["str", "dex", "con"]);
-
   // Apply feat ability score bonuses before computing mods.
   const abilityScores = { ...character.data.abilityScores };
   for (const mod of featStatMods) {
@@ -211,11 +186,10 @@ export function deriveStats(
     ALL_SKILLS.map((skill) => {
       const ability = SKILL_ABILITIES[skill];
       const proficient = proficientSkills.has(skill);
-      const raBonus = hasRemarkableAthlete && !proficient && RA_ABILITIES.has(ability) ? halfPb : 0;
       return [
         skill,
         {
-          modifier: abilityMods[ability] + (proficient ? pb : 0) + raBonus,
+          modifier: abilityMods[ability] + (proficient ? pb : 0),
           proficient,
           ability,
         },
@@ -361,14 +335,6 @@ export function deriveStats(
     }
   }
 
-  // Feats whose initiative bonus equals proficiency bonus (Aurora omits these from statModifiers).
-  const pickedFeatIds = new Set(
-    Object.values(character.data.levelChoices ?? {}).map((c) => c.featId).filter((id): id is string => !!id)
-  );
-  if ([...PROF_BONUS_INITIATIVE_FEAT_IDS].some((id) => pickedFeatIds.has(id))) {
-    featInitiative += pb;
-  }
-
   // ─── Build breakdowns ──────────────────────────────────────────────────────
 
   const ABILITY_LABEL: Record<AbilityKey, string> = {
@@ -403,24 +369,13 @@ export function deriveStats(
         { label: ABILITY_LABEL[ability], value: abilityMods[ability] },
       ];
       if (proficient) components.push({ label: "Proficiency", value: pb });
-      if (hasRemarkableAthlete && !proficient && RA_ABILITIES.has(ability)) {
-        components.push({ label: "Remarkable Athlete", value: halfPb });
-      }
       return [skill, { components, total: skills[skill].modifier }];
     })
   ) as Record<string, StatBreakdown>;
 
-  // ── chunk-2b: data-driven effect walker ───────────────────────────────────
-  // Runs AFTER all hardcoded paths. Pushes "(data)"-labeled components onto
-  // existing breakdowns as a parity check. Deletions of the hardcoded paths
-  // happen in chunk 2c.
   const maxHpComponents: { label: string; value: number }[] = [
     { label: "Rolled HP", value: character.data.maxHp },
   ];
-  const toughBonus = toughHpBonus(character);
-  if (toughBonus > 0) {
-    maxHpComponents.push({ label: "Tough", value: toughBonus });
-  }
 
   const activeFeatures = collectActiveFeatures(character);
   for (const featDef of activeFeatures) {
@@ -443,7 +398,6 @@ export function deriveStats(
 
   const maxHp = maxHpComponents.reduce((sum, c) => sum + c.value, 0);
   const maxHpBreakdown: StatBreakdown = { components: maxHpComponents, total: maxHp };
-  // ── end chunk-2b ───────────────────────────────────────────────────────────
 
   const speedComponents: { label: string; value: number }[] = [
     { label: "Base", value: srdRace?.speed ?? 30 },

@@ -127,11 +127,11 @@ describe("collectActiveFeatures", () => {
 // ── applyHpPerLevel ───────────────────────────────────────────────────────────
 
 describe("applyHpPerLevel via applyFeatureEffect", () => {
-  it("adds value × level to maxHpComponents with '(data)' label", () => {
+  it("adds value × level to maxHpComponents with feature name as label", () => {
     const ctx = makeCtx({ featureName: "Tough", level: 5 });
     const effect: FeatureEffect = { kind: "hp-per-level", value: 2 };
     applyFeatureEffect(effect, ctx);
-    const extra = ctx.maxHpComponents.find((c) => c.label === "Tough (data)");
+    const extra = ctx.maxHpComponents.find((c) => c.label === "Tough");
     expect(extra?.value).toBe(10); // 2 × 5
   });
 
@@ -150,14 +150,14 @@ describe("applyInitiativeAdd via applyFeatureEffect", () => {
     const ctx = makeCtx({ featureName: "Alert", pb: 3, initiativeBreakdown: { components: [{ label: "DEX", value: 2 }], total: 2 } });
     applyFeatureEffect({ kind: "initiative-add", value: "prof-bonus" }, ctx);
     expect(ctx.initiativeBreakdown.total).toBe(5); // 2 + 3
-    expect(ctx.initiativeBreakdown.components).toContainEqual({ label: "Alert (data)", value: 3 });
+    expect(ctx.initiativeBreakdown.components).toContainEqual({ label: "Alert", value: 3 });
   });
 
   it("adds a flat number when value is numeric", () => {
     const ctx = makeCtx({ featureName: "Alert", initiativeBreakdown: { components: [{ label: "DEX", value: 2 }], total: 2 } });
     applyFeatureEffect({ kind: "initiative-add", value: 5 }, ctx);
     expect(ctx.initiativeBreakdown.total).toBe(7);
-    expect(ctx.initiativeBreakdown.components).toContainEqual({ label: "Alert (data)", value: 5 });
+    expect(ctx.initiativeBreakdown.components).toContainEqual({ label: "Alert", value: 5 });
   });
 
   it("does not change maxHpComponents", () => {
@@ -183,11 +183,11 @@ describe("applyHalfProfOnChecks via applyFeatureEffect", () => {
 
     // half of pb=3, rounded up = 2
     const acro = ctx.skillBreakdowns["Acrobatics"];
-    expect(acro.components).toContainEqual({ label: "Remarkable Athlete (data)", value: 2 });
+    expect(acro.components).toContainEqual({ label: "Remarkable Athlete", value: 2 });
     expect(acro.total).toBe(4); // was 2, now +2
 
     const stealth = ctx.skillBreakdowns["Stealth"];
-    expect(stealth.components).toContainEqual({ label: "Remarkable Athlete (data)", value: 2 });
+    expect(stealth.components).toContainEqual({ label: "Remarkable Athlete", value: 2 });
     expect(stealth.total).toBe(4);
   });
 
@@ -198,7 +198,7 @@ describe("applyHalfProfOnChecks via applyFeatureEffect", () => {
     });
     applyFeatureEffect({ kind: "half-prof-on-checks", abilities: ["str", "dex", "con"] }, ctx);
     const athletics = ctx.skillBreakdowns["Athletics"];
-    expect(athletics.components.map((c) => c.label)).not.toContain("Remarkable Athlete (data)");
+    expect(athletics.components.map((c) => c.label)).not.toContain("Remarkable Athlete");
     expect(athletics.total).toBe(6); // unchanged
   });
 
@@ -207,7 +207,7 @@ describe("applyHalfProfOnChecks via applyFeatureEffect", () => {
     applyFeatureEffect({ kind: "half-prof-on-checks", abilities: ["str"] }, ctx);
     // Arcana is INT — not in ["str"]
     const arcana = ctx.skillBreakdowns["Arcana"];
-    expect(arcana?.components.map((c) => c.label) ?? []).not.toContain("Remarkable Athlete (data)");
+    expect(arcana?.components.map((c) => c.label) ?? []).not.toContain("Remarkable Athlete");
   });
 
   it("does not change initiativeBreakdown", () => {

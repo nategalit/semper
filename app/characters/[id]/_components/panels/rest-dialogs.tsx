@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useMutation } from "@/lib/character/mutation-context";
 import { shortRest, longRest } from "@/app/actions/characters";
 import { btn } from "@/lib/ui-tokens";
-import { toughHpBonus } from "@/lib/character/calc";
 import type { DerivedStats } from "@/lib/character/calc";
 import type { SrdClass } from "@/lib/content/srd";
 import type { CharacterData } from "@/lib/types/character";
@@ -28,7 +27,7 @@ export function ShortRestDialog({ open, onClose, srdClass, derived }: ShortRestP
   const conMod = derived.abilityMods.con ?? 0;
   const remaining = character.data.hitDiceRemaining;
   const currentHp = character.data.currentHp;
-  const maxHp = character.data.maxHp + toughHpBonus(character);
+  const maxHp = derived.maxHp;
   const hpSpace = maxHp - currentHp;
   const canRoll = diceSpent < remaining && hpRolled < hpSpace;
 
@@ -137,9 +136,10 @@ export function ShortRestDialog({ open, onClose, srdClass, derived }: ShortRestP
 interface LongRestProps {
   open: boolean;
   onClose: () => void;
+  derived: DerivedStats;
 }
 
-export function LongRestDialog({ open, onClose }: LongRestProps) {
+export function LongRestDialog({ open, onClose, derived }: LongRestProps) {
   const { character, mutate } = useMutation();
   const [confirming, setConfirming] = useState(false);
 
@@ -147,7 +147,7 @@ export function LongRestDialog({ open, onClose }: LongRestProps) {
 
   function handleConfirm() {
     const { data } = character;
-    const effectiveMaxHp = data.maxHp + toughHpBonus(character);
+    const effectiveMaxHp = derived.maxHp;
     const patch: Partial<CharacterData> = {
       currentHp: effectiveMaxHp,
       hitDiceRemaining: Math.min(
@@ -187,7 +187,7 @@ export function LongRestDialog({ open, onClose }: LongRestProps) {
           </p>
 
           <ul className="space-y-1.5 mb-5 text-sm text-stone-300">
-            <RestItem label="HP" value={`${character.data.currentHp} → ${character.data.maxHp + toughHpBonus(character)}`} />
+            <RestItem label="HP" value={`${character.data.currentHp} → ${derived.maxHp}`} />
             <RestItem
               label="Spell slots"
               value={Object.keys(character.data.spellSlots ?? {}).length > 0 ? "All restored" : "None"}

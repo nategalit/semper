@@ -134,7 +134,7 @@ export function TabExtras({ srdClass, derived }: Props) {
         srdClass={srdClass}
         derived={derived}
       />
-      <LongRestDialog open={longRestOpen} onClose={() => setLongRestOpen(false)} />
+      <LongRestDialog open={longRestOpen} onClose={() => setLongRestOpen(false)} derived={derived} />
     </>
   );
 }
