@@ -1,10 +1,8 @@
-// Type-shape tests for the feature data layer (chunk 1).
+// Type-shape and registry tests for the feature data layer.
 //
-// No consumers and no data exist yet — these tests verify only that:
-//   - The registry is empty and the lookup helpers behave sanely.
-//   - Every documented variant of FeatureChoice / FeatureEffect / ResourceShape
-//     compiles against a representative example. If a future schema change
-//     drops or renames a variant, these `satisfies` checks fail at build time.
+// Chunk 1: type variants, empty registry.
+// Chunk 2a: three migration-target entries (Tough, Alert, Remarkable Athlete) registered;
+//           three new FeatureEffect kinds added to the union.
 
 import { describe, it, expect } from "vitest";
 import {
@@ -21,17 +19,38 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("ships empty in chunk 1", () => {
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(0);
+  it("contains exactly the three chunk-2a entries", () => {
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(3);
   });
 
-  it("getFeatureDef returns undefined for any id", () => {
+  it("getFeatureDef resolves feat-tough", () => {
+    const def = getFeatureDef("feat-tough");
+    expect(def).toBeDefined();
+    expect(def?.name).toBe("Tough");
+    expect(def?.effects).toEqual([{ kind: "hp-per-level", value: 2 }]);
+  });
+
+  it("getFeatureDef resolves feat-alert", () => {
+    const def = getFeatureDef("feat-alert");
+    expect(def).toBeDefined();
+    expect(def?.name).toBe("Alert");
+    expect(def?.effects).toEqual([{ kind: "initiative-add", value: "prof-bonus" }]);
+  });
+
+  it("getFeatureDef resolves subclass-champion-remarkable-athlete", () => {
+    const def = getFeatureDef("subclass-champion-remarkable-athlete");
+    expect(def).toBeDefined();
+    expect(def?.name).toBe("Remarkable Athlete");
+    expect(def?.effects).toEqual([{ kind: "half-prof-on-checks", abilities: ["str", "dex", "con"] }]);
+  });
+
+  it("getFeatureDef returns undefined for unknown id", () => {
     expect(getFeatureDef("rage")).toBeUndefined();
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns an empty array", () => {
-    expect(allFeatureDefs()).toEqual([]);
+  it("allFeatureDefs returns all three entries", () => {
+    expect(allFeatureDefs()).toHaveLength(3);
   });
 });
 
@@ -89,6 +108,11 @@ describe("FeatureEffect variants", () => {
         stat: "martial-arts-die",
         formula: { by: "class-level", classId: "ID_CLASS_MONK", table: { 1: "d6", 5: "d8", 11: "d10", 17: "d12" } },
       },
+      // chunk-2 migration kinds
+      { kind: "hp-per-level", value: 2 },
+      { kind: "initiative-add", value: "prof-bonus" },
+      { kind: "initiative-add", value: 5 },
+      { kind: "half-prof-on-checks", abilities: ["str", "dex", "con"] },
     ];
     expect(effects.length).toBeGreaterThan(0);
   });

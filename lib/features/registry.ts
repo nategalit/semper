@@ -7,8 +7,14 @@
 // Lookup helpers live here so consumers don't reach into the map directly.
 
 import type { FeatureDef } from "./types";
+import { FEAT_ALERT, FEAT_TOUGH } from "./data/feats";
+import { SUBCLASS_CHAMPION_REMARKABLE_ATHLETE } from "./data/subclasses";
 
-export const FEATURE_REGISTRY: Record<string, FeatureDef> = {};
+export const FEATURE_REGISTRY: Record<string, FeatureDef> = {
+  [FEAT_TOUGH.id]:                            FEAT_TOUGH,
+  [FEAT_ALERT.id]:                            FEAT_ALERT,
+  [SUBCLASS_CHAMPION_REMARKABLE_ATHLETE.id]:  SUBCLASS_CHAMPION_REMARKABLE_ATHLETE,
+};
 
 /** Resolve a feature by canonical ID. Returns undefined if absent. */
 export function getFeatureDef(id: string): FeatureDef | undefined {

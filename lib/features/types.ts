@@ -175,7 +175,12 @@ export type FeatureEffect =
   | { kind: "sense"; sense: "darkvision" | "blindsight" | "tremorsense" | "truesight"; range: number }
   | { kind: "resistance"; damageType: DamageType | "by-choice"; choiceId?: string }
   | { kind: "condition-immunity"; condition: Condition; whileAuraActive?: boolean }
-  | { kind: "scaling-stat"; stat: string; formula: ScalingFormula };
+  | { kind: "scaling-stat"; stat: string; formula: ScalingFormula }
+  // ── Migration targets (chunk 2) ─────────────────────────────────────────────
+  // Each maps to exactly one consumer site in calc.ts (HP table, initiative, check rolls).
+  | { kind: "hp-per-level"; value: number }
+  | { kind: "initiative-add"; value: "prof-bonus" | number }
+  | { kind: "half-prof-on-checks"; abilities: AbilityKey[] };
 
 // ─── Resources ────────────────────────────────────────────────────────────────
 
