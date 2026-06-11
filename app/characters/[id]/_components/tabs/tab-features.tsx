@@ -18,6 +18,8 @@ import { sourceChipClass } from "@/lib/ui-tokens";
 import { cleanHtml } from "@/lib/content/aurora/clean-html";
 import { EmptyState } from "../shared/empty-state";
 import { SubclassPicker } from "../panels/subclass-picker";
+import { allFeatureDefs } from "@/lib/features";
+import { ResourceDisplay } from "@/components/features/resource-display";
 
 // ─── Section collapse state ───────────────────────────────────────────────────
 
@@ -299,16 +301,32 @@ export function TabFeatures({
                         const max = maxChargesFor(def, character.level, {});
                         const current = currentChargesFor(def, character.level, {}, character.data.featureCharges ?? {});
                         const recharge = resolveRechargesOn(def, character.level);
+                        const newDef = allFeatureDefs().find(
+                          (fd) => fd.resource?.id === def.key
+                        );
                         return (
-                          <FeatureRow
-                            key={def.key}
-                            label={def.label}
-                            description={def.description}
-                            current={current}
-                            max={max}
-                            recharge={recharge}
-                            onSet={(next) => handleChargeChange(def.key, next)}
-                          />
+                          <div key={def.key}>
+                            <FeatureRow
+                              label={def.label}
+                              description={def.description}
+                              current={current}
+                              max={max}
+                              recharge={recharge}
+                              onSet={(next) => handleChargeChange(def.key, next)}
+                            />
+                            {newDef?.resource && (
+                              <div className="mt-3 pt-3 border-t border-stone-800/40">
+                                <p className="text-[10px] uppercase tracking-wider text-amber-600/60 mb-1.5">
+                                  {newDef.name} (data)
+                                </p>
+                                <ResourceDisplay
+                                  resource={newDef.resource}
+                                  character={character}
+                                  onChange={(next) => handleChargeChange(def.key, next)}
+                                />
+                              </div>
+                            )}
+                          </div>
                         );
                       })}
                     </div>

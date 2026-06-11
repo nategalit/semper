@@ -187,7 +187,8 @@ export type FeatureEffect =
 export type DerivedCount =
   | { from: "ability-mod"; ability: Ability; min?: number }
   | { from: "prof-bonus" }
-  | { from: "level"; classId: string; multiplier?: number };
+  | { from: "level"; classId: string; multiplier?: number }
+  | { from: "class-table"; classId: string; column: string };
 
 export type ResourceShape =
   | { kind: "charges"; max: number | DerivedCount }
@@ -207,7 +208,8 @@ export type ResourceDisplay =
   | "number"
   | "spell-slot-row"
   | "per-tier-checkboxes"
-  | "binary-token";
+  | "binary-token"
+  | "points";
 
 export interface FeatureResource {
   id: string;

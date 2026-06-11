@@ -118,9 +118,11 @@ describe("collectActiveFeatures", () => {
     expect(active.map((d) => d.id)).not.toContain("subclass-champion-remarkable-athlete");
   });
 
-  it("returns no features for a plain Barbarian with no feats", () => {
+  it("returns Rage for a plain Barbarian (Rage registered at L1+)", () => {
     const character = makeCharacter();
-    expect(collectActiveFeatures(character)).toHaveLength(0);
+    const active = collectActiveFeatures(character);
+    expect(active.map((d) => d.id)).toContain("barbarian-rage");
+    expect(active).toHaveLength(1);
   });
 });
 

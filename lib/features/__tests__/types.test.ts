@@ -19,8 +19,8 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains exactly the three chunk-2a entries", () => {
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(3);
+  it("contains exactly four entries (chunk-2a + Rage)", () => {
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(4);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -49,8 +49,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all three entries", () => {
-    expect(allFeatureDefs()).toHaveLength(3);
+  it("allFeatureDefs returns all four entries", () => {
+    expect(allFeatureDefs()).toHaveLength(4);
   });
 });
 
@@ -119,17 +119,18 @@ describe("FeatureEffect variants", () => {
 });
 
 describe("ResourceShape + Recharge variants", () => {
-  it("compiles every shape", () => {
+  it("compiles every shape including class-table DerivedCount", () => {
     const shapes: ResourceShape[] = [
       { kind: "charges", max: 3 },
       { kind: "charges", max: { from: "ability-mod", ability: "cha", min: 1 } },
+      { kind: "charges", max: { from: "class-table", classId: "barbarian", column: "rages" } },
       { kind: "pool", max: { from: "level", classId: "ID_CLASS_PALADIN", multiplier: 5 } },
       { kind: "points", max: { from: "level", classId: "ID_CLASS_SORCERER" }, convertsTo: "spell-slots" },
       { kind: "slots", level: "by-table", max: { from: "level", classId: "ID_CLASS_WARLOCK" } },
       { kind: "per-tier-one-shot", tiers: [6, 7, 8, 9] },
       { kind: "binary-token" },
     ];
-    expect(shapes).toHaveLength(7);
+    expect(shapes).toHaveLength(8);
   });
 
   it("compiles every recharge variant", () => {

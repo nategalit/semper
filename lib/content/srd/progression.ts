@@ -105,6 +105,19 @@ const WARLOCK_SLOTS: Record<number, [count: number, slotLevel: number]> = {
   20: [4, 5],
 };
 
+// ─── Class progression tables ────────────────────────────────────────────────
+//
+// Used by resolveDerivedCount's "class-table" variant. Each column is a
+// level-indexed array (index 0 = level 1). classId keys are lowercase
+// short names, distinct from the Aurora "ID_CLASS_*" identifiers.
+
+export const CLASS_TABLE_COLUMNS: Record<string, Record<string, number[]>> = {
+  barbarian: {
+    // Level:   1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18 19 20
+    rages:    [2, 2, 3, 3, 3, 4, 4, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6,  6],
+  },
+};
+
 // ─── ASI level tables ─────────────────────────────────────────────────────────
 
 export const DEFAULT_ASI_LEVELS = [4, 8, 12, 16, 19];
