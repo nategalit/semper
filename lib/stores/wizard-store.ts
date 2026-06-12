@@ -75,7 +75,8 @@ interface WizardState {
 
   classSkills: string[];
   wizardSubclassId: string;
-  wizardFightingStyleId: string;
+  /** Draft choices for each level, keyed by level then FeatureDef id → chosen value string. */
+  draftLevelChoices: Record<number, Record<string, string>>;
   /** Flexible ability picks (e.g. Half-Elf's two +1s), stored as an array of chosen keys. */
   flexibleAbilityPicks: AbilityKey[];
 
@@ -90,7 +91,7 @@ interface WizardState {
   setBackgroundId: (id: string) => void;
   toggleClassSkill: (skill: string) => void;
   setWizardSubclassId: (id: string) => void;
-  setWizardFightingStyleId: (id: string) => void;
+  setDraftLevelChoice: (level: number, defId: string, value: string) => void;
   toggleFlexiblePick: (key: AbilityKey, maxCount: number) => void;
   setAbilityMethod: (method: AbilityMethod) => void;
   setAbilityScore: (key: AbilityKey, value: number) => void;
@@ -114,7 +115,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
   backgroundId: "",
   classSkills: [],
   wizardSubclassId: "",
-  wizardFightingStyleId: "",
+  draftLevelChoices: {},
   flexibleAbilityPicks: [],
   abilityMethod: "standard-array",
   abilityScores: { ...DEFAULT_SCORES },
@@ -135,12 +136,18 @@ export const useWizardStore = create<WizardState>((set, get) => ({
   setName: (name) => set({ name }),
   setEdition: (edition) =>
     set({ edition, raceId: "", subraceId: "", classId: "", backgroundId: "",
-          classSkills: [], wizardSubclassId: "", flexibleAbilityPicks: [] }),
+          classSkills: [], wizardSubclassId: "", draftLevelChoices: {}, flexibleAbilityPicks: [] }),
   setRaceId: (raceId) => set({ raceId, subraceId: "", flexibleAbilityPicks: [] }),
   setSubraceId: (subraceId) => set({ subraceId }),
-  setClassId: (classId) => set({ classId, classSkills: [], wizardSubclassId: "", wizardFightingStyleId: "" }),
+  setClassId: (classId) => set({ classId, classSkills: [], wizardSubclassId: "", draftLevelChoices: {} }),
   setWizardSubclassId: (wizardSubclassId) => set({ wizardSubclassId }),
-  setWizardFightingStyleId: (wizardFightingStyleId) => set({ wizardFightingStyleId }),
+  setDraftLevelChoice: (level, defId, value) =>
+    set((s) => ({
+      draftLevelChoices: {
+        ...s.draftLevelChoices,
+        [level]: { ...(s.draftLevelChoices[level] ?? {}), [defId]: value },
+      },
+    })),
   setBackgroundId: (backgroundId) => set({ backgroundId }),
   toggleFlexiblePick: (key, maxCount) =>
     set((s) => {
@@ -206,7 +213,7 @@ export const useWizardStore = create<WizardState>((set, get) => ({
     backgroundId: "",
     classSkills: [],
     wizardSubclassId: "",
-    wizardFightingStyleId: "",
+    draftLevelChoices: {},
     flexibleAbilityPicks: [],
     abilityMethod: "standard-array",
     abilityScores: { ...DEFAULT_SCORES },

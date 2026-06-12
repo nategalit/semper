@@ -18,6 +18,9 @@ export interface LevelChoiceRecord {
   featId?: string;
   subclassId?: string;
   fightingStyle?: string;
+  // picks: generic overflow for choice kinds without a named field (Weapon Mastery, Divine Order, etc.).
+  // Named fields (fightingStyle, featId, asi) remain the backward-compat landing spots for existing kinds.
+  picks?: Record<string, string>;
 }
 
 export interface AbilityScores {
