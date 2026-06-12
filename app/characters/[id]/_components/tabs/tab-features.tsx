@@ -115,7 +115,10 @@ export function TabFeatures({
   const activeProseDefs = _activeFeatures.filter(
     (d) => d.resource == null && d.choices == null
   );
-  const proseDefNames = new Set(activeProseDefs.map((d) => d.name.toLowerCase()));
+  const proseDefNames = new Set([
+    ...activeProseDefs.map((d) => d.name.toLowerCase()),
+    ...activeProseDefs.flatMap((d) => d.legacyNames?.map((n) => n.toLowerCase()) ?? []),
+  ]);
 
   const proseDefById = new Map(activeProseDefs.map((d) => [d.id, d]));
   const proseChildrenMap = new Map<string, FeatureDef[]>();

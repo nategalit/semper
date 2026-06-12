@@ -19,11 +19,11 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 7)", () => {
+  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9a)", () => {
     // 20 named defs + 50 std-class ASI (10 classes × 5) + 7 fighter ASI + 6 rogue ASI = 83
-    // chunk 7 adds 4: barbarian-brutal-strike, barbarian-improved-brutal-strike,
-    //                  paladin-aura-of-protection, paladin-aura-expansion
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(87);
+    // chunk 7 adds 4: brutal-strike ×2, aura-of-protection, aura-expansion
+    // chunk 9a adds 14: full Barbarian L1-L20 fill
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(101);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -52,8 +52,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 87 entries (chunk 7)", () => {
-    expect(allFeatureDefs()).toHaveLength(87);
+  it("allFeatureDefs returns all 101 entries (chunk 9a)", () => {
+    expect(allFeatureDefs()).toHaveLength(101);
   });
 
   it("resolves barbarian-brutal-strike (chunk 7)", () => {
@@ -149,6 +149,10 @@ describe("FeatureEffect variants", () => {
       { kind: "initiative-add", value: "prof-bonus" },
       { kind: "initiative-add", value: 5 },
       { kind: "half-prof-on-checks", abilities: ["str", "dex", "con"] },
+      // chunk-9a additions
+      { kind: "ac-base", formula: "10+dex+con", condition: { not_wearing: "any-armor" } },
+      { kind: "ac-base", formula: "10+dex+wis" },
+      { kind: "initiative-advantage" },
     ];
     expect(effects.length).toBeGreaterThan(0);
   });
@@ -274,6 +278,20 @@ describe("FeatureDef", () => {
       ],
     };
     expect(def.resource?.id).toBe("rage");
+  });
+
+  it("accepts legacyNames for cross-version renames (chunk 9a)", () => {
+    const def: FeatureDef = {
+      id: "barbarian-brutal-strike",
+      name: "Brutal Strike",
+      source: "SRD",
+      origin: { kind: "class", classId: "ID_CLASS_BARBARIAN", level: 9 },
+      prose: { fallback: "..." },
+      actionType: "special",
+      actionTypeSource: "tagged",
+      legacyNames: ["Brutal Critical"],
+    };
+    expect(def.legacyNames).toEqual(["Brutal Critical"]);
   });
 
   it("accepts actionTypeSource: 'inferred' (chunk 8)", () => {

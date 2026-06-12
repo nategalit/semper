@@ -181,7 +181,14 @@ export type FeatureEffect =
   // Each maps to exactly one consumer site in calc.ts (HP table, initiative, check rolls).
   | { kind: "hp-per-level"; value: number }
   | { kind: "initiative-add"; value: "prof-bonus" | number }
-  | { kind: "half-prof-on-checks"; abilities: AbilityKey[] };
+  | { kind: "half-prof-on-checks"; abilities: AbilityKey[] }
+  // ── Chunk 9a additions ───────────────────────────────────────────────────────
+  // ac-base: sets base AC via a formula when condition is met (Unarmored Defense pattern).
+  // deriveStats consumer is TODO — data is encoded now, calc wiring follows.
+  | { kind: "ac-base"; formula: "10+dex+con" | "10+dex+wis"; condition?: EffectCondition }
+  // initiative-advantage: grants Advantage on Initiative rolls (Feral Instinct).
+  // Display/calc consumer is TODO.
+  | { kind: "initiative-advantage" };
 
 // ─── Resources ────────────────────────────────────────────────────────────────
 
@@ -249,6 +256,9 @@ export interface FeatureDef {
   parentFeatureId?: string;
   /** How the child relates to the parent in display. */
   augments?: "extend" | "replace";
+  /** SRD/legacy display names this FeatureDef supersedes in the Path B dedup filter.
+   *  Set when PHB24 renamed a feature (e.g. "Brutal Critical" → "Brutal Strike"). */
+  legacyNames?: string[];
 
   // Behavior — all optional, all composable.
   choices?: FeatureChoice[];
