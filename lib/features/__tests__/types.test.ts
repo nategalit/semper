@@ -276,6 +276,19 @@ describe("FeatureDef", () => {
     expect(def.resource?.id).toBe("rage");
   });
 
+  it("accepts actionTypeSource: 'inferred' (chunk 8)", () => {
+    const def: FeatureDef = {
+      id: "test-inferred",
+      name: "Test Feature",
+      source: "SRD",
+      origin: { kind: "class", classId: "ID_CLASS_BARBARIAN", level: 1 },
+      prose: { fallback: "You gain a bonus." },
+      actionType: "passive",
+      actionTypeSource: "inferred",
+    };
+    expect(def.actionTypeSource).toBe("inferred");
+  });
+
   it("compiles a child feature pointing at a parent", () => {
     const def: FeatureDef = {
       id: "improved-brutal-strike",

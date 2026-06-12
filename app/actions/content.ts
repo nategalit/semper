@@ -13,6 +13,7 @@ import type {
   ClassElement,
   SubclassElement,
   ClassFeatureElement,
+  RacialTraitElement,
   BackgroundElement,
   FeatElement,
   ItemElement,
@@ -25,6 +26,9 @@ export interface FeatureEntry {
   id: string;
   name: string;
   description: string;
+  /** Aurora-tagged action type string (e.g. "Action", "Bonus Action"). Present when the
+   *  source element has an <action> tag. Used by ensureActionType as tier-2 precedence. */
+  action?: string;
 }
 
 export interface FightingStyleEntry {
@@ -142,11 +146,15 @@ function partitionElements(elements: AuroraElement[]): {
             sourceLabel: abbreviateSource(cf.source),
           });
         } else {
-          content.features.push({ id: cf.id, name: cf.name, description: cf.description });
+          content.features.push({ id: cf.id, name: cf.name, description: cf.description, action: cf.action });
         }
         break;
       }
-      case "RacialTrait": content.features.push({ id: el.id, name: el.name, description: el.description }); break;
+      case "RacialTrait": {
+        const rt = el as RacialTraitElement;
+        content.features.push({ id: rt.id, name: rt.name, description: rt.description, action: rt.action });
+        break;
+      }
     }
   }
 

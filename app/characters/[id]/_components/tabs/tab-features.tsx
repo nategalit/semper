@@ -15,8 +15,9 @@ import { cleanHtml } from "@/lib/content/aurora/clean-html";
 import { EmptyState } from "../shared/empty-state";
 import { SubclassPicker } from "../panels/subclass-picker";
 import { collectActiveFeatures } from "@/lib/features";
-import type { FeatureDef, FeatureResource } from "@/lib/features";
+import type { FeatureDef, FeatureResource, ActionType } from "@/lib/features";
 import { resolveProse } from "@/lib/features/resolve-prose";
+import { ensureActionType } from "@/lib/features/infer-action-type";
 import { ResourceDisplay } from "@/components/features/resource-display";
 
 // ─── Section collapse state ───────────────────────────────────────────────────
@@ -154,9 +155,11 @@ export function TabFeatures({
   const activeClass = srdClass ?? character.data.resolvedClass;
 
   const descByNameLower = new Map<string, string>();
+  const actionByNameLower = new Map<string, string>();
   for (const f of featureMap.values()) {
     const stripped = f.description.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
     if (stripped) descByNameLower.set(f.name.toLowerCase(), stripped);
+    if (f.action) actionByNameLower.set(f.name.toLowerCase(), f.action);
   }
   if (activeClass?.featureDescriptions) {
     for (const [name, desc] of Object.entries(activeClass.featureDescriptions)) {
@@ -182,7 +185,7 @@ export function TabFeatures({
 
   // ── Merged progression: Path C top-level + deduped Path B ───────────────
   type ProgressionItem =
-    | { kind: "legacy"; name: string; level: number; description?: string }
+    | { kind: "legacy"; name: string; level: number; description?: string; actionType: ActionType; actionTypeSource: "tagged" | "inferred" }
     | { kind: "prosedef"; def: FeatureDef; children: FeatureDef[] };
 
   const progressionItems: ProgressionItem[] = [
@@ -193,7 +196,14 @@ export function TabFeatures({
     })),
     ...nonChargeFeatures
       .filter((f) => !proseDefNames.has(f.name.toLowerCase()))
-      .map((f): ProgressionItem => ({ kind: "legacy", ...f })),
+      .map((f): ProgressionItem => {
+        const { actionType, actionTypeSource } = ensureActionType(
+          {},
+          f.description ?? "",
+          actionByNameLower.get(f.name.toLowerCase()),
+        );
+        return { kind: "legacy", name: f.name, level: f.level, description: f.description, actionType, actionTypeSource };
+      }),
   ].sort((a, b) => {
     const la = a.kind === "legacy" ? a.level : featureLevel(a.def);
     const lb = b.kind === "legacy" ? b.level : featureLevel(b.def);
