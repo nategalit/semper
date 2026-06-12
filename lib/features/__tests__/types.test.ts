@@ -19,8 +19,9 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains exactly sixteen entries (all class resources + feat resources + subclass)", () => {
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(16);
+  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 5)", () => {
+    // 20 named defs + 50 std-class ASI (10 classes × 5) + 7 fighter ASI + 6 rogue ASI = 83
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(83);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -49,8 +50,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all sixteen entries", () => {
-    expect(allFeatureDefs()).toHaveLength(16);
+  it("allFeatureDefs returns all 83 entries (chunk 5)", () => {
+    expect(allFeatureDefs()).toHaveLength(83);
   });
 });
 

@@ -8,35 +8,46 @@
 
 import type { FeatureDef } from "./types";
 import { FEAT_ALERT, FEAT_INSPIRING_LEADER, FEAT_LUCKY, FEAT_TOUGH } from "./data/feats";
-import { SUBCLASS_CHAMPION_REMARKABLE_ATHLETE } from "./data/subclasses";
+import { CHAMPION_EXTRA_FIGHTING_STYLE, SUBCLASS_CHAMPION_REMARKABLE_ATHLETE } from "./data/subclasses";
 import { BARBARIAN_RAGE } from "./data/classes/barbarian";
 import { BARDIC_INSPIRATION } from "./data/classes/bard";
 import { CLERIC_CHANNEL_DIVINITY } from "./data/classes/cleric";
 import { WILD_SHAPE } from "./data/classes/druid";
-import { ACTION_SURGE, SECOND_WIND } from "./data/classes/fighter";
+import { ACTION_SURGE, FIGHTER_FIGHTING_STYLE, SECOND_WIND } from "./data/classes/fighter";
 import { KI_POINTS } from "./data/classes/monk";
-import { LAY_ON_HANDS, PALADIN_CHANNEL_DIVINITY } from "./data/classes/paladin";
+import { LAY_ON_HANDS, PALADIN_CHANNEL_DIVINITY, PALADIN_FIGHTING_STYLE } from "./data/classes/paladin";
+import { RANGER_FIGHTING_STYLE } from "./data/classes/ranger";
 import { SORCERY_POINTS } from "./data/classes/sorcerer";
 import { ARCANE_RECOVERY } from "./data/classes/wizard";
+import { ALL_ASI_DEFS } from "./data/asi-choices";
 
-export const FEATURE_REGISTRY: Record<string, FeatureDef> = {
-  [FEAT_TOUGH.id]:                            FEAT_TOUGH,
-  [FEAT_ALERT.id]:                            FEAT_ALERT,
-  [FEAT_LUCKY.id]:                            FEAT_LUCKY,
-  [FEAT_INSPIRING_LEADER.id]:                 FEAT_INSPIRING_LEADER,
-  [SUBCLASS_CHAMPION_REMARKABLE_ATHLETE.id]:  SUBCLASS_CHAMPION_REMARKABLE_ATHLETE,
-  [BARBARIAN_RAGE.id]:                        BARBARIAN_RAGE,
-  [BARDIC_INSPIRATION.id]:                    BARDIC_INSPIRATION,
-  [CLERIC_CHANNEL_DIVINITY.id]:               CLERIC_CHANNEL_DIVINITY,
-  [WILD_SHAPE.id]:                            WILD_SHAPE,
-  [ACTION_SURGE.id]:                          ACTION_SURGE,
-  [SECOND_WIND.id]:                           SECOND_WIND,
-  [KI_POINTS.id]:                             KI_POINTS,
-  [LAY_ON_HANDS.id]:                          LAY_ON_HANDS,
-  [PALADIN_CHANNEL_DIVINITY.id]:              PALADIN_CHANNEL_DIVINITY,
-  [SORCERY_POINTS.id]:                        SORCERY_POINTS,
-  [ARCANE_RECOVERY.id]:                       ARCANE_RECOVERY,
-};
+const BASE_DEFS: FeatureDef[] = [
+  FEAT_TOUGH,
+  FEAT_ALERT,
+  FEAT_LUCKY,
+  FEAT_INSPIRING_LEADER,
+  CHAMPION_EXTRA_FIGHTING_STYLE,
+  SUBCLASS_CHAMPION_REMARKABLE_ATHLETE,
+  BARBARIAN_RAGE,
+  BARDIC_INSPIRATION,
+  CLERIC_CHANNEL_DIVINITY,
+  WILD_SHAPE,
+  FIGHTER_FIGHTING_STYLE,
+  ACTION_SURGE,
+  SECOND_WIND,
+  KI_POINTS,
+  LAY_ON_HANDS,
+  PALADIN_CHANNEL_DIVINITY,
+  PALADIN_FIGHTING_STYLE,
+  RANGER_FIGHTING_STYLE,
+  SORCERY_POINTS,
+  ARCANE_RECOVERY,
+  ...ALL_ASI_DEFS,
+];
+
+export const FEATURE_REGISTRY: Record<string, FeatureDef> = Object.fromEntries(
+  BASE_DEFS.map((d) => [d.id, d])
+);
 
 /** Resolve a feature by canonical ID. Returns undefined if absent. */
 export function getFeatureDef(id: string): FeatureDef | undefined {

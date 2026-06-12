@@ -1,5 +1,16 @@
 import type { FeatureDef } from "@/lib/features/types";
 
+export const FIGHTER_FIGHTING_STYLE: FeatureDef = {
+  id: "fighter-fighting-style",
+  name: "Fighting Style",
+  source: "SRD",
+  origin: { kind: "class", classId: "ID_CLASS_FIGHTER", level: 1 },
+  prose: { fallback: "Adopt a particular style of fighting as your specialty. You can't take a Fighting Style option more than once, even if you later get to choose again." },
+  actionType: "passive",
+  actionTypeSource: "tagged",
+  choices: [{ kind: "feat", from: { tag: "fighting-style" }, count: 1 }],
+};
+
 export const ACTION_SURGE: FeatureDef = {
   id: "fighter-action-surge",
   name: "Action Surge",

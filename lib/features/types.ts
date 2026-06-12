@@ -138,7 +138,8 @@ export type FeatureChoice =
   | { kind: "feat"; from: FeatFilter; count: number }
   | { kind: "spell"; from: SpellFilter; count: number; alwaysPrepared?: boolean }
   | { kind: "mode"; options: ModeOption[]; affects: string }
-  | { kind: "subfeature"; options: SubfeatureOption[] };
+  | { kind: "subfeature"; options: SubfeatureOption[] }
+  | { kind: "asi-or-feat"; canTakeHalfFeat: boolean };
 
 // ─── Effects ──────────────────────────────────────────────────────────────────
 

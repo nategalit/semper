@@ -65,6 +65,26 @@ export function collectActiveFeatures(character: Character): FeatureDef[] {
 }
 
 /**
+ * Returns FeatureDefs that have choices and are granted at exactly `level`
+ * for the given class/subclass. Used by the level-up panel to know which
+ * ChoicePickers to render for each new level.
+ */
+export function choiceFeatureDefs(
+  classId: string,
+  subclassId: string | undefined,
+  level: number
+): FeatureDef[] {
+  return allFeatureDefs().filter((def) => {
+    if (!def.choices?.length) return false;
+    const o = def.origin;
+    if (o.kind === "class") return o.classId === classId && o.level === level;
+    if (o.kind === "subclass")
+      return o.subclassId === subclassId && o.level === level;
+    return false;
+  });
+}
+
+/**
  * Dispatches one FeatureEffect onto ctx. Real handlers exist for the three
  * chunk-2b migration kinds; all other kinds are silently skipped until their
  * respective chunks land.

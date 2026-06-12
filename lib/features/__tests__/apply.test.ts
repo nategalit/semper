@@ -121,8 +121,9 @@ describe("collectActiveFeatures", () => {
   it("returns Rage for a plain Barbarian (Rage registered at L1+)", () => {
     const character = makeCharacter();
     const active = collectActiveFeatures(character);
+    // L5 Barbarian: Rage (L1) + ASI (L4). Exact count grows as more FeatureDefs land.
     expect(active.map((d) => d.id)).toContain("barbarian-rage");
-    expect(active).toHaveLength(1);
+    expect(active.filter((d) => d.id === "barbarian-rage")).toHaveLength(1);
   });
 
   it("returns feat-lucky for a character with PHB14 Lucky (array featId)", () => {
