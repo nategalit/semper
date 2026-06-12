@@ -9,13 +9,13 @@
 import type { FeatureDef } from "./types";
 import { FEAT_ALERT, FEAT_INSPIRING_LEADER, FEAT_LUCKY, FEAT_TOUGH } from "./data/feats";
 import { CHAMPION_EXTRA_FIGHTING_STYLE, SUBCLASS_CHAMPION_REMARKABLE_ATHLETE } from "./data/subclasses";
-import { BARBARIAN_RAGE } from "./data/classes/barbarian";
+import { BARBARIAN_RAGE, BARBARIAN_BRUTAL_STRIKE, BARBARIAN_IMPROVED_BRUTAL_STRIKE } from "./data/classes/barbarian";
 import { BARDIC_INSPIRATION } from "./data/classes/bard";
 import { CLERIC_CHANNEL_DIVINITY } from "./data/classes/cleric";
 import { WILD_SHAPE } from "./data/classes/druid";
 import { ACTION_SURGE, FIGHTER_FIGHTING_STYLE, SECOND_WIND } from "./data/classes/fighter";
 import { KI_POINTS } from "./data/classes/monk";
-import { LAY_ON_HANDS, PALADIN_CHANNEL_DIVINITY, PALADIN_FIGHTING_STYLE } from "./data/classes/paladin";
+import { LAY_ON_HANDS, PALADIN_CHANNEL_DIVINITY, PALADIN_FIGHTING_STYLE, PALADIN_AURA_OF_PROTECTION, PALADIN_AURA_EXPANSION } from "./data/classes/paladin";
 import { RANGER_FIGHTING_STYLE } from "./data/classes/ranger";
 import { SORCERY_POINTS } from "./data/classes/sorcerer";
 import { ARCANE_RECOVERY } from "./data/classes/wizard";
@@ -29,6 +29,8 @@ const BASE_DEFS: FeatureDef[] = [
   CHAMPION_EXTRA_FIGHTING_STYLE,
   SUBCLASS_CHAMPION_REMARKABLE_ATHLETE,
   BARBARIAN_RAGE,
+  BARBARIAN_BRUTAL_STRIKE,
+  BARBARIAN_IMPROVED_BRUTAL_STRIKE,
   BARDIC_INSPIRATION,
   CLERIC_CHANNEL_DIVINITY,
   WILD_SHAPE,
@@ -39,6 +41,8 @@ const BASE_DEFS: FeatureDef[] = [
   LAY_ON_HANDS,
   PALADIN_CHANNEL_DIVINITY,
   PALADIN_FIGHTING_STYLE,
+  PALADIN_AURA_OF_PROTECTION,
+  PALADIN_AURA_EXPANSION,
   RANGER_FIGHTING_STYLE,
   SORCERY_POINTS,
   ARCANE_RECOVERY,

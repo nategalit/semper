@@ -135,6 +135,50 @@ describe("collectActiveFeatures", () => {
     const active = collectActiveFeatures(character);
     expect(active.map((d) => d.id)).toContain("feat-lucky");
   });
+
+  // chunk 7 — Brutal Strike level gating
+  it("includes Brutal Strike for a Barbarian at L9", () => {
+    const character = makeCharacter({ level: 9, classId: "ID_CLASS_BARBARIAN" });
+    const ids = collectActiveFeatures(character).map((d) => d.id);
+    expect(ids).toContain("barbarian-brutal-strike");
+    expect(ids).not.toContain("barbarian-improved-brutal-strike");
+  });
+
+  it("includes both Brutal Strike and Improved Brutal Strike for a Barbarian at L13", () => {
+    const character = makeCharacter({ level: 13, classId: "ID_CLASS_BARBARIAN" });
+    const ids = collectActiveFeatures(character).map((d) => d.id);
+    expect(ids).toContain("barbarian-brutal-strike");
+    expect(ids).toContain("barbarian-improved-brutal-strike");
+  });
+
+  it("does NOT include Brutal Strike for a Barbarian at L8", () => {
+    const character = makeCharacter({ level: 8, classId: "ID_CLASS_BARBARIAN" });
+    const ids = collectActiveFeatures(character).map((d) => d.id);
+    expect(ids).not.toContain("barbarian-brutal-strike");
+    expect(ids).not.toContain("barbarian-improved-brutal-strike");
+  });
+
+  // chunk 7 — Aura of Protection level gating
+  it("includes Aura of Protection for a Paladin at L6", () => {
+    const character = makeCharacter({ level: 6, classId: "ID_CLASS_PALADIN" });
+    const ids = collectActiveFeatures(character).map((d) => d.id);
+    expect(ids).toContain("paladin-aura-of-protection");
+    expect(ids).not.toContain("paladin-aura-expansion");
+  });
+
+  it("includes both Aura of Protection and Aura Expansion for a Paladin at L18", () => {
+    const character = makeCharacter({ level: 18, classId: "ID_CLASS_PALADIN" });
+    const ids = collectActiveFeatures(character).map((d) => d.id);
+    expect(ids).toContain("paladin-aura-of-protection");
+    expect(ids).toContain("paladin-aura-expansion");
+  });
+
+  it("does NOT include Aura of Protection for a Paladin at L5", () => {
+    const character = makeCharacter({ level: 5, classId: "ID_CLASS_PALADIN" });
+    const ids = collectActiveFeatures(character).map((d) => d.id);
+    expect(ids).not.toContain("paladin-aura-of-protection");
+    expect(ids).not.toContain("paladin-aura-expansion");
+  });
 });
 
 // ── applyHpPerLevel ───────────────────────────────────────────────────────────

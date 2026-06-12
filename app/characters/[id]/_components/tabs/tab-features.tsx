@@ -99,10 +99,45 @@ export function TabFeatures({
     character.level >= srdClass.subclassUnlockLevel &&
     !character.data.subclassId;
 
+  const _activeFeatures = collectActiveFeatures(character);
+
   type ActiveResourceDef = FeatureDef & { resource: FeatureResource };
-  const activeResourceDefs = collectActiveFeatures(character).filter(
+  const activeResourceDefs = _activeFeatures.filter(
     (d): d is ActiveResourceDef => d.resource != null
   );
+
+  // ── Path C: prose FeatureDefs (no resource, no choices) ─────────────────
+  // Path B (featuresByLevel) is the legacy long-tail fallback.
+  // Path C (FeatureDef prose) takes precedence: any name present in Path C is
+  // suppressed from Path B. When chunk 9 completes, Path B will be mostly
+  // empty for migrated classes — Path C subsumes it.
+  const activeProseDefs = _activeFeatures.filter(
+    (d) => d.resource == null && d.choices == null
+  );
+  const proseDefNames = new Set(activeProseDefs.map((d) => d.name.toLowerCase()));
+
+  const proseDefById = new Map(activeProseDefs.map((d) => [d.id, d]));
+  const proseChildrenMap = new Map<string, FeatureDef[]>();
+  const proseTopLevel: FeatureDef[] = [];
+  for (const def of activeProseDefs) {
+    if (def.parentFeatureId) {
+      const arr = proseChildrenMap.get(def.parentFeatureId) ?? [];
+      arr.push(def);
+      proseChildrenMap.set(def.parentFeatureId, arr);
+    } else {
+      proseTopLevel.push(def);
+    }
+  }
+  for (const [parentId, orphans] of proseChildrenMap.entries()) {
+    if (!proseDefById.has(parentId)) {
+      console.warn(`[features] children reference parent "${parentId}" which is not active; rendering at top level`);
+      proseTopLevel.push(...orphans);
+      proseChildrenMap.delete(parentId);
+    }
+  }
+  for (const children of proseChildrenMap.values()) {
+    children.sort((a, b) => featureLevel(a) - featureLevel(b));
+  }
 
   const pickedFeats: { feat: FeatElement; level: number }[] = [];
   if (character.data.levelChoices) {
@@ -145,6 +180,26 @@ export function TabFeatures({
           )
       : [];
 
+  // ── Merged progression: Path C top-level + deduped Path B ───────────────
+  type ProgressionItem =
+    | { kind: "legacy"; name: string; level: number; description?: string }
+    | { kind: "prosedef"; def: FeatureDef; children: FeatureDef[] };
+
+  const progressionItems: ProgressionItem[] = [
+    ...proseTopLevel.map((def): ProgressionItem => ({
+      kind: "prosedef",
+      def,
+      children: proseChildrenMap.get(def.id) ?? [],
+    })),
+    ...nonChargeFeatures
+      .filter((f) => !proseDefNames.has(f.name.toLowerCase()))
+      .map((f): ProgressionItem => ({ kind: "legacy", ...f })),
+  ].sort((a, b) => {
+    const la = a.kind === "legacy" ? a.level : featureLevel(a.def);
+    const lb = b.kind === "legacy" ? b.level : featureLevel(b.def);
+    return la - lb;
+  });
+
   // ── Search index ─────────────────────────────────────────────────────────
 
   type SearchItem = { name: string; category: string; description?: string; meta?: string };
@@ -160,8 +215,17 @@ export function TabFeatures({
         .replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
       items.push({ name: feat.name, category: "Feat", description: desc || undefined, meta: `L${level}` });
     }
-    for (const f of nonChargeFeatures) {
-      items.push({ name: f.name, category: "Class Progression", description: f.description, meta: `Lv${f.level}` });
+    for (const item of progressionItems) {
+      if (item.kind === "legacy") {
+        items.push({ name: item.name, category: "Class Progression", description: item.description, meta: `Lv${item.level}` });
+      } else {
+        const lvl = featureLevel(item.def);
+        items.push({ name: item.def.name, category: "Class Feature", description: resolveProse(item.def.prose, character), meta: lvl ? `Lv${lvl}` : undefined });
+        for (const child of item.children) {
+          const cLvl = featureLevel(child);
+          items.push({ name: child.name, category: "Class Feature", description: resolveProse(child.prose, character), meta: cLvl ? `Lv${cLvl}` : undefined });
+        }
+      }
     }
     if (chosenFightingStyle) {
       const desc = chosenFightingStyle.description?.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
@@ -193,7 +257,7 @@ export function TabFeatures({
 
     return items;
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeResourceDefs, pickedFeats, nonChargeFeatures, chosenFightingStyle, currentSubclass, srdRace, subrace, srdBackground, character.level]);
+  }, [activeResourceDefs, pickedFeats, progressionItems, chosenFightingStyle, currentSubclass, srdRace, subrace, srdBackground, character.level]);
 
   const q = search.toLowerCase();
   const filteredItems = q
@@ -284,10 +348,10 @@ export function TabFeatures({
           /* Normal sections */
           <>
             {/* Class — charge-tracked features + class progression + fighting style */}
-            {(activeResourceDefs.length > 0 || nonChargeFeatures.length > 0 || chosenFightingStyle) && (
+            {(activeResourceDefs.length > 0 || progressionItems.length > 0 || chosenFightingStyle) && (
               <CollapsibleSection
                 title={srdClass?.name ?? "Class"}
-                count={activeResourceDefs.length + nonChargeFeatures.length + (chosenFightingStyle ? 1 : 0)}
+                count={activeResourceDefs.length + progressionItems.length + (chosenFightingStyle ? 1 : 0)}
                 expanded={sectionOpen.class}
                 onToggle={() => toggleSection("class")}
               >
@@ -315,25 +379,60 @@ export function TabFeatures({
                     </div>
                   )}
 
-                  {nonChargeFeatures.length > 0 && (
+                  {progressionItems.length > 0 && (
                     <div>
                       {activeResourceDefs.length > 0 && (
                         <p className="text-[10px] uppercase tracking-widest text-stone-600 mb-2">Progression</p>
                       )}
                       <div className="space-y-2">
-                        {nonChargeFeatures.map(({ name, level, description }) => (
-                          <div key={`${level}-${name}`} className="flex gap-3">
-                            <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
-                              {level}
-                            </span>
-                            <div>
-                              <p className="text-sm font-medium text-stone-300">{name}</p>
-                              {description && (
-                                <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{description}</p>
-                              )}
+                        {progressionItems.map((item, idx) => {
+                          if (item.kind === "legacy") {
+                            return (
+                              <div key={`legacy-${item.level}-${item.name}`} className="flex gap-3">
+                                <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
+                                  {item.level}
+                                </span>
+                                <div>
+                                  <p className="text-sm font-medium text-stone-300">{item.name}</p>
+                                  {item.description && (
+                                    <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">{item.description}</p>
+                                  )}
+                                </div>
+                              </div>
+                            );
+                          }
+                          const { def, children } = item;
+                          const lvl = featureLevel(def);
+                          return (
+                            <div key={`prosedef-${def.id}`} className="flex gap-3">
+                              <span className="text-[10px] font-semibold text-stone-600 w-5 shrink-0 pt-0.5 text-right tabular-nums">
+                                {lvl || ""}
+                              </span>
+                              <div className="flex-1 min-w-0">
+                                <p className="text-sm font-medium text-stone-300">{def.name}</p>
+                                <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">
+                                  {resolveProse(def.prose, character)}
+                                </p>
+                                {children.map((child) => {
+                                  const cLvl = featureLevel(child);
+                                  return (
+                                    <div key={child.id} className="mt-2 pl-3 border-l border-stone-700/50">
+                                      <p className="text-xs font-medium text-stone-400">
+                                        {child.name}
+                                        {cLvl > 0 && (
+                                          <span className="text-stone-600 font-normal ml-1">· L{cLvl}</span>
+                                        )}
+                                      </p>
+                                      <p className="text-xs text-stone-500 mt-0.5 leading-relaxed">
+                                        {resolveProse(child.prose, character)}
+                                      </p>
+                                    </div>
+                                  );
+                                })}
+                              </div>
                             </div>
-                          </div>
-                        ))}
+                          );
+                        })}
                       </div>
                     </div>
                   )}
@@ -631,6 +730,13 @@ function CollapsibleSection({
       )}
     </div>
   );
+}
+
+// ─── Feature level helper ─────────────────────────────────────────────────────
+
+function featureLevel(def: FeatureDef): number {
+  const o = def.origin;
+  return o.kind === "class" || o.kind === "subclass" ? o.level : 0;
 }
 
 // ─── Recharge label helper ────────────────────────────────────────────────────

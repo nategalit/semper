@@ -31,6 +31,38 @@ export const LAY_ON_HANDS: FeatureDef = {
   },
 };
 
+// PHB24 prose — transcribed from 2024 Player's Handbook. Verify in chunk 9.
+export const PALADIN_AURA_OF_PROTECTION: FeatureDef = {
+  id: "paladin-aura-of-protection",
+  name: "Aura of Protection",
+  source: "SRD",
+  origin: { kind: "class", classId: "ID_CLASS_PALADIN", level: 6 },
+  prose: {
+    fallback: `You radiate a protective, unseeable aura in a 10-foot Emanation that originates from you. The aura is inactive while you have the Incapacitated condition.
+
+You and your allies in the aura gain a bonus to saving throws equal to your Charisma modifier (minimum bonus of +1).
+
+If another Paladin is present, a creature can benefit from only one Aura of Protection at a time; the creature chooses which aura while in them.`,
+  },
+  actionType: "passive",
+  actionTypeSource: "tagged",
+};
+
+// PHB24 prose — transcribed from 2024 Player's Handbook. Verify in chunk 9.
+export const PALADIN_AURA_EXPANSION: FeatureDef = {
+  id: "paladin-aura-expansion",
+  name: "Aura Expansion",
+  source: "SRD",
+  origin: { kind: "class", classId: "ID_CLASS_PALADIN", level: 18 },
+  parentFeatureId: "paladin-aura-of-protection",
+  augments: "extend",
+  prose: {
+    fallback: "Your Aura of Protection is now a 30-foot Emanation.",
+  },
+  actionType: "passive",
+  actionTypeSource: "tagged",
+};
+
 export const PALADIN_CHANNEL_DIVINITY: FeatureDef = {
   id: "paladin-channel-divinity",
   name: "Channel Divinity",

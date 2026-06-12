@@ -19,9 +19,11 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 5)", () => {
+  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 7)", () => {
     // 20 named defs + 50 std-class ASI (10 classes × 5) + 7 fighter ASI + 6 rogue ASI = 83
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(83);
+    // chunk 7 adds 4: barbarian-brutal-strike, barbarian-improved-brutal-strike,
+    //                  paladin-aura-of-protection, paladin-aura-expansion
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(87);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -50,8 +52,41 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 83 entries (chunk 5)", () => {
-    expect(allFeatureDefs()).toHaveLength(83);
+  it("allFeatureDefs returns all 87 entries (chunk 7)", () => {
+    expect(allFeatureDefs()).toHaveLength(87);
+  });
+
+  it("resolves barbarian-brutal-strike (chunk 7)", () => {
+    const def = getFeatureDef("barbarian-brutal-strike");
+    expect(def).toBeDefined();
+    expect(def?.name).toBe("Brutal Strike");
+    expect(def?.parentFeatureId).toBeUndefined();
+    expect(def?.augments).toBeUndefined();
+    expect(def?.actionType).toBe("special");
+  });
+
+  it("resolves barbarian-improved-brutal-strike as child of brutal-strike (chunk 7)", () => {
+    const def = getFeatureDef("barbarian-improved-brutal-strike");
+    expect(def).toBeDefined();
+    expect(def?.parentFeatureId).toBe("barbarian-brutal-strike");
+    expect(def?.augments).toBe("extend");
+    expect(def?.actionType).toBe("special");
+  });
+
+  it("resolves paladin-aura-of-protection (chunk 7)", () => {
+    const def = getFeatureDef("paladin-aura-of-protection");
+    expect(def).toBeDefined();
+    expect(def?.name).toBe("Aura of Protection");
+    expect(def?.parentFeatureId).toBeUndefined();
+    expect(def?.actionType).toBe("passive");
+  });
+
+  it("resolves paladin-aura-expansion as child of aura-of-protection (chunk 7)", () => {
+    const def = getFeatureDef("paladin-aura-expansion");
+    expect(def).toBeDefined();
+    expect(def?.parentFeatureId).toBe("paladin-aura-of-protection");
+    expect(def?.augments).toBe("extend");
+    expect(def?.actionType).toBe("passive");
   });
 });
 

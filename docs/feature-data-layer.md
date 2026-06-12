@@ -254,7 +254,7 @@ Each chunk ends with `"Show me the diff. Stop. Await my approval."` Each is one 
 6. **Choices in creation wizard.** L1 choices surface during creation. Required for Phase 8.7 to slot in cleanly.
 7. **Grouping.** `parentFeatureId` rendering in Features tab. Improved* features nest under parents.
 8. **actionType field + inference engine.** Field on FeatureDef, inference rule set, source flag. No UI yet.
-9. **Bulk content fill.** Class features populated with `actionType`, `effects`, `resource`, `choices`, `grantedSpells`, `prose.phb24` where applicable. Multiple commits, one class per commit. Each commit lands the data + verifies the relevant sheet display. Chunk 9 prose verification list: `feat-tough`, `feat-alert` (and any future `FeatureDef` carrying the "written from reference, not copied" marker).
+9. **Bulk content fill.** Class features populated with `actionType`, `effects`, `resource`, `choices`, `grantedSpells`, `prose.phb24` where applicable. Multiple commits, one class per commit. Each commit lands the data + verifies the relevant sheet display. Chunk 9 prose verification list: `feat-tough`, `feat-alert`, `barbarian-brutal-strike`, `barbarian-improved-brutal-strike`, `paladin-aura-of-protection`, `paladin-aura-expansion` (and any future `FeatureDef` carrying the "written from reference, not copied" marker).
 10. **Generalized always-prepared.** Class- and race-level granted spells (generalize 8.6-E up).
 
 The chunks 1–8 are infrastructure. Chunk 9 is the bulk content work, the long tail. By the time it's done, Phase 9 (Actions tab) has all the data it needs to read from.
