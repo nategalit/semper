@@ -19,12 +19,13 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9b)", () => {
+  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9c)", () => {
     // 20 named defs + 50 std-class ASI (10 classes × 5) + 7 fighter ASI + 6 rogue ASI = 83
     // chunk 7 adds 4: brutal-strike ×2, aura-of-protection, aura-expansion
     // chunk 9a adds 14: full Barbarian L1-L20 fill
     // chunk 9b adds 15: 9 Fighter features L1-L20 + 6 fighting-style feat defs
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(116);
+    // chunk 9c adds 22: full Monk L1-L20 fill
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(138);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -53,8 +54,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 116 entries (chunk 9b)", () => {
-    expect(allFeatureDefs()).toHaveLength(116);
+  it("allFeatureDefs returns all 138 entries (chunk 9c)", () => {
+    expect(allFeatureDefs()).toHaveLength(138);
   });
 
   it("resolves barbarian-brutal-strike (chunk 7)", () => {
@@ -293,6 +294,20 @@ describe("FeatureDef", () => {
       legacyNames: ["Brutal Critical"],
     };
     expect(def.legacyNames).toEqual(["Brutal Critical"]);
+  });
+
+  it("accepts spendsResource field (chunk 9c)", () => {
+    const def: FeatureDef = {
+      id: "monk-stunning-strike",
+      name: "Stunning Strike",
+      source: "SRD",
+      origin: { kind: "class", classId: "ID_CLASS_MONK", level: 5 },
+      prose: { fallback: "Spend 1 ki to force a CON save." },
+      actionType: "situational",
+      actionTypeSource: "tagged",
+      spendsResource: { resourceId: "ki_points", amount: 1 },
+    };
+    expect(def.spendsResource?.amount).toBe(1);
   });
 
   it("accepts actionTypeSource: 'inferred' (chunk 8)", () => {

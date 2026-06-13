@@ -266,4 +266,7 @@ export interface FeatureDef {
   /** At most one resource per feature. */
   resource?: FeatureResource;
   grantedSpells?: GrantedSpells;
+  /** Cost paid from an existing resource when this feature is activated.
+   *  Informs Phase 9 Actions tab display (e.g. "Stunning Strike (1 Ki)"). */
+  spendsResource?: { resourceId: string; amount: number | "variable" };
 }
