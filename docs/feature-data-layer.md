@@ -265,6 +265,8 @@ The chunks 1–8 are infrastructure. Chunk 9 is the bulk content work, the long 
 
 ## Known Limitations
 
+**Aurora content-audit descriptions are truncated (chunk 9m).** `docs/content-audit-class-features.json` stores feature descriptions truncated to 200 characters with no `action` field. For classes sourced from this file, chunk 8's tier 2 (Aurora-tagged action string) never fires and tier 3 (prose inference) is unreliable when the action-indicating phrase falls past the truncation point. Tier 1 (hand-tagged `actionType` on the FeatureDef) is the load-bearing path for any class sourced from this file. Confirmed during chunk 9m (Artificer); likely applies to chunk 9n (Blood Hunter) as well.
+
 **FeatureDef existence is not edition-gated (chunk 9c).** Every FeatureDef in the registry is active for any character of the matching class/level regardless of which rules edition they use. An optional `editions?: ('srd' | 'phb24')[]` field (default: both) on `FeatureDef`, filtered in `collectActiveFeatures`, would resolve this. Current instances where this matters: `monk-ki-empowered-strikes` (SRD L6, removed in PHB24), `monk-tongue-of-sun-and-moon` (SRD L11, removed in PHB24), `monk-empty-body` (SRD L15, replaced by `monk-superior-defense` at L18 in PHB24). PHB24 Monk characters at these levels will see both the SRD-only feature and any PHB24 replacement simultaneously. Candidate for a dedicated follow-up chunk after the class-fill pass completes.
 
 ---
