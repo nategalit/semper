@@ -173,7 +173,7 @@ export type FeatureEffect =
   | { kind: "save-prof"; saves: Ability[] | "all" }
   | { kind: "save-advantage"; against: "all" | TraitFilter }
   | { kind: "skill-prof"; skill: Skill; level: "proficient" | "expertise" }
-  | { kind: "sense"; sense: "darkvision" | "blindsight" | "tremorsense" | "truesight"; range: number }
+  | { kind: "sense"; sense: "darkvision" | "blindsight" | "blindsense" | "tremorsense" | "truesight"; range: number }
   | { kind: "resistance"; damageType: DamageType | "by-choice"; choiceId?: string }
   | { kind: "condition-immunity"; condition: Condition; whileAuraActive?: boolean }
   | { kind: "scaling-stat"; stat: string; formula: ScalingFormula }
