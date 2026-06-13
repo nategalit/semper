@@ -130,6 +130,7 @@ export const SORCERER_SORCEROUS_RENEWAL: FeatureDef = {
   name: "Sorcerous Renewal",
   source: "SRD",
   origin: { kind: "class", classId: "ID_CLASS_SORCERER", level: 20 },
+  editions: ["srd"],
   prose: {
     fallback: "At 20th level, you regain 4 expended Sorcery Points whenever you finish a Short Rest. (SRD version: Sorcerous Restoration. PHB24 moved partial recovery to L10 as Sorcerous Restoration; it is unclear whether PHB24 has a distinct universal L20 feature or leaves L20 to subclass features only.)",
     srd: "At 20th level, you regain 4 expended sorcery points whenever you finish a short rest.",

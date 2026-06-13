@@ -253,6 +253,73 @@ describe("Monk spendsResource (chunk 9c)", () => {
   });
 });
 
+// ── editions field (chunk 10b) ────────────────────────────────────────────────
+
+describe("Monk editions field (chunk 10b)", () => {
+  it("ki-empowered-strikes has editions: ['srd']", () => {
+    expect(getFeatureDef("monk-ki-empowered-strikes")?.editions).toEqual(["srd"]);
+  });
+  it("tongue-of-sun-and-moon has editions: ['srd']", () => {
+    expect(getFeatureDef("monk-tongue-of-sun-and-moon")?.editions).toEqual(["srd"]);
+  });
+  it("empty-body has editions: ['srd']", () => {
+    expect(getFeatureDef("monk-empty-body")?.editions).toEqual(["srd"]);
+  });
+});
+
+// ── collectActiveFeatures edition filtering (chunk 10b) ───────────────────────
+
+function makeMonkWithEdition(level: number, edition: "2014" | "2024" | "mix" | undefined): Character {
+  return {
+    ...makeMonk(level),
+    data: { ...makeMonk(level).data, edition },
+  };
+}
+
+describe("collectActiveFeatures — edition filtering for SRD-only Monk features", () => {
+  it("PHB24 Monk (edition '2024') at L6: does NOT include ki-empowered-strikes", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(6, "2024")).map((d) => d.id);
+    expect(ids).not.toContain("monk-ki-empowered-strikes");
+  });
+
+  it("SRD Monk (edition '2014') at L6: DOES include ki-empowered-strikes", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(6, "2014")).map((d) => d.id);
+    expect(ids).toContain("monk-ki-empowered-strikes");
+  });
+
+  it("mix Monk (edition 'mix') at L6: DOES include ki-empowered-strikes (safe default)", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(6, "mix")).map((d) => d.id);
+    expect(ids).toContain("monk-ki-empowered-strikes");
+  });
+
+  it("Monk with no edition set at L6: DOES include ki-empowered-strikes (safe default)", () => {
+    const ids = collectActiveFeatures(makeMonk(6)).map((d) => d.id);
+    expect(ids).toContain("monk-ki-empowered-strikes");
+  });
+
+  it("PHB24 Monk at L11: does NOT include tongue-of-sun-and-moon", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(11, "2024")).map((d) => d.id);
+    expect(ids).not.toContain("monk-tongue-of-sun-and-moon");
+  });
+
+  it("SRD Monk at L11: DOES include tongue-of-sun-and-moon", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(11, "2014")).map((d) => d.id);
+    expect(ids).toContain("monk-tongue-of-sun-and-moon");
+  });
+
+  it("PHB24 Monk at L15: does NOT include empty-body", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(15, "2024")).map((d) => d.id);
+    expect(ids).not.toContain("monk-empty-body");
+  });
+
+  it("PHB24 Monk filtering does NOT affect non-SRD-only features (regression)", () => {
+    const ids = collectActiveFeatures(makeMonkWithEdition(6, "2024")).map((d) => d.id);
+    // Monk Evasion (L7) is not edition-gated and should still be absent only due to level
+    expect(ids).toContain("monk-unarmored-defense");
+    expect(ids).toContain("monk-martial-arts");
+  });
+});
+
 // ── Parent/child grouping ──────────────────────────────────────────────────────
 
 describe("Monk parentFeatureId (chunk 9c)", () => {

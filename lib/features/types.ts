@@ -259,6 +259,10 @@ export interface FeatureDef {
   /** SRD/legacy display names this FeatureDef supersedes in the Path B dedup filter.
    *  Set when PHB24 renamed a feature (e.g. "Brutal Critical" → "Brutal Strike"). */
   legacyNames?: string[];
+  /** Editions this feature applies to. Absent = both editions. ["srd"] = SRD/2014 only;
+   *  ["phb24"] = PHB24/2024 only. collectActiveFeatures excludes features not matching
+   *  the character's edition when character.data.edition is "2014" or "2024". */
+  editions?: ("srd" | "phb24")[];
 
   // Behavior — all optional, all composable.
   choices?: FeatureChoice[];

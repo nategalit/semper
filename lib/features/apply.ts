@@ -40,8 +40,16 @@ export function collectActiveFeatures(character: Character): FeatureDef[] {
       .filter((id): id is string => !!id)
   );
 
+  const charEdition = character.data.edition;
+
   const result: FeatureDef[] = [];
   for (const def of allFeatureDefs()) {
+    // Edition filter: skip features not applicable to this character's edition.
+    // mix / undefined → include all; "2024" → skip srd-only; "2014" → skip phb24-only.
+    if (def.editions) {
+      if (charEdition === "2024" && !def.editions.includes("phb24")) continue;
+      if (charEdition === "2014" && !def.editions.includes("srd")) continue;
+    }
     const o = def.origin;
     switch (o.kind) {
       case "feat": {

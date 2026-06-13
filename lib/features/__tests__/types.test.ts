@@ -351,4 +351,18 @@ describe("FeatureDef", () => {
     };
     expect(def.parentFeatureId).toBe("brutal-strike");
   });
+
+  it("accepts editions field for SRD-only features (chunk 10b)", () => {
+    const def: FeatureDef = {
+      id: "monk-ki-empowered-strikes",
+      name: "Ki-Empowered Strikes",
+      source: "SRD",
+      origin: { kind: "class", classId: "ID_CLASS_MONK", level: 6 },
+      prose: { fallback: "Your unarmed strikes count as magical." },
+      actionType: "passive",
+      actionTypeSource: "tagged",
+      editions: ["srd"],
+    };
+    expect(def.editions).toEqual(["srd"]);
+  });
 });

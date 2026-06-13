@@ -209,6 +209,7 @@ export const MONK_KI_EMPOWERED_STRIKES: FeatureDef = {
   name: "Ki-Empowered Strikes",
   source: "SRD",
   origin: { kind: "class", classId: "ID_CLASS_MONK", level: 6 },
+  editions: ["srd"],
   prose: {
     fallback: "Your unarmed strikes count as magical for the purpose of overcoming resistance and immunity to nonmagical attacks and damage.",
   },
@@ -290,6 +291,7 @@ export const MONK_TONGUE_OF_SUN_AND_MOON: FeatureDef = {
   name: "Tongue of the Sun and Moon",
   source: "SRD",
   origin: { kind: "class", classId: "ID_CLASS_MONK", level: 11 },
+  editions: ["srd"],
   prose: {
     fallback: "You learn to touch the ki of other minds so that you understand all spoken languages. Moreover, any creature that can understand a language can understand what you say.",
   },
@@ -345,6 +347,7 @@ export const MONK_EMPTY_BODY: FeatureDef = {
   name: "Empty Body",
   source: "SRD",
   origin: { kind: "class", classId: "ID_CLASS_MONK", level: 15 },
+  editions: ["srd"],
   prose: {
     fallback: "Spend 4 ki points to become invisible for 1 minute with resistance to all damage except force. Spend 8 ki points to cast astral projection on yourself without a silver cord.",
   },
