@@ -50,11 +50,12 @@ export function applyInitiativeAdd(value: "prof-bonus" | number, ctx: DeriveCont
 
 // ── Handler: half-prof-on-checks (Remarkable Athlete) ─────────────────────────
 
-export function applyHalfProfOnChecks(abilities: AbilityKey[], ctx: DeriveContext): void {
+export function applyHalfProfOnChecks(abilities: AbilityKey[] | "all", ctx: DeriveContext): void {
   const halfPb = Math.ceil(ctx.pb / 2);
   for (const [skill, bd] of Object.entries(ctx.skillBreakdowns)) {
     const ability = ctx.skillAbilities[skill];
-    if (!ability || !abilities.includes(ability)) continue;
+    if (!ability) continue;
+    if (abilities !== "all" && !abilities.includes(ability)) continue;
     if (ctx.proficientSkills.has(skill)) continue;
     bd.components.push({ label: ctx.featureName, value: halfPb });
     bd.total += halfPb;

@@ -30,7 +30,8 @@ describe("FEATURE_REGISTRY", () => {
     // chunk 9f adds 17: full Rogue L1-L20 fill
     // chunk 9g adds 9: full Sorcerer L1-L20 fill
     // chunk 9h adds 6: full Wizard L1-L20 fill
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(194);
+    // chunk 9i adds 12: full Bard L1-L20 fill
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(206);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -59,8 +60,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 194 entries (chunk 9h)", () => {
-    expect(allFeatureDefs()).toHaveLength(194);
+  it("allFeatureDefs returns all 206 entries (chunk 9i)", () => {
+    expect(allFeatureDefs()).toHaveLength(206);
   });
 
   it("resolves barbarian-brutal-strike (chunk 7)", () => {
@@ -156,6 +157,8 @@ describe("FeatureEffect variants", () => {
       { kind: "initiative-add", value: "prof-bonus" },
       { kind: "initiative-add", value: 5 },
       { kind: "half-prof-on-checks", abilities: ["str", "dex", "con"] },
+      // chunk-9i addition
+      { kind: "half-prof-on-checks", abilities: "all" },
       // chunk-9a additions
       { kind: "ac-base", formula: "10+dex+con", condition: { not_wearing: "any-armor" } },
       { kind: "ac-base", formula: "10+dex+wis" },

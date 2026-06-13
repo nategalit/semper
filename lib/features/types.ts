@@ -181,7 +181,7 @@ export type FeatureEffect =
   // Each maps to exactly one consumer site in calc.ts (HP table, initiative, check rolls).
   | { kind: "hp-per-level"; value: number }
   | { kind: "initiative-add"; value: "prof-bonus" | number }
-  | { kind: "half-prof-on-checks"; abilities: AbilityKey[] }
+  | { kind: "half-prof-on-checks"; abilities: AbilityKey[] | "all" }
   // ── Chunk 9a additions ───────────────────────────────────────────────────────
   // ac-base: sets base AC via a formula when condition is met (Unarmored Defense pattern).
   // deriveStats consumer is TODO — data is encoded now, calc wiring follows.
