@@ -135,7 +135,7 @@ export type FeatureChoice =
   | { kind: "skill"; from: SkillFilter; count: number; grants: "proficient" | "expertise" }
   | { kind: "language"; from: LanguageFilter; count: number }
   | { kind: "weapon-mastery"; count: number; pool: "any" | WeaponFilter; rePickOn: "long-rest" }
-  | { kind: "feat"; from: FeatFilter; count: number }
+  | { kind: "feat"; from: FeatFilter; count: number | DerivedCount; rePickOn?: "level-up" }
   | { kind: "spell"; from: SpellFilter; count: number; alwaysPrepared?: boolean }
   | { kind: "mode"; options: ModeOption[]; affects: string }
   | { kind: "subfeature"; options: SubfeatureOption[] }

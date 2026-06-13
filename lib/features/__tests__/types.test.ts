@@ -19,7 +19,7 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9k)", () => {
+  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9l)", () => {
     // 20 named defs + 50 std-class ASI (10 classes × 5) + 7 fighter ASI + 6 rogue ASI = 83
     // chunk 7 adds 4: brutal-strike ×2, aura-of-protection, aura-expansion
     // chunk 9a adds 14: full Barbarian L1-L20 fill
@@ -33,7 +33,8 @@ describe("FEATURE_REGISTRY", () => {
     // chunk 9i adds 12: full Bard L1-L20 fill
     // chunk 9j adds 7: full Cleric L1-L20 fill
     // chunk 9k adds 13: full Druid L1-L20 fill
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(226);
+    // chunk 9l adds 10: full Warlock L1-L20 fill
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(236);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -62,8 +63,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 226 entries (chunk 9k)", () => {
-    expect(allFeatureDefs()).toHaveLength(226);
+  it("allFeatureDefs returns all 236 entries (chunk 9l)", () => {
+    expect(allFeatureDefs()).toHaveLength(236);
   });
 
   it("resolves barbarian-brutal-strike (chunk 7)", () => {
@@ -111,6 +112,7 @@ describe("FeatureChoice variants", () => {
       { kind: "language", from: { source: "any-standard" }, count: 2 },
       { kind: "weapon-mastery", count: 2, pool: "any", rePickOn: "long-rest" },
       { kind: "feat", from: { tag: "epic-boon" }, count: 1 },
+      { kind: "feat", from: { tag: "invocation" }, count: { from: "class-table", classId: "warlock", column: "invocationsKnown" }, rePickOn: "level-up" },
       { kind: "spell", from: { classList: "wizard", levels: [1] }, count: 1, alwaysPrepared: true },
       {
         kind: "mode",
@@ -128,7 +130,7 @@ describe("FeatureChoice variants", () => {
         ],
       },
     ];
-    expect(choices).toHaveLength(7);
+    expect(choices).toHaveLength(8);
   });
 });
 
