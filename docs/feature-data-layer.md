@@ -265,13 +265,53 @@ The chunks 1–8 are infrastructure. Chunk 9 is the bulk content work, the long 
 
 ## Known Limitations
 
-**Aurora content-audit descriptions are truncated (chunk 9m).** `docs/content-audit-class-features.json` stores feature descriptions truncated to 200 characters with no `action` field. For classes sourced from this file, chunk 8's tier 2 (Aurora-tagged action string) never fires and tier 3 (prose inference) is unreliable when the action-indicating phrase falls past the truncation point. Tier 1 (hand-tagged `actionType` on the FeatureDef) is the load-bearing path for any class sourced from this file. Confirmed during chunk 9m (Artificer); likely applies to chunk 9n (Blood Hunter) as well.
+**Aurora content-audit descriptions are truncated (chunk 9m).** `docs/content-audit-class-features.json` stores feature descriptions truncated to 200 characters with no `action` field. For classes sourced from this file, chunk 8's tier 2 (Aurora-tagged action string) never fires and tier 3 (prose inference) is unreliable when the action-indicating phrase falls past the truncation point. Tier 1 (hand-tagged `actionType` on the FeatureDef) is the load-bearing path for any class sourced from this file. Confirmed during chunk 9m (Artificer).
+
+**Blood Hunter has no Aurora content-audit data (chunk 9n).** `docs/content-audit-class-features.json` contains no Blood Hunter entries at all — the class is absent from the file, not merely truncated. All 10 Blood Hunter FeatureDefs were written from design reference. `SRD_CLASS_ID_BY_NAME` in `lib/content/aurora/adapters.ts` was updated to map `"Blood Hunter"` → `"ID_CLASS_BLOOD_HUNTER"` so Aurora-imported characters get a normalized classId that matches FeatureDef origins. Blood Hunter ASI defs (L4/8/12/16/19) were not added in this chunk; deferred to chunk 10 or alongside Blood Hunter ASI table data.
 
 **FeatureDef existence is not edition-gated (chunk 9c).** Every FeatureDef in the registry is active for any character of the matching class/level regardless of which rules edition they use. An optional `editions?: ('srd' | 'phb24')[]` field (default: both) on `FeatureDef`, filtered in `collectActiveFeatures`, would resolve this. Current instances where this matters: `monk-ki-empowered-strikes` (SRD L6, removed in PHB24), `monk-tongue-of-sun-and-moon` (SRD L11, removed in PHB24), `monk-empty-body` (SRD L15, replaced by `monk-superior-defense` at L18 in PHB24). PHB24 Monk characters at these levels will see both the SRD-only feature and any PHB24 replacement simultaneously. Candidate for a dedicated follow-up chunk after the class-fill pass completes.
 
 ---
 
-## 11. Open questions
+## 11. Chunk 10 candidates (deferred from chunk 9)
+
+Items flagged during the chunk 9 class-fill pass that are not yet encoded. Each entry names the blocking reason and the earliest chunk that could land it.
+
+| Item | Blocked by | Priority |
+|---|---|---|
+| Individual Blood Hunter blood curses (Binding, Corrosion, Expulsion, Grave, Hexing, Purgation, Silence, Vulnerability) | Need a `feat`-like "blood-curse" tag and individual FeatureDefs per curse | Medium |
+| Individual Warlock Eldritch Invocations | Same pattern as blood curses; need `{ tag: "invocation" }` FeatureDefs | Medium |
+| Blood Hunter ASI defs (L4/8/12/16/19) | No class-table data for Blood Hunter yet | Low |
+| Edition-gating (`editions?: ('srd' \| 'phb24')[]` on FeatureDef) | New field + `collectActiveFeatures` filter; would fix Monk SRD-vs-PHB24 conflicts | High |
+| Barbarian Persistent Rage PHB24 divergence | Conditional `Recharge` on `barbarian-rage` resource based on edition; needs edition-gate first | Medium |
+| Warlock Eldritch Master initiative-roll recharge | Recharge `{ on: "initiative-roll", once: "per-long-rest" }` type exists; only wiring deferred | Low |
+| Warlock Pact Boon individual sub-benefits (Pact of the Blade weapon, Pact of the Chain familiar, etc.) | Require subfeature-level FeatureDefs nested under `warlock-pact-boon` mode options | Low |
+| Druid Archdruid Nature Magician `convertsTo` | Needs a mechanism to convert Wild Shape uses to spell slots at an exchange rate | Low |
+| Druid Wild Companion `spendsResource` wiring | `spendsResource: { resourceId: "wild_shape", amount: 1 }` is encoded; needs deriveStats consumer | Low |
+| Crimson Rite Primal Blood rites (Flame/Frozen/Storm) | Unlock via subclass; require subclass FeatureDefs and `inheritedBy` on Crimson Rite mode | Low |
+
+---
+
+## 12. Pending deriveStats consumers
+
+FeatureEffects encoded in the registry that have no active `applyFeatureEffect` handler yet (silently skipped per the `default: break` in `apply.ts`). These represent data-layer debt — the shapes are correct but the calc layer doesn't read them.
+
+| Effect kind | Example FeatureDef | What it would change in `deriveStats` |
+|---|---|---|
+| `ac-base` | `monk-unarmored-defense`, `barbarian-unarmored-defense` | Set base AC when no armor worn |
+| `initiative-advantage` | `barbarian-feral-instinct` | Grant advantage on initiative rolls |
+| `scaling-stat` | `monk-martial-arts`, `rogue-sneak-attack` | Populate `derivedStats.martialArtsDie`, `sneak-attack-die`, etc. |
+| `sense` | (multiple race/subrace defs, not yet in registry) | Populate `derivedStats.darkvisionRange`, etc. |
+| `resistance` | `barbarian-rage` (raging resistances), `barbarian-unarmored-defense` | Populate `derivedStats.resistances[]` |
+| `condition-immunity` | `paladin-aura-of-courage` (`frightened` while aura active) | Populate `derivedStats.conditionImmunities[]` |
+| `speed` | `monk-unarmored-movement`, `barbarian-fast-movement` | Adjust `derivedStats.speed` by formula |
+| `save-advantage` | `barbarian-rage` (STR checks/saves while raging) | Populate `derivedStats.saveAdvantages[]` |
+| `ability` | Multiple (ability score bonuses from feats, half-ASI) | Adjust ability score totals |
+| `ac` | Multiple (Defense fighting style, etc.) | Add to AC calculation |
+
+---
+
+## 13. Open questions
 
 - **Multiclassing.** Out of scope per current product, but FeatureDef.origin already supports it. Flag for later.
 - **Feat-style replacement** (PHB24 Fighting Styles are technically feats granted by class features). Cleanest fix: classes carry a `{ kind: "feat"; from: { tag: "fighting-style" } }` choice. Means the Fighting Style picker becomes a tagged feat picker filter. (b) from the diagnostic is fixed by this — PHB24 styles get tagged and surface in the right picker.

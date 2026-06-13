@@ -52,7 +52,8 @@ const SRD_CLASS_ID_BY_NAME: Record<string, string> = {
   Sorcerer:  "ID_CLASS_SORCERER",
   Warlock:   "ID_CLASS_WARLOCK",
   Wizard:    "ID_CLASS_WIZARD",
-  Artificer: "ID_CLASS_ARTIFICER",
+  Artificer:       "ID_CLASS_ARTIFICER",
+  "Blood Hunter":  "ID_CLASS_BLOOD_HUNTER",
 };
 
 /**
