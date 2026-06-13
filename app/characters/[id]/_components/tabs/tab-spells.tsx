@@ -9,6 +9,7 @@ import type { OverridableStatKey } from "@/lib/types/character";
 import { signedMod } from "@/lib/character/calc";
 import type { SrdClass } from "@/lib/content/srd";
 import { getCasterType, SUBCLASS_SPELLCASTING, SUBCLASS_SPELL_CLASS, SRD_SUBCLASSES } from "@/lib/content/srd";
+import { collectActiveFeatures } from "@/lib/features";
 import type { CharacterData, SpellSlotLevel } from "@/lib/types/character";
 import type { DisplaySpell } from "@/lib/types/spell";
 import { SectionCard } from "../shared/section-card";
@@ -81,6 +82,17 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
     .filter((s): s is NonNullable<typeof s> => s !== undefined)
     .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
   const domainSectionTitle = character.classId === "ID_CLASS_PALADIN" ? "Oath Spells" : "Domain Spells";
+
+  // Class-granted always-prepared spells — from FeatureDef.grantedSpells (chunk 10c).
+  // Level-gating is handled by collectActiveFeatures (origin.level). countsAgainstPrepared
+  // is always false here; the section renders below the prepared-spell count.
+  const classGrantedSpells = collectActiveFeatures(character)
+    .flatMap((def) =>
+      def.grantedSpells?.preparation === "always-prepared" ? def.grantedSpells.spells : []
+    )
+    .map((id) => allSpells.find((s) => s.id === id))
+    .filter((s): s is NonNullable<typeof s> => s !== undefined)
+    .sort((a, b) => a.level - b.level || a.name.localeCompare(b.name));
 
   const cantrips = allSpells
     .filter((s) => s.level === 0 && spellsKnown.includes(s.id))
@@ -212,6 +224,24 @@ export function TabSpells({ derived, srdClass, allSpells }: Props) {
             <p className="text-xs text-stone-500 mb-2">Always prepared — don't count against your limit.</p>
             <ul className="space-y-1.5">
               {domainSpells.map((spell) => (
+                <li key={spell.id}>
+                  <SpellExpandCard
+                    spell={spell}
+                    expanded={expandedIds.has(spell.id)}
+                    onToggle={() => toggleSpell(spell.id)}
+                  />
+                </li>
+              ))}
+            </ul>
+          </SectionCard>
+        )}
+
+        {/* Class-granted always-prepared spells (chunk 10c) */}
+        {classGrantedSpells.length > 0 && (
+          <SectionCard title="Always Prepared">
+            <p className="text-xs text-stone-500 mb-2">Always prepared — don't count against your limit.</p>
+            <ul className="space-y-1.5">
+              {classGrantedSpells.map((spell) => (
                 <li key={spell.id}>
                   <SpellExpandCard
                     spell={spell}

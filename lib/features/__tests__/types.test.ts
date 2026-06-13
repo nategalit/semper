@@ -36,7 +36,7 @@ describe("FEATURE_REGISTRY", () => {
     // chunk 9l adds 10: full Warlock L1-L20 fill
     // chunk 9m adds 11: Artificer L1-L20 fill (Aurora-only, lighter pass)
     // chunk 9n adds 10: Blood Hunter L1-L20 fill (homebrew, no Aurora content-audit data)
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(257);
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(259);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -65,8 +65,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 257 entries (chunk 9n)", () => {
-    expect(allFeatureDefs()).toHaveLength(257);
+  it("allFeatureDefs returns all 259 entries (chunk 10c)", () => {
+    expect(allFeatureDefs()).toHaveLength(259);
   });
 
   it("resolves barbarian-brutal-strike (chunk 7)", () => {

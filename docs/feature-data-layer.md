@@ -257,7 +257,9 @@ Each chunk ends with `"Show me the diff. Stop. Await my approval."` Each is one 
 9. **Bulk content fill.** Class features populated with `actionType`, `effects`, `resource`, `choices`, `grantedSpells`, `prose.phb24` where applicable. Multiple commits, one class per commit. Each commit lands the data + verifies the relevant sheet display. Chunk 9 prose verification list: `feat-tough`, `feat-alert`, `barbarian-brutal-strike`, `barbarian-improved-brutal-strike`, `paladin-aura-of-protection`, `paladin-aura-expansion`, `barbarian-unarmored-defense`, `barbarian-weapon-mastery`, `barbarian-danger-sense`, `barbarian-reckless-attack`, `barbarian-primal-knowledge`, `barbarian-extra-attack`, `barbarian-fast-movement`, `barbarian-feral-instinct`, `barbarian-instinctive-pounce`, `barbarian-relentless-rage`, `barbarian-improved-brutal-strike-l17`, `barbarian-persistent-rage`, `barbarian-indomitable-might`, `barbarian-primal-champion`, `fighter-action-surge`, `fighter-second-wind`, `fighter-extra-attack`, `fighter-indomitable`, `fighter-tactical-mind`, `fighter-tactical-shift`, `fighter-weapon-mastery`, `fighter-two-extra-attacks`, `fighter-indomitable-2`, `fighter-indomitable-3`, `fighter-three-extra-attacks`, `monk-ki-points`, `monk-martial-arts`, `monk-unarmored-defense`, `monk-unarmored-movement`, `monk-flurry-of-blows`, `monk-patient-defense`, `monk-step-of-the-wind`, `monk-deflect-attacks`, `monk-slow-fall`, `monk-extra-attack`, `monk-stunning-strike`, `monk-evasion`, `monk-stillness-of-mind`, `monk-acrobatic-movement`, `monk-self-restoration`, `monk-deflect-energy`, `monk-disciplined-survivor`, `monk-perfect-focus`, `monk-superior-defense`, `monk-body-and-mind` (and any future `FeatureDef` carrying the "written from reference, not copied" marker).
 
 **barbarian-persistent-rage (PHB24 mechanical divergence):** PHB24 L15 Persistent Rage adds an initiative-roll recharge trigger to Rage itself — on initiative roll, regain all expended Rage uses (once per Long Rest) — which is absent from the SRD version. The `Recharge` type already supports `{ on: "initiative-roll", once: "per-long-rest" }` (chunk 3 design). Wiring this conditionally onto `barbarian-rage`'s resource for L15+ PHB24 characters is future work, not chunk 9a scope.
-10. **Generalized always-prepared.** Class- and race-level granted spells (generalize 8.6-E up).
+10. **Generalized always-prepared (chunk 10c).** `FeatureDef.grantedSpells` wired into `tab-spells.tsx` rendering path alongside existing subclass domain/oath spells. `collectActiveFeatures` drives level-gating. Hunter's Mark live for Rangers. `grantedSpells` stubs added to `paladin-divine-smite`, `paladin-find-steed`, `bard-words-of-creation` — rendering deferred pending spell catalog additions (see §11).
+
+**Feature data layer migration complete as of 2026-06-13.** All ten chunks (1–10) are implemented. Remaining deferred items in §11 require spell catalog additions (Divine Smite, Find Steed, Power Word Heal/Kill) or are lower-priority follow-up work (individual invocations, blood curses, edition-specific divergences).
 
 The chunks 1–8 are infrastructure. Chunk 9 is the bulk content work, the long tail. By the time it's done, Phase 9 (Actions tab) has all the data it needs to read from.
 
@@ -269,7 +271,7 @@ The chunks 1–8 are infrastructure. Chunk 9 is the bulk content work, the long 
 
 **Blood Hunter has no Aurora content-audit data (chunk 9n).** `docs/content-audit-class-features.json` contains no Blood Hunter entries at all — the class is absent from the file, not merely truncated. All 10 Blood Hunter FeatureDefs were written from design reference. `SRD_CLASS_ID_BY_NAME` in `lib/content/aurora/adapters.ts` was updated to map `"Blood Hunter"` → `"ID_CLASS_BLOOD_HUNTER"` so Aurora-imported characters get a normalized classId that matches FeatureDef origins. Blood Hunter ASI defs (L4/8/12/16/19) were not added in this chunk; deferred to chunk 10 or alongside Blood Hunter ASI table data.
 
-**FeatureDef existence is not edition-gated (chunk 9c).** Every FeatureDef in the registry is active for any character of the matching class/level regardless of which rules edition they use. An optional `editions?: ('srd' | 'phb24')[]` field (default: both) on `FeatureDef`, filtered in `collectActiveFeatures`, would resolve this. Current instances where this matters: `monk-ki-empowered-strikes` (SRD L6, removed in PHB24), `monk-tongue-of-sun-and-moon` (SRD L11, removed in PHB24), `monk-empty-body` (SRD L15, replaced by `monk-superior-defense` at L18 in PHB24). PHB24 Monk characters at these levels will see both the SRD-only feature and any PHB24 replacement simultaneously. Candidate for a dedicated follow-up chunk after the class-fill pass completes.
+**Edition-gating implemented (chunk 10b).** `editions?: ('srd' | 'phb24')[]` field added to `FeatureDef`; `collectActiveFeatures` now filters by `character.data.edition`. PHB24 characters (`edition: "2024"`) skip `editions: ["srd"]` features; SRD characters (`edition: "2014"`) skip `editions: ["phb24"]` features; `"mix"` and `undefined` include all. Tagged: `monk-ki-empowered-strikes`, `monk-tongue-of-sun-and-moon`, `monk-empty-body`, `sorcerer-sorcerous-renewal`. Note: `ranger-favored-enemy.grantedSpells` (Hunter's Mark) applies to all editions of the FeatureDef — edition-gating at the `GrantedSpells` level is a future `GrantedSpells.editions` field.
 
 ---
 
@@ -277,37 +279,41 @@ The chunks 1–8 are infrastructure. Chunk 9 is the bulk content work, the long 
 
 Items flagged during the chunk 9 class-fill pass that are not yet encoded. Each entry names the blocking reason and the earliest chunk that could land it.
 
-| Item | Blocked by | Priority |
+| Item | Status | Priority |
 |---|---|---|
-| Individual Blood Hunter blood curses (Binding, Corrosion, Expulsion, Grave, Hexing, Purgation, Silence, Vulnerability) | Need a `feat`-like "blood-curse" tag and individual FeatureDefs per curse | Medium |
-| Individual Warlock Eldritch Invocations | Same pattern as blood curses; need `{ tag: "invocation" }` FeatureDefs | Medium |
-| Blood Hunter ASI defs (L4/8/12/16/19) | No class-table data for Blood Hunter yet | Low |
-| Edition-gating (`editions?: ('srd' \| 'phb24')[]` on FeatureDef) | New field + `collectActiveFeatures` filter; would fix Monk SRD-vs-PHB24 conflicts | High |
-| Barbarian Persistent Rage PHB24 divergence | Conditional `Recharge` on `barbarian-rage` resource based on edition; needs edition-gate first | Medium |
-| Warlock Eldritch Master initiative-roll recharge | Recharge `{ on: "initiative-roll", once: "per-long-rest" }` type exists; only wiring deferred | Low |
-| Warlock Pact Boon individual sub-benefits (Pact of the Blade weapon, Pact of the Chain familiar, etc.) | Require subfeature-level FeatureDefs nested under `warlock-pact-boon` mode options | Low |
-| Druid Archdruid Nature Magician `convertsTo` | Needs a mechanism to convert Wild Shape uses to spell slots at an exchange rate | Low |
-| Druid Wild Companion `spendsResource` wiring | `spendsResource: { resourceId: "wild_shape", amount: 1 }` is encoded; needs deriveStats consumer | Low |
-| Crimson Rite Primal Blood rites (Flame/Frozen/Storm) | Unlock via subclass; require subclass FeatureDefs and `inheritedBy` on Crimson Rite mode | Low |
+| Individual Blood Hunter blood curses (Binding, Corrosion, Expulsion, Grave, Hexing, Purgation, Silence, Vulnerability) | Deferred — need a `feat`-like "blood-curse" tag and individual FeatureDefs per curse | Medium |
+| Individual Warlock Eldritch Invocations | Deferred — same pattern as blood curses; need `{ tag: "invocation" }` FeatureDefs | Medium |
+| Blood Hunter ASI defs (L4/8/12/16/19) | Deferred — no class-table data for Blood Hunter yet | Low |
+| ~~Edition-gating~~ | **Done (chunk 10b)** — `editions` field live; Monk SRD-vs-PHB24 conflicts resolved | — |
+| Barbarian Persistent Rage PHB24 divergence | Deferred — conditional `Recharge` on initiative roll; edition-gate unblocked | Medium |
+| Warlock Eldritch Master initiative-roll recharge | Deferred — Recharge type supports it; wiring only | Low |
+| Warlock Pact Boon individual sub-benefits | Deferred — subfeature-level FeatureDefs required | Low |
+| Druid Archdruid Nature Magician `convertsTo` | Deferred — needs `convertsTo` exchange-rate mechanism | Low |
+| Druid Wild Companion `spendsResource` wiring | Deferred — encoded, needs deriveStats consumer | Low |
+| Crimson Rite Primal Blood rites (Flame/Frozen/Storm) | Deferred — unlock via subclass; `inheritedBy` on Crimson Rite mode needed | Low |
+| Paladin Divine Smite `grantedSpells` rendering | Deferred — `grantedSpells` stub encoded on `paladin-divine-smite`; blocked on `ID_SPELL_DIVINE_SMITE` in spell catalog | Medium |
+| Paladin Faithful Steed `grantedSpells` rendering | Deferred — stub on `paladin-find-steed`; blocked on `ID_SPELL_FIND_STEED` | Low |
+| Bard Words of Creation `grantedSpells` rendering | Deferred — stub on `bard-words-of-creation`; blocked on `ID_SPELL_POWER_WORD_HEAL` + `ID_SPELL_POWER_WORD_KILL` | Low |
+| Ranger Hunter's Mark free-cast resource | Deferred — always-prepared live; free-cast charge count (scales by level) needs class-table resource shape | Medium |
 
 ---
 
-## 12. Pending deriveStats consumers
+## 12. deriveStats consumers — resolved (chunk 10a)
 
-FeatureEffects encoded in the registry that have no active `applyFeatureEffect` handler yet (silently skipped per the `default: break` in `apply.ts`). These represent data-layer debt — the shapes are correct but the calc layer doesn't read them.
+All effect kinds listed here were wired in chunk 10a via the two-pass `deriveStats` restructure. The table is kept for historical reference.
 
-| Effect kind | Example FeatureDef | What it would change in `deriveStats` |
+| Effect kind | Handler | Notes |
 |---|---|---|
-| `ac-base` | `monk-unarmored-defense`, `barbarian-unarmored-defense` | Set base AC when no armor worn |
-| `initiative-advantage` | `barbarian-feral-instinct` | Grant advantage on initiative rolls |
-| `scaling-stat` | `monk-martial-arts`, `rogue-sneak-attack` | Populate `derivedStats.martialArtsDie`, `sneak-attack-die`, etc. |
-| `sense` | (multiple race/subrace defs, not yet in registry) | Populate `derivedStats.darkvisionRange`, etc. |
-| `resistance` | `barbarian-rage` (raging resistances), `barbarian-unarmored-defense` | Populate `derivedStats.resistances[]` |
-| `condition-immunity` | `paladin-aura-of-courage` (`frightened` while aura active) | Populate `derivedStats.conditionImmunities[]` |
-| `speed` | `monk-unarmored-movement`, `barbarian-fast-movement` | Adjust `derivedStats.speed` by formula |
-| `save-advantage` | `barbarian-rage` (STR checks/saves while raging) | Populate `derivedStats.saveAdvantages[]` |
-| `ability` | Multiple (ability score bonuses from feats, half-ASI) | Adjust ability score totals |
-| `ac` | Multiple (Defense fighting style, etc.) | Add to AC calculation |
+| `ac-base` | `applyAcBase` | Single compound label "Unarmored Defense (DEX + CON/WIS)"; replaces hardcoded class-ID checks |
+| `initiative-advantage` | `applyInitiativeAdvantage` | Sets `derivedStats.initiativeAdvantage` |
+| `scaling-stat` | `applyScalingStat` | Populates `martialArtsDie`, `sneakAttackDie`, `attacksPerAction`, etc. |
+| `sense` | `applySense` | Populates `derivedStats.senses[]` |
+| `resistance` | `applyResistance` | Populates `derivedStats.resistances[]` |
+| `condition-immunity` | `applyConditionImmunity` | Populates `derivedStats.conditionImmunities[]` |
+| `speed` | `applySpeedBonus` | Checks armor condition flags; populates `speedBreakdown` |
+| `save-advantage` | `applySaveAdvantage` | Populates `derivedStats.saveAdvantages[]` |
+| `ability` | Pass 1 (inline in `deriveStats`) | Applied before `abilityMods` freeze |
+| `ac` | `applyAcAdd` | Additive AC (Defense fighting style +1 when wearing armor) |
 
 ---
 

@@ -204,3 +204,29 @@ describe("Ranger Nature's Veil resource (chunk 9e)", () => {
     });
   });
 });
+
+// ── Favored Enemy grantedSpells (chunk 10c) ───────────────────────────────────
+
+describe("Ranger Favored Enemy grantedSpells (chunk 10c)", () => {
+  it("favored-enemy has grantedSpells with Hunter's Mark always-prepared", () => {
+    const def = getFeatureDef("ranger-favored-enemy");
+    expect(def?.grantedSpells).toEqual({
+      spells: ["ID_SPELL_HUNTERS_MARK"],
+      source: "class",
+      preparation: "always-prepared",
+      countsAgainstPrepared: false,
+    });
+  });
+
+  it("L1 Ranger active features include favored-enemy (which carries Hunter's Mark)", () => {
+    const active = collectActiveFeatures(makeRanger(1));
+    const favored = active.find((d) => d.id === "ranger-favored-enemy");
+    expect(favored).toBeDefined();
+    expect(favored?.grantedSpells?.spells).toContain("ID_SPELL_HUNTERS_MARK");
+  });
+
+  it("L1 Fighter does NOT have favored-enemy (wrong class)", () => {
+    const active = collectActiveFeatures({ ...makeRanger(1), classId: "ID_CLASS_FIGHTER" });
+    expect(active.map((d) => d.id)).not.toContain("ranger-favored-enemy");
+  });
+});

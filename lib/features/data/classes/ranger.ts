@@ -18,10 +18,17 @@ export const RANGER_FAVORED_ENEMY: FeatureDef = {
   origin: { kind: "class", classId: "ID_CLASS_RANGER", level: 1 },
   prose: {
     fallback: "You have significant experience studying, tracking, hunting, and even talking to a certain type of enemy. Choose a type of favored enemy: Aberrations, Beasts, Celestials, Constructs, Dragons, Elementals, Fey, Fiends, Giants, Monstrosities, Oozes, Plants, or Undead. You gain advantage on Wisdom (Survival) checks to track them and Intelligence checks to recall information about them.",
-    phb24: "You are an experienced hunter, adept at tracking down your quarry. In PHB24, Favored Enemy grants Hunter's Mark as an always-prepared spell — grantedSpells integration deferred to chunk 10.",
+    phb24: "You are an experienced hunter, adept at tracking down your quarry. You always have Hunter's Mark prepared, and it doesn't count against your number of prepared spells. You can also cast it twice without a spell slot (uses scale by level — free-cast resource deferred; TODO: encode huntersMark free-cast charges from class table).",
   },
   actionType: "passive",
   actionTypeSource: "tagged",
+  // PHB24 behavior: Hunter's Mark always prepared. Free-cast resource deferred (chunk 11+).
+  grantedSpells: {
+    spells: ["ID_SPELL_HUNTERS_MARK"],
+    source: "class",
+    preparation: "always-prepared",
+    countsAgainstPrepared: false,
+  },
 };
 
 export const RANGER_WEAPON_MASTERY: FeatureDef = {

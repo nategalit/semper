@@ -179,8 +179,16 @@ export const BARD_WORDS_OF_CREATION: FeatureDef = {
   source: "SRD",
   origin: { kind: "class", classId: "ID_CLASS_BARD", level: 20 },
   prose: {
-    fallback: "You have mastered two of the prime words of creation: Power Word Heal and Power Word Kill. You always have these spells prepared, they don't count against your prepared spells total, and you can cast each of them once without expending a spell slot. You regain these uses when you finish a Long Rest. (grantedSpells integration deferred to chunk 10.)",
+    fallback: "You have mastered two of the prime words of creation: Power Word Heal and Power Word Kill. You always have these spells prepared, they don't count against your prepared spells total, and you can cast each of them once without expending a spell slot. You regain these uses when you finish a Long Rest.",
   },
   actionType: "passive",
   actionTypeSource: "tagged",
+  // TODO: spell data missing from SRD_SPELLS — rendering deferred until ID_SPELL_POWER_WORD_HEAL
+  // and ID_SPELL_POWER_WORD_KILL are added to the spell catalog.
+  grantedSpells: {
+    spells: ["ID_SPELL_POWER_WORD_HEAL", "ID_SPELL_POWER_WORD_KILL"],
+    source: "class",
+    preparation: "always-prepared",
+    countsAgainstPrepared: false,
+  },
 };

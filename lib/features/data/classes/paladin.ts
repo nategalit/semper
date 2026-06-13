@@ -36,6 +36,52 @@ export const PALADIN_SPELLCASTING: FeatureDef = {
   actionTypeSource: "tagged",
 };
 
+// PHB24 L2: Divine Smite became a spell (no longer a passive class feature).
+// TODO: spell data missing from SRD_SPELLS — rendering deferred until ID_SPELL_DIVINE_SMITE is added.
+export const PALADIN_DIVINE_SMITE: FeatureDef = {
+  id: "paladin-divine-smite",
+  name: "Divine Smite",
+  source: "SRD",
+  origin: { kind: "class", classId: "ID_CLASS_PALADIN", level: 2 },
+  editions: ["phb24"],
+  prose: {
+    fallback: "When you hit a creature with a melee weapon, you can expend a Paladin spell slot to deal bonus Radiant damage: 2d8 for a 1st-level slot, +1d8 per slot level above 1st (max 5d8). Critical hits double the bonus dice.",
+    phb24: "You always have the Divine Smite spell prepared. When you hit a creature with a melee weapon or an Unarmed Strike, you can expend one Paladin spell slot to smite that target, dealing 2d8 Radiant damage for a 1st-level slot, plus 1d8 per slot level above 1st (max 5d8). You can smite once per hit; criticals double the dice.",
+  },
+  actionType: "situational",
+  actionTypeSource: "tagged",
+  // TODO: spell data missing from SRD_SPELLS — rendering deferred until ID_SPELL_DIVINE_SMITE is added.
+  grantedSpells: {
+    spells: ["ID_SPELL_DIVINE_SMITE"],
+    source: "class",
+    preparation: "always-prepared",
+    countsAgainstPrepared: false,
+  },
+};
+
+// PHB24 L5: Faithful Steed grants Find Steed as an always-prepared spell.
+// TODO: spell data missing from SRD_SPELLS — rendering deferred until ID_SPELL_FIND_STEED is added.
+export const PALADIN_FIND_STEED: FeatureDef = {
+  id: "paladin-find-steed",
+  name: "Faithful Steed",
+  source: "SRD",
+  origin: { kind: "class", classId: "ID_CLASS_PALADIN", level: 5 },
+  editions: ["phb24"],
+  prose: {
+    fallback: "You summon a spirit that assumes the form of an unusually intelligent, strong, and loyal steed, creating a long-lasting bond with it.",
+    phb24: "You can call on the magic of the Outer Planes to summon a noble steed. You always have the Find Steed spell prepared. You can also cast it once without expending a spell slot, and you regain the ability to do so when you finish a Long Rest.",
+  },
+  actionType: "action",
+  actionTypeSource: "tagged",
+  // TODO: spell data missing from SRD_SPELLS — rendering deferred until ID_SPELL_FIND_STEED is added.
+  grantedSpells: {
+    spells: ["ID_SPELL_FIND_STEED"],
+    source: "class",
+    preparation: "always-prepared",
+    countsAgainstPrepared: false,
+  },
+};
+
 export const PALADIN_DIVINE_HEALTH: FeatureDef = {
   id: "paladin-divine-health",
   name: "Divine Health",
