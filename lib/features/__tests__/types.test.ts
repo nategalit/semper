@@ -19,7 +19,7 @@ import {
 } from "..";
 
 describe("FEATURE_REGISTRY", () => {
-  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9f)", () => {
+  it("contains base class/feat/subclass defs plus fighting-style and ASI defs (chunk 9g)", () => {
     // 20 named defs + 50 std-class ASI (10 classes × 5) + 7 fighter ASI + 6 rogue ASI = 83
     // chunk 7 adds 4: brutal-strike ×2, aura-of-protection, aura-expansion
     // chunk 9a adds 14: full Barbarian L1-L20 fill
@@ -28,7 +28,8 @@ describe("FEATURE_REGISTRY", () => {
     // chunk 9d adds 10: full Paladin L1-L18 fill
     // chunk 9e adds 14: full Ranger L1-L20 fill
     // chunk 9f adds 17: full Rogue L1-L20 fill
-    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(179);
+    // chunk 9g adds 9: full Sorcerer L1-L20 fill
+    expect(Object.keys(FEATURE_REGISTRY)).toHaveLength(188);
   });
 
   it("getFeatureDef resolves feat-tough", () => {
@@ -57,8 +58,8 @@ describe("FEATURE_REGISTRY", () => {
     expect(getFeatureDef("")).toBeUndefined();
   });
 
-  it("allFeatureDefs returns all 179 entries (chunk 9f)", () => {
-    expect(allFeatureDefs()).toHaveLength(179);
+  it("allFeatureDefs returns all 188 entries (chunk 9g)", () => {
+    expect(allFeatureDefs()).toHaveLength(188);
   });
 
   it("resolves barbarian-brutal-strike (chunk 7)", () => {
