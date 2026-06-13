@@ -4,8 +4,11 @@
 // class/subclass/race/feats and returns all matching FeatureDefs from
 // FEATURE_REGISTRY.
 //
-// applyFeatureEffect: dispatches on effect.kind. Only the three chunk-2b
-// migration kinds have real handlers; all others are no-ops until later chunks.
+// applyFeatureEffect: dispatches on effect.kind.
+// chunk 2b: hp-per-level, initiative-add, half-prof-on-checks
+// chunk 10a: speed, ac-base, ac, initiative-advantage, scaling-stat,
+//            save-advantage, resistance, condition-immunity, sense
+//            (ability + save-prof are handled in Pass 1 of deriveStats, not here)
 
 import type { Character } from "@/lib/types/character";
 import type { FeatureDef, FeatureEffect } from "./types";
@@ -15,6 +18,15 @@ import {
   applyHpPerLevel,
   applyInitiativeAdd,
   applyHalfProfOnChecks,
+  applySpeedBonus,
+  applyAcBase,
+  applyAcAdd,
+  applyInitiativeAdvantage,
+  applyScalingStat,
+  applySaveAdvantage,
+  applyResistance,
+  applyConditionImmunity,
+  applySense,
 } from "@/lib/character/feature-effects";
 
 /**
@@ -85,9 +97,9 @@ export function choiceFeatureDefs(
 }
 
 /**
- * Dispatches one FeatureEffect onto ctx. Real handlers exist for the three
- * chunk-2b migration kinds; all other kinds are silently skipped until their
- * respective chunks land.
+ * Dispatches one FeatureEffect onto ctx.
+ * "ability" and "save-prof" are handled in Pass 1 of deriveStats (before
+ * abilityMods are frozen) and are intentional no-ops here.
  */
 export function applyFeatureEffect(effect: FeatureEffect, ctx: DeriveContext): void {
   switch (effect.kind) {
@@ -100,8 +112,42 @@ export function applyFeatureEffect(effect: FeatureEffect, ctx: DeriveContext): v
     case "half-prof-on-checks":
       applyHalfProfOnChecks(effect.abilities, ctx);
       break;
-    // All other kinds (ability, ac, speed, sense, resistance, scaling-stat, …)
-    // are no-ops in this chunk — handled in later chunks.
+
+    // ── chunk 10a handlers ───────────────────────────────────────────────────
+    case "speed":
+      applySpeedBonus(effect.op, effect.value, effect.condition, ctx);
+      break;
+    case "ac-base":
+      applyAcBase(effect.formula, ctx);
+      break;
+    case "ac":
+      applyAcAdd(effect.value, effect.condition, ctx);
+      break;
+    case "initiative-advantage":
+      applyInitiativeAdvantage(ctx);
+      break;
+    case "scaling-stat":
+      applyScalingStat(effect.formula, effect.stat, ctx);
+      break;
+    case "save-advantage":
+      applySaveAdvantage(effect.against, ctx);
+      break;
+    case "resistance":
+      applyResistance(effect.damageType, ctx);
+      break;
+    case "condition-immunity":
+      applyConditionImmunity(effect.condition, effect.whileAuraActive, ctx);
+      break;
+    case "sense":
+      applySense(effect.sense, effect.range, ctx);
+      break;
+
+    // ── Handled in deriveStats Pass 1 (before abilityMods) ──────────────────
+    case "ability":
+    case "save-prof":
+      break;
+
+    // Remaining kinds (ac-base already handled above).
     default:
       break;
   }

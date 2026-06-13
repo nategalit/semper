@@ -71,6 +71,18 @@ function makeCtx(overrides: Partial<DeriveContext> = {}): DeriveContext {
       Stealth: { components: [{ label: "DEX", value: 2 }], total: 2 },
       Arcana: { components: [{ label: "INT", value: 0 }], total: 0 },
     },
+    characterClassId: "ID_CLASS_BARBARIAN",
+    armorEquipped: false,
+    heavyArmorEquipped: false,
+    acBaseComponents: [],
+    acAdditiveComponents: [],
+    speedBonusComponents: [],
+    initiativeAdvantageSources: [],
+    scalingStats: {},
+    saveAdvantages: [],
+    resistances: [],
+    conditionImmunities: [],
+    senses: [],
     ...overrides,
   };
 }

@@ -133,6 +133,23 @@ export interface DerivedStats {
   passivePerceptionBreakdown: StatBreakdown;
   spellSaveDCBreakdown?: StatBreakdown;
   spellAttackBonusBreakdown?: StatBreakdown;
+  // ── chunk 10a additions ──────────────────────────────────────────────────────
+  /** True if any active feature grants Advantage on Initiative rolls. */
+  initiativeAdvantage: boolean;
+  /** Resolved Martial Arts die string (e.g. "d8") for Monks. */
+  martialArtsDie?: string;
+  /** Resolved Sneak Attack die string (e.g. "3d6") for Rogues. */
+  sneakAttackDie?: string;
+  /** Resolved Song of Rest die string (e.g. "d8") for Bards. */
+  songOfRestDie?: string;
+  /** CR threshold that Clerics can destroy undead outright (e.g. "1/2", "1"). */
+  destroyUndeadCR?: string;
+  /** Number of attacks per Attack action (2 with Extra Attack). */
+  attacksPerAction?: number;
+  saveAdvantages: Array<{ against: string; source: string }>;
+  resistances: Array<{ damageType: string; source: string }>;
+  conditionImmunities: Array<{ condition: string; source: string; whileAuraActive?: boolean }>;
+  senses: Array<{ sense: string; range: number; source: string }>;
 }
 
 // ─── Main deriver ─────────────────────────────────────────────────────────────
@@ -145,28 +162,59 @@ export function deriveStats(
   featStatMods: StatModifier[] = [],
 ): DerivedStats {
   const pb = proficiencyBonus(character.level);
+  const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "cha"];
 
-  // Apply feat ability score bonuses before computing mods.
+  // ── Cache active features (shared by Pass 1 and Pass 2) ───────────────────
+  const activeFeatures = collectActiveFeatures(character);
+
+  // ── Ability scores ────────────────────────────────────────────────────────
+  // Apply feat static ability bonuses first, then FeatureEffect "ability" ops.
   const abilityScores = { ...character.data.abilityScores };
   for (const mod of featStatMods) {
     const key = FEAT_ABILITY_STAT[mod.stat.toLowerCase()];
     if (key) abilityScores[key] += mod.value;
   }
 
-  const ABILITY_KEYS: AbilityKey[] = ["str", "dex", "con", "int", "wis", "cha"];
+  // ── Pass 1: ability + save-prof effects (must run before abilityMods) ─────
+  const extraSaveProficiencies = new Set<AbilityKey>();
+  for (const featDef of activeFeatures) {
+    if (!featDef.effects) continue;
+    for (const eff of featDef.effects) {
+      if (eff.kind === "ability") {
+        const numVal =
+          typeof eff.value === "number" ? eff.value
+          : eff.value === "level" ? character.level
+          : pb;
+        const capVal = eff.cap ?? 20;
+        if (eff.op === "add") {
+          abilityScores[eff.ability] = Math.min(abilityScores[eff.ability] + numVal, capVal);
+        } else if (eff.op === "set-min") {
+          abilityScores[eff.ability] = Math.max(abilityScores[eff.ability], numVal);
+        }
+      }
+      if (eff.kind === "save-prof") {
+        if (eff.saves === "all") {
+          for (const k of ABILITY_KEYS) extraSaveProficiencies.add(k);
+        } else {
+          for (const k of eff.saves) extraSaveProficiencies.add(k as AbilityKey);
+        }
+      }
+    }
+  }
 
   const abilityMods = Object.fromEntries(
     ABILITY_KEYS.map((k) => [k, abilityMod(abilityScores[k])])
   ) as Record<AbilityKey, number>;
 
-  // Saving throws — proficient in the two class saves.
+  // ── Saving throws ─────────────────────────────────────────────────────────
   const classSaves = new Set<AbilityKey>(srdClass?.savingThrows ?? []);
+  const allSaveProficiencies = new Set<AbilityKey>([...classSaves, ...extraSaveProficiencies]);
   const savingThrows = Object.fromEntries(
     ABILITY_KEYS.map((k) => [
       k,
       {
-        modifier: abilityMods[k] + (classSaves.has(k) ? pb : 0),
-        proficient: classSaves.has(k),
+        modifier: abilityMods[k] + (allSaveProficiencies.has(k) ? pb : 0),
+        proficient: allSaveProficiencies.has(k),
       },
     ])
   ) as Record<AbilityKey, SavingThrowResult>;
@@ -176,8 +224,7 @@ export function deriveStats(
     ABILITY_KEYS.map(k => [k, [] as { label: string; value: number }[]])
   ) as Record<AbilityKey, { label: string; value: number }[]>;
 
-  // Skills — use stored skillProficiencies if present; fall back to background
-  // skills only for characters created before Phase 6A (migration path).
+  // ── Skills ────────────────────────────────────────────────────────────────
   const storedSkills = character.data.skillProficiencies;
   const proficientSkills = new Set<string>(
     storedSkills ?? srdBackground?.skillProficiencies ?? []
@@ -197,73 +244,20 @@ export function deriveStats(
     })
   ) as Record<string, SkillResult>;
 
-  // AC — single source of truth: the live equipment array.
+  // ── Equipment detection (needed for Pass 2 context) ───────────────────────
   const liveEquipment = character.data.equipment ?? [];
   const armorItem  = liveEquipment.find(i => i.equipped && i.equipSlot === "armor");
   const shieldItem = liveEquipment.find(i => i.equipped && i.equipSlot === "shield");
+  const armorEquipped     = !!(armorItem?.armor);
+  const heavyArmorEquipped = armorEquipped && armorItem!.armor!.type === "heavy";
 
-  const acComponents: { label: string; value: number }[] = [];
-  let armorClass: number;
-
-  if (armorItem?.armor) {
-    acComponents.push({ label: armorItem.name, value: armorItem.armor.baseAc });
-    if (armorItem.enhancement) {
-      acComponents.push({ label: `+${armorItem.enhancement} Enhancement`, value: armorItem.enhancement });
-    }
-    let dexBonus: number;
-    if (armorItem.armor.type === "heavy") {
-      dexBonus = 0;
-    } else if (armorItem.armor.type === "medium") {
-      dexBonus = Math.min(abilityMods.dex, 2);
-      if (dexBonus !== 0) acComponents.push({ label: "DEX (max 2)", value: dexBonus });
-    } else {
-      dexBonus = abilityMods.dex;
-      if (dexBonus !== 0) acComponents.push({ label: "DEX", value: dexBonus });
-    }
-    armorClass = armorItem.armor.baseAc + (armorItem.enhancement ?? 0) + dexBonus;
-  } else {
-    acComponents.push({ label: "Base", value: 10 });
-    if (srdClass?.id === "ID_CLASS_BARBARIAN") {
-      armorClass = 10 + abilityMods.dex + abilityMods.con;
-      if (abilityMods.dex !== 0) acComponents.push({ label: "DEX", value: abilityMods.dex });
-      if (abilityMods.con !== 0) acComponents.push({ label: "CON", value: abilityMods.con });
-    } else if (srdClass?.id === "ID_CLASS_MONK") {
-      armorClass = 10 + abilityMods.dex + abilityMods.wis;
-      if (abilityMods.dex !== 0) acComponents.push({ label: "DEX", value: abilityMods.dex });
-      if (abilityMods.wis !== 0) acComponents.push({ label: "WIS", value: abilityMods.wis });
-    } else {
-      armorClass = 10 + abilityMods.dex;
-      if (abilityMods.dex !== 0) acComponents.push({ label: "DEX", value: abilityMods.dex });
-    }
-  }
-
-  if (shieldItem) {
-    const shieldEnh = shieldItem.enhancement ?? 0;
-    const shieldTotal = 2 + shieldEnh;
-    acComponents.push({
-      label: shieldEnh > 0 ? `Shield (+${shieldEnh})` : "Shield",
-      value: shieldTotal,
-    });
-    armorClass += shieldTotal;
-  }
-
-  // Passive magic item bonuses: statModifiers from equipped + condition-met items.
-  // Items requiring attunement only contribute when attuned.
+  // ── Magic stat mods ───────────────────────────────────────────────────────
   const magicStatMods = liveEquipment
     .filter(i => i.equipped && i.magic?.statModifiers?.length &&
       (!i.magic.requiresAttunement || i.attuned))
     .flatMap(i => i.magic!.statModifiers!);
 
   if (magicStatMods.length > 0) {
-    // AC bonus
-    const magicAcBonus = magicStatMods
-      .filter(m => { const s = m.stat.toLowerCase(); return s === "ac" || s.includes("armor class"); })
-      .reduce((sum, m) => sum + m.value, 0);
-    if (magicAcBonus !== 0) {
-      acComponents.push({ label: "Magic Bonus", value: magicAcBonus });
-      armorClass += magicAcBonus;
-    }
-
     // All-saves bonus (e.g. Cloak of Protection)
     const allSaveBonus = magicStatMods
       .filter(m => {
@@ -272,7 +266,6 @@ export function deriveStats(
           (s.includes("saving") && s.includes("all"));
       })
       .reduce((sum, m) => sum + m.value, 0);
-
     if (allSaveBonus !== 0) {
       for (const k of ABILITY_KEYS) {
         savingThrows[k] = { ...savingThrows[k], modifier: savingThrows[k].modifier + allSaveBonus };
@@ -296,11 +289,18 @@ export function deriveStats(
     }
   }
 
+  // Magic AC bonus — computed now, applied to armorClass during AC finalization below.
+  const magicAcBonus = magicStatMods.length > 0
+    ? magicStatMods
+        .filter(m => { const s = m.stat.toLowerCase(); return s === "ac" || s.includes("armor class"); })
+        .reduce((sum, m) => sum + m.value, 0)
+    : 0;
+
   const initiative = abilityMods.dex;
   const passivePerception = 10 + (skills["Perception"]?.modifier ?? abilityMods.wis);
-  const speed = srdRace?.speed ?? 30;
+  const baseSpeed = srdRace?.speed ?? 30;
 
-  // Spellcasting stats — fall back to subclass-granted spellcasting when base class has none.
+  // Spellcasting stats
   const sc = srdClass?.spellcasting
     ?? SUBCLASS_SPELLCASTING[character.data.subclassId ?? ""]
     ?? null;
@@ -329,7 +329,6 @@ export function deriveStats(
     if (s === "initiative") { featInitiative += mod.value; continue; }
     if (s === "ac:misc" || s === "ac") { featAc += mod.value; continue; }
     if (s === "perception:passive") { featPassivePerc += mod.value; continue; }
-    // Exclude all non-base speed variants (climb, fly, swim, burrow) and conditional bonuses.
     if (s.includes("speed") && !s.includes("climb") && !s.includes("fly") && !s.includes("swim") && !s.includes("burrow")) {
       featSpeed += mod.value;
     }
@@ -341,25 +340,11 @@ export function deriveStats(
     str: "STR", dex: "DEX", con: "CON", int: "INT", wis: "WIS", cha: "CHA",
   };
 
-  if (featAc !== 0) acComponents.push({ label: "Feat Bonus", value: featAc });
-  const acBreakdown: StatBreakdown = { components: acComponents, total: armorClass + featAc };
-
   const initiativeComponents: { label: string; value: number }[] = [
     { label: "DEX", value: abilityMods.dex },
   ];
   if (featInitiative !== 0) initiativeComponents.push({ label: "Feat Bonus", value: featInitiative });
-  const initiativeBreakdown: StatBreakdown = { components: initiativeComponents, total: initiative + featInitiative };
-
-  const savingThrowBreakdowns = Object.fromEntries(
-    ABILITY_KEYS.map(k => {
-      const components: { label: string; value: number }[] = [
-        { label: ABILITY_LABEL[k], value: abilityMods[k] },
-      ];
-      if (classSaves.has(k)) components.push({ label: "Proficiency", value: pb });
-      components.push(...saveExtraComponents[k]);
-      return [k, { components, total: savingThrows[k].modifier }];
-    })
-  ) as Record<AbilityKey, StatBreakdown>;
+  const initiativeBreakdown = { components: initiativeComponents, total: initiative + featInitiative };
 
   const skillBreakdowns = Object.fromEntries(
     ALL_SKILLS.map(skill => {
@@ -371,27 +356,49 @@ export function deriveStats(
       if (proficient) components.push({ label: "Proficiency", value: pb });
       return [skill, { components, total: skills[skill].modifier }];
     })
-  ) as Record<string, StatBreakdown>;
+  ) as Record<string, { components: { label: string; value: number }[]; total: number }>;
 
   const maxHpComponents: { label: string; value: number }[] = [
     { label: "Rolled HP", value: character.data.maxHp },
   ];
 
-  const activeFeatures = collectActiveFeatures(character);
+  // ── Pass 2: all other feature effects ─────────────────────────────────────
+  const acBaseComponents:            { label: string; value: number }[] = [];
+  const acAdditiveComponents:        { label: string; value: number }[] = [];
+  const speedBonusComponents:        { label: string; value: number }[] = [];
+  const initiativeAdvantageSources:  string[] = [];
+  const scalingStats:                Record<string, string | number> = {};
+  const saveAdvantages:              Array<{ against: string; source: string }> = [];
+  const resistances:                 Array<{ damageType: string; source: string }> = [];
+  const conditionImmunities:         Array<{ condition: string; source: string; whileAuraActive?: boolean }> = [];
+  const senses:                      Array<{ sense: string; range: number; source: string }> = [];
+
   for (const featDef of activeFeatures) {
     if (!featDef.effects) continue;
+    const ctx: DeriveContext = {
+      level: character.level,
+      pb,
+      featureName: featDef.name,
+      characterClassId: character.classId ?? "",
+      abilityMods,
+      armorEquipped,
+      heavyArmorEquipped,
+      proficientSkills,
+      skillAbilities: SKILL_ABILITIES,
+      maxHpComponents,
+      initiativeBreakdown,
+      skillBreakdowns,
+      acBaseComponents,
+      acAdditiveComponents,
+      speedBonusComponents,
+      initiativeAdvantageSources,
+      scalingStats,
+      saveAdvantages,
+      resistances,
+      conditionImmunities,
+      senses,
+    };
     for (const effect of featDef.effects) {
-      const ctx: DeriveContext = {
-        level: character.level,
-        pb,
-        featureName: featDef.name,
-        abilityMods,
-        proficientSkills,
-        skillAbilities: SKILL_ABILITIES,
-        maxHpComponents,
-        initiativeBreakdown,
-        skillBreakdowns,
-      };
       applyFeatureEffect(effect, ctx);
     }
   }
@@ -399,12 +406,77 @@ export function deriveStats(
   const maxHp = maxHpComponents.reduce((sum, c) => sum + c.value, 0);
   const maxHpBreakdown: StatBreakdown = { components: maxHpComponents, total: maxHp };
 
+  // ── AC finalization (after Pass 2 so effect results are available) ─────────
+  const acComponents: { label: string; value: number }[] = [];
+  let armorClass: number;
+
+  if (armorItem?.armor) {
+    // Armor-equipped path (unchanged)
+    acComponents.push({ label: armorItem.name, value: armorItem.armor.baseAc });
+    if (armorItem.enhancement) {
+      acComponents.push({ label: `+${armorItem.enhancement} Enhancement`, value: armorItem.enhancement });
+    }
+    let dexBonus: number;
+    if (armorItem.armor.type === "heavy") {
+      dexBonus = 0;
+    } else if (armorItem.armor.type === "medium") {
+      dexBonus = Math.min(abilityMods.dex, 2);
+      if (dexBonus !== 0) acComponents.push({ label: "DEX (max 2)", value: dexBonus });
+    } else {
+      dexBonus = abilityMods.dex;
+      if (dexBonus !== 0) acComponents.push({ label: "DEX", value: dexBonus });
+    }
+    armorClass = armorItem.armor.baseAc + (armorItem.enhancement ?? 0) + dexBonus;
+  } else if (acBaseComponents.length > 0) {
+    // Effect-driven unarmored defense (Barbarian, Monk, etc.)
+    // Single compound component: "Unarmored Defense (DEX + CON)" carrying the full value.
+    acComponents.push(acBaseComponents[0]);
+    armorClass = acBaseComponents[0].value;
+  } else {
+    // Default unarmored: 10 + DEX
+    acComponents.push({ label: "Base", value: 10 });
+    const dexBonus = abilityMods.dex;
+    if (dexBonus !== 0) acComponents.push({ label: "DEX", value: dexBonus });
+    armorClass = 10 + dexBonus;
+  }
+
+  // Additive effects (e.g. Defense fighting style +1 AC while wearing armor)
+  for (const comp of acAdditiveComponents) {
+    acComponents.push(comp);
+    armorClass += comp.value;
+  }
+
+  // Shield
+  if (shieldItem) {
+    const shieldEnh = shieldItem.enhancement ?? 0;
+    const shieldTotal = 2 + shieldEnh;
+    acComponents.push({
+      label: shieldEnh > 0 ? `Shield (+${shieldEnh})` : "Shield",
+      value: shieldTotal,
+    });
+    armorClass += shieldTotal;
+  }
+
+  // Magic AC bonus
+  if (magicAcBonus !== 0) {
+    acComponents.push({ label: "Magic Bonus", value: magicAcBonus });
+    armorClass += magicAcBonus;
+  }
+
+  if (featAc !== 0) acComponents.push({ label: "Feat Bonus", value: featAc });
+  const acBreakdown: StatBreakdown = { components: acComponents, total: armorClass + featAc };
+
+  // ── Speed finalization ─────────────────────────────────────────────────────
+  const speedBonusTotal = speedBonusComponents.reduce((s, c) => s + c.value, 0);
+  const speed = baseSpeed + speedBonusTotal;
   const speedComponents: { label: string; value: number }[] = [
-    { label: "Base", value: srdRace?.speed ?? 30 },
+    { label: "Base", value: baseSpeed },
+    ...speedBonusComponents,
   ];
   if (featSpeed !== 0) speedComponents.push({ label: "Feat Bonus", value: featSpeed });
   const speedBreakdown: StatBreakdown = { components: speedComponents, total: speed + featSpeed };
 
+  // ── Remaining breakdowns ───────────────────────────────────────────────────
   const percProficient = proficientSkills.has("Perception");
   const passivePercComponents: { label: string; value: number }[] = [
     { label: "Base", value: 10 },
@@ -416,6 +488,17 @@ export function deriveStats(
     components: passivePercComponents,
     total: passivePerception + featPassivePerc,
   };
+
+  const savingThrowBreakdowns = Object.fromEntries(
+    ABILITY_KEYS.map(k => {
+      const components: { label: string; value: number }[] = [
+        { label: ABILITY_LABEL[k], value: abilityMods[k] },
+      ];
+      if (allSaveProficiencies.has(k)) components.push({ label: "Proficiency", value: pb });
+      components.push(...saveExtraComponents[k]);
+      return [k, { components, total: savingThrows[k].modifier }];
+    })
+  ) as Record<AbilityKey, StatBreakdown>;
 
   const spellSaveDCBreakdown: StatBreakdown | undefined =
     spellcastingAbility !== undefined && spellSaveDC !== undefined
@@ -439,6 +522,14 @@ export function deriveStats(
           total: spellAttackBonus,
         }
       : undefined;
+
+  // ── Scaling stats → typed DerivedStats fields ──────────────────────────────
+  const martialArtsDie   = scalingStats["martial-arts-die"] as string | undefined;
+  const sneakAttackDie   = scalingStats["sneak-attack-die"] as string | undefined;
+  const songOfRestDie    = scalingStats["song-of-rest-die"] as string | undefined;
+  const destroyUndeadCR  = scalingStats["destroy-undead-cr"] as string | undefined;
+  const attacksPerAction = scalingStats["attacksPerAction"] !== undefined
+    ? Number(scalingStats["attacksPerAction"]) : undefined;
 
   // ─── Apply otherModifiers and overrides ───────────────────────────────────
 
@@ -506,6 +597,17 @@ export function deriveStats(
     passivePerceptionBreakdown: adjPassivePerc,
     ...(adjSaveDC   && { spellSaveDCBreakdown:      adjSaveDC   }),
     ...(adjSpellAtk && { spellAttackBonusBreakdown: adjSpellAtk }),
+    // ── chunk 10a new fields ─────────────────────────────────────────────────
+    initiativeAdvantage: initiativeAdvantageSources.length > 0,
+    ...(martialArtsDie  !== undefined && { martialArtsDie }),
+    ...(sneakAttackDie  !== undefined && { sneakAttackDie }),
+    ...(songOfRestDie   !== undefined && { songOfRestDie }),
+    ...(destroyUndeadCR !== undefined && { destroyUndeadCR }),
+    ...(attacksPerAction !== undefined && { attacksPerAction }),
+    saveAdvantages,
+    resistances,
+    conditionImmunities,
+    senses,
   };
 }
 
